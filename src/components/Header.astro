@@ -14,7 +14,6 @@ import LangSwitcher from './LangSwitcher.astro';
     <div class="nav-links" id="nav-links">
       <a href="/" class="nav-link">Главная</a>
       <a href="/about" class="nav-link">О команде</a>
-      <a href="/#projects" class="nav-link">Проекты</a>
       <a href="/news" class="nav-link">Новости</a>
       <a href="/roadmap" class="nav-link">Roadmap</a>
       <a href="/faq" class="nav-link">FAQ</a>
@@ -39,7 +38,6 @@ import LangSwitcher from './LangSwitcher.astro';
   <div class="mobile-menu" id="mobile-menu">
     <a href="/" class="mobile-link">Главная</a>
     <a href="/about" class="mobile-link">О команде</a>
-    <a href="/#projects" class="mobile-link">Проекты</a>
     <a href="/news" class="mobile-link">Новости</a>
     <a href="/roadmap" class="mobile-link">Roadmap</a>
     <a href="/faq" class="mobile-link">FAQ</a>
@@ -153,7 +151,8 @@ import LangSwitcher from './LangSwitcher.astro';
     display: flex;
     align-items: center;
     gap: 8px;
-    padding: 10px 20px;
+    height: 48px;
+    padding: 0 20px;
     background-color: var(--md-sys-color-primary);
     color: var(--md-sys-color-on-primary);
     border-radius: 100px;

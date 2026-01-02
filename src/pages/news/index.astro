@@ -81,22 +81,11 @@ function formatDate(date: Date): string {
   .page-header {
     padding: 140px 32px 70px;
     text-align: center;
-    background: linear-gradient(165deg, var(--md-sys-color-background) 0%, var(--md-sys-color-surface) 100%);
+    background: var(--md-sys-color-background);
     position: relative;
     overflow: hidden;
   }
 
-  .page-header::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 600px;
-    height: 600px;
-    background: radial-gradient(circle, rgba(166, 196, 255, 0.06) 0%, transparent 70%);
-    pointer-events: none;
-  }
 
   .page-header h1 {
     font-size: 64px;
@@ -117,7 +106,7 @@ function formatDate(date: Date): string {
   }
 
   .news-container {
-    max-width: 1200px;
+    max-width: 1400px;
     margin: 0 auto;
     padding: 70px 32px;
   }
@@ -141,12 +130,12 @@ function formatDate(date: Date): string {
   .featured-image {
     width: 100%;
     height: 420px;
-    background: linear-gradient(135deg, var(--md-sys-color-primary-container), var(--md-sys-color-secondary-container));
+    background: var(--md-sys-color-surface-container-high);
     display: flex;
     align-items: center;
     justify-content: center;
     font-size: 96px;
-    color: var(--md-sys-color-on-primary-container);
+    color: var(--md-sys-color-on-surface-variant);
     transition: all 0.4s;
   }
 
