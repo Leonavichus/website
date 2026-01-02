@@ -1,0 +1,216 @@
+---
+export interface Props {
+  title: string;
+  description?: string;
+  image?: string;
+  article?: boolean;
+}
+
+const canonicalURL = new URL(Astro.url.pathname, Astro.site);
+const { title, description = 'Команда разработчиков, создающая инди-игры и приложения с открытым исходным кодом', image = '/og-image.png', article = false } = Astro.props;
+
+const siteName = 'DARK NIGHT';
+const fullTitle = title.includes(siteName) ? title : `${title} - ${siteName}`;
+---
+
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <link rel="manifest" href="/manifest.json" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/icons/icon-192x192.png" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="DARK NIGHT" />
+  <meta name="theme-color" content="#A6C4FF" />
+
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <meta name="generator" content={Astro.generator} />
+
+  <!-- Primary Meta Tags -->
+  <title>{fullTitle}</title>
+  <meta name="title" content={fullTitle} />
+  <meta name="description" content={description} />
+  <link rel="canonical" href={canonicalURL} />
+
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content={article ? 'article' : 'website'} />
+  <meta property="og:url" content={canonicalURL} />
+  <meta property="og:title" content={fullTitle} />
+  <meta property="og:description" content={description} />
+  <meta property="og:image" content={new URL(image, Astro.site)} />
+  <meta property="og:site_name" content={siteName} />
+  <meta property="og:locale" content="ru_RU" />
+
+  <!-- Twitter -->
+  <meta property="twitter:card" content="summary_large_image" />
+  <meta property="twitter:url" content={canonicalURL} />
+  <meta property="twitter:title" content={fullTitle} />
+  <meta property="twitter:description" content={description} />
+  <meta property="twitter:image" content={new URL(image, Astro.site)} />
+
+  <!-- Additional Meta Tags -->
+  <meta name="robots" content="index, follow" />
+  <meta name="author" content="DARK NIGHT Team" />
+  <meta name="keywords" content="open source, indie games, flutter apps, game development, android apps" />
+
+  <!-- Theme Color -->
+  <meta name="theme-color" content="#1B1B1F" />
+  <meta name="color-scheme" content="dark light" />
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
+</head>
+<body>
+  <slot />
+  <script is:inline>
+  // Регистрация Service Worker
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('/sw.js')
+        .then((registration) => {
+          console.log('SW registered:', registration);
+
+          // Проверяем обновления
+          registration.addEventListener('updatefound', () => {
+            const newWorker = registration.installing;
+            newWorker.addEventListener('statechange', () => {
+              if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                // Показываем уведомление об обновлении
+                showUpdateNotification();
+              }
+            });
+          });
+        })
+        .catch((error) => {
+          console.log('SW registration failed:', error);
+        });
+    });
+  }
+
+  // Уведомление об обновлении
+  function showUpdateNotification() {
+    if (confirm('Доступно обновление! Обновить страницу?')) {
+      window.location.reload();
+    }
+  }
+</script>
+</body>
+</html>
+
+<style is:global>
+:root {
+  /* Dark Theme (по умолчанию) */
+  --md-sys-color-primary: #A6C4FF;
+  --md-sys-color-on-primary: #003062;
+  --md-sys-color-primary-container: #00458B;
+  --md-sys-color-on-primary-container: #D4E3FF;
+
+  --md-sys-color-secondary: #BAC6DC;
+  --md-sys-color-on-secondary: #253141;
+  --md-sys-color-secondary-container: #3B4858;
+  --md-sys-color-on-secondary-container: #D6E3F8;
+
+  --md-sys-color-tertiary: #D6BEE4;
+  --md-sys-color-on-tertiary: #3B2948;
+  --md-sys-color-tertiary-container: #523F5F;
+  --md-sys-color-on-tertiary-container: #F2DAFF;
+
+  --md-sys-color-error: #FFB4AB;
+  --md-sys-color-on-error: #690005;
+
+  --md-sys-color-background: #1B1B1F;
+  --md-sys-color-on-background: #E4E1E6;
+  --md-sys-color-surface: #1B1B1F;
+  --md-sys-color-on-surface: #E4E1E6;
+  --md-sys-color-surface-dim: #131316;
+  --md-sys-color-surface-bright: #3A393D;
+  --md-sys-color-surface-container-lowest: #0E0E11;
+  --md-sys-color-surface-container-low: #232327;
+  --md-sys-color-surface-container: #27272B;
+  --md-sys-color-surface-container-high: #323236;
+  --md-sys-color-surface-container-highest: #3D3D41;
+
+  --md-sys-color-on-surface-variant: #C5C6D0;
+  --md-sys-color-outline: #8F9099;
+  --md-sys-color-outline-variant: #444650;
+}
+
+/* Light Theme */
+html[data-theme="light"] {
+  --md-sys-color-primary: #0061A6;
+  --md-sys-color-on-primary: #FFFFFF;
+  --md-sys-color-primary-container: #D0E4FF;
+  --md-sys-color-on-primary-container: #001D36;
+
+  --md-sys-color-secondary: #535F70;
+  --md-sys-color-on-secondary: #FFFFFF;
+  --md-sys-color-secondary-container: #D6E3F8;
+  --md-sys-color-on-secondary-container: #101C2B;
+
+  --md-sys-color-tertiary: #6B5778;
+  --md-sys-color-on-tertiary: #FFFFFF;
+  --md-sys-color-tertiary-container: #F2DAFF;
+  --md-sys-color-on-tertiary-container: #251432;
+
+  --md-sys-color-error: #BA1A1A;
+  --md-sys-color-on-error: #FFFFFF;
+
+  --md-sys-color-background: #F9F9FF;
+  --md-sys-color-on-background: #191C20;
+  --md-sys-color-surface: #F9F9FF;
+  --md-sys-color-on-surface: #191C20;
+  --md-sys-color-surface-dim: #D9D9E0;
+  --md-sys-color-surface-bright: #F9F9FF;
+  --md-sys-color-surface-container-lowest: #FFFFFF;
+  --md-sys-color-surface-container-low: #F3F3FA;
+  --md-sys-color-surface-container: #EDEDF4;
+  --md-sys-color-surface-container-high: #E7E8EE;
+  --md-sys-color-surface-container-highest: #E2E2E9;
+
+  --md-sys-color-on-surface-variant: #43474E;
+  --md-sys-color-outline: #74777F;
+  --md-sys-color-outline-variant: #C4C6D0;
+}
+
+/* Плавные переходы для всех цветов */
+* {
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}
+
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    font-family: 'Roboto', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background-color: var(--md-sys-color-background);
+    color: var(--md-sys-color-on-background);
+    line-height: 1.6;
+    overflow-x: hidden;
+  }
+
+  ::selection {
+    background-color: var(--md-sys-color-primary);
+    color: var(--md-sys-color-on-primary);
+  }
+
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  button {
+    font-family: inherit;
+  }
+</style>

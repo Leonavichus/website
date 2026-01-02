@@ -1,0 +1,34 @@
+{
+  "title": "Toolkit Pro",
+  "tagline": "Набор полезных инструментов в одном приложении",
+  "description": "Toolkit Pro объединяет в себе десятки полезных инструментов: калькуляторы, конвертеры, генераторы и многое другое. Всё что нужно разработчику и не только — в одном удобном приложении.",
+  "icon": "phone_android",
+  "tech": "Flutter • Material Design 3",
+  "version": "v1.5",
+  "badges": ["Android", "iOS", "Бесплатно"],
+  "github": "https://github.com/darkmoonight",
+  "order": 3,
+  "published": true,
+  "features": [
+    {
+      "icon": "calculate",
+      "title": "Калькуляторы",
+      "description": "Научный, программистский, финансовый калькуляторы"
+    },
+    {
+      "icon": "swap_horiz",
+      "title": "Конвертеры",
+      "description": "Конвертация валют, единиц измерения, систем счисления"
+    },
+    {
+      "icon": "fingerprint",
+      "title": "Генераторы",
+      "description": "Пароли, UUID, QR-коды и многое другое"
+    },
+    {
+      "icon": "style",
+      "title": "Цветовые палитры",
+      "description": "Работа с цветами, градиентами, палитрами"
+    }
+  ]
+}

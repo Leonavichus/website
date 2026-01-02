@@ -1,0 +1,660 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import Button from '../components/Button.astro';
+import ProjectCard from '../components/ProjectCard.astro';
+import JsonLd from '../components/JsonLd.astro';
+import { getCollection } from 'astro:content';
+import type { CollectionEntry } from 'astro:content';
+
+const allProjects = await getCollection('projects', ({ data }: CollectionEntry<'projects'>) => {
+  return data.published === true;
+});
+
+type ProjectCardProps = {
+  title: string;
+  tech: string;
+  description: string;
+  icon: string;
+  badges: string[];
+  slug: string;
+  downloadLink?: string;
+};
+
+const projects = allProjects
+  .sort((a: CollectionEntry<'projects'>, b: CollectionEntry<'projects'>) => a.data.order - b.data.order)
+  .map((project: CollectionEntry<'projects'>): ProjectCardProps => ({
+    title: project.data.title,
+    tech: project.data.tech,
+    description: project.data.description,
+    icon: project.data.icon,
+    badges: project.data.badges,
+    slug: project.id,
+    downloadLink: project.data.downloadLink
+  }));
+---
+
+<Layout title="DARK NIGHT - Open Source Games & Apps">
+  <JsonLd />
+  <Header />
+
+  <!-- Hero Section -->
+  <section class="hero">
+    <div class="hero-container">
+      <div class="hero-content">
+        <div class="hero-badge">
+          <span class="material-icons">rocket_launch</span>
+          Open Source Games & Apps
+        </div>
+        <h1>DARK NIGHT</h1>
+        <p>
+          Команда разработчиков, создающая инди-игры и приложения с открытым исходным кодом. 
+          Превращаем идеи в реальность и делимся с миром.
+        </p>
+        <div class="hero-buttons">
+          <Button href="/#projects" icon="apps">Наши проекты</Button>
+          <Button href="/#join" variant="secondary" icon="group_add">Присоединиться</Button>
+        </div>
+      </div>
+      <div class="mascot-container">
+        <div class="mascot-placeholder">
+          🐦‍⬛<br><br>
+          Ворон в героической позе<br>
+          <small style="opacity: 0.6;">(ваше изображение маскота)</small>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Mission Section -->
+  <section id="mission">
+    <div class="section-header">
+      <h2>Наша миссия</h2>
+      <p>Открытость, сотрудничество и свобода в технологиях</p>
+    </div>
+
+    <div class="mission-layout">
+      <div class="mission-content">
+        <h3>🌟 Во что мы верим</h3>
+        <p>
+          Мы верим в силу открытого программного обеспечения и дух сотрудничества. 
+          Работаем вместе, чтобы превратить идеи в реальное, полезное ПО, 
+          и делимся нашими творениями с миром бесплатно.
+        </p>
+        <p>
+          Наша цель — продвигать открытость и свободу в технологиях. 
+          Давайте вместе создадим лучший, открытый и свободный мир через технологии.
+        </p>
+        <div class="mission-values">
+          <span class="value-tag">Open Source</span>
+          <span class="value-tag">Collaboration</span>
+          <span class="value-tag">Innovation</span>
+          <span class="value-tag">Freedom</span>
+          <span class="value-tag">Quality</span>
+        </div>
+      </div>
+      <div class="mascot-container">
+        <div class="mascot-placeholder" style="height: 100%;">
+          🐦‍⬛<br><br>
+          Ворон с книгой знаний<br>
+          <small style="opacity: 0.6;">(изображение маскота)</small>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Projects Section -->
+  <section id="projects">
+    <div class="section-header">
+      <h2>Наши проекты</h2>
+      <p>Игры и приложения, созданные с любовью к коду</p>
+    </div>
+
+    <div class="projects-grid">
+      {projects.map((project: ProjectCardProps) => <ProjectCard {...project} />)}
+    </div>
+  </section>
+
+  <!-- Join Section -->
+  <section id="join">
+    <div class="section-header">
+      <h2>Присоединяйтесь</h2>
+      <p>Мы приветствуем всех, кто разделяет нашу страсть к open-source</p>
+    </div>
+
+    <div class="join-grid">
+      <div class="join-card">
+        <div class="join-icon">
+          <span class="material-icons">code</span>
+        </div>
+        <h4>Разработчики</h4>
+        <p>Flutter, Unity, Web, Backend — любой стек приветствуется</p>
+      </div>
+
+      <div class="join-card">
+        <div class="join-icon">
+          <span class="material-icons">palette</span>
+        </div>
+        <h4>Дизайнеры</h4>
+        <p>UI/UX дизайн, иллюстрации, анимации</p>
+      </div>
+
+      <div class="join-card">
+        <div class="join-icon">
+          <span class="material-icons">translate</span>
+        </div>
+        <h4>Переводчики</h4>
+        <p>Помогите сделать проекты доступными для всего мира</p>
+      </div>
+
+      <div class="join-card">
+        <div class="join-icon">
+          <span class="material-icons">lightbulb</span>
+        </div>
+        <h4>Энтузиасты</h4>
+        <p>Идеи, тестирование, документация</p>
+      </div>
+    </div>
+
+    <div class="join-cta">
+      <Button href="https://github.com/darkmoonight" icon="favorite">
+        Стать частью команды
+      </Button>
+    </div>
+  </section>
+
+  <!-- CTA Section with Mascot -->
+  <section>
+    <div class="cta-section">
+      <div class="cta-content">
+        <h2>Поддержите наши проекты</h2>
+        <p>
+          Ваши пожертвования помогают нам продолжать разработку качественных open-source проектов. 
+          Каждый вклад имеет значение и позволяет нам оставаться независимыми.
+        </p>
+        <Button href="#donate" class="donate-btn" icon="volunteer_activism">
+          Сделать пожертвование
+        </Button>
+      </div>
+      <div class="cta-mascot">
+        <div class="mascot-placeholder">
+          🐦‍⬛<br><br>
+          Ворон с благодарностью<br>
+          <small style="opacity: 0.6;">(изображение маскота)</small>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Contact Section -->
+  <section id="contact">
+    <div class="section-header">
+      <h2>Связаться с нами</h2>
+      <p>Присоединяйтесь к сообществу на различных платформах</p>
+    </div>
+
+    <div class="contact-grid">
+      <div class="contact-card">
+        <span class="material-icons">code</span>
+        <h4>GitHub</h4>
+        <p>darkmoonight</p>
+      </div>
+
+      <div class="contact-card">
+        <span class="material-icons">chat</span>
+        <h4>Discord</h4>
+        <p>Обсуждения</p>
+      </div>
+
+      <div class="contact-card">
+        <span class="material-icons">forum</span>
+        <h4>Форум</h4>
+        <p>Сообщество</p>
+      </div>
+
+      <div class="contact-card">
+        <span class="material-icons">mail</span>
+        <h4>Email</h4>
+        <p>contact@darknight.dev</p>
+      </div>
+    </div>
+  </section>
+
+  <Footer />
+</Layout>
+
+<style>
+  .hero {
+    position: relative;
+    min-height: 95vh;
+    display: flex;
+    align-items: center;
+    padding: 100px 32px 60px;
+    overflow: hidden;
+    background: linear-gradient(165deg, var(--md-sys-color-background) 0%, var(--md-sys-color-surface-dim) 50%, var(--md-sys-color-background) 100%);
+  }
+
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: -20%;
+    right: -10%;
+    width: 800px;
+    height: 800px;
+    background: radial-gradient(circle, rgba(166, 196, 255, 0.06) 0%, transparent 70%);
+    pointer-events: none;
+    animation: pulse 8s ease-in-out infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 0.5; transform: scale(1); }
+    50% { opacity: 0.8; transform: scale(1.1); }
+  }
+
+  .hero-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1.3fr 1fr;
+    gap: 80px;
+    align-items: center;
+    position: relative;
+    z-index: 1;
+  }
+
+  .hero-content {
+    animation: fadeInUp 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  @keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background-color: var(--md-sys-color-surface-container-high);
+    color: var(--md-sys-color-primary);
+    padding: 10px 20px;
+    border-radius: 100px;
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 28px;
+    border: 1px solid var(--md-sys-color-outline-variant);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .hero-badge .material-icons {
+    font-size: 18px;
+  }
+
+  .hero-badge:hover {
+    border-color: var(--md-sys-color-primary);
+    transform: translateY(-2px);
+  }
+
+  .hero h1 {
+    font-size: 72px;
+    font-weight: 900;
+    margin-bottom: 20px;
+    color: var(--md-sys-color-on-background);
+    letter-spacing: -2px;
+    line-height: 1.1;
+  }
+
+  .hero p {
+    font-size: 20px;
+    margin-bottom: 36px;
+    color: var(--md-sys-color-on-surface-variant);
+    line-height: 1.7;
+  }
+
+  .hero-buttons {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+
+  .mascot-container {
+    position: relative;
+    animation: fadeInRight 0.8s cubic-bezier(0.4, 0, 0.2, 1) 0.2s both;
+  }
+
+  @keyframes fadeInRight {
+    from { opacity: 0; transform: translateX(30px); }
+    to { opacity: 1; transform: translateX(0); }
+  }
+
+  .mascot-placeholder {
+    background: linear-gradient(135deg, var(--md-sys-color-surface-container) 0%, var(--md-sys-color-surface-container-high) 100%);
+    border-radius: 28px;
+    height: 480px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--md-sys-color-outline);
+    font-size: 18px;
+    border: 2px solid var(--md-sys-color-outline-variant);
+    text-align: center;
+    padding: 24px;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .mascot-placeholder::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, transparent 0%, rgba(166, 196, 255, 0.05) 100%);
+    opacity: 0;
+    transition: opacity 0.4s;
+  }
+
+  .mascot-placeholder:hover {
+    border-color: var(--md-sys-color-primary);
+    transform: translateY(-4px) scale(1.02);
+  }
+
+  .mascot-placeholder:hover::before {
+    opacity: 1;
+  }
+
+  section {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 80px 32px;
+  }
+
+  .section-header {
+    text-align: center;
+    margin-bottom: 60px;
+  }
+
+  .section-header h2 {
+    font-size: 48px;
+    font-weight: 800;
+    margin-bottom: 14px;
+    color: var(--md-sys-color-on-background);
+    letter-spacing: -1px;
+  }
+
+  .section-header p {
+    font-size: 19px;
+    color: var(--md-sys-color-on-surface-variant);
+  }
+
+  .mission-layout {
+    display: grid;
+    grid-template-columns: 1.2fr 1fr;
+    gap: 60px;
+    align-items: center;
+  }
+
+  .mission-content {
+    background-color: var(--md-sys-color-surface-container);
+    border-radius: 24px;
+    padding: 44px;
+    border: 1px solid var(--md-sys-color-outline-variant);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .mission-content:hover {
+    border-color: var(--md-sys-color-primary);
+    transform: translateY(-4px);
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4);
+  }
+
+  .mission-content h3 {
+    font-size: 26px;
+    color: var(--md-sys-color-primary);
+    margin-bottom: 20px;
+    font-weight: 700;
+  }
+
+  .mission-content p {
+    font-size: 17px;
+    line-height: 1.8;
+    margin-bottom: 18px;
+    color: var(--md-sys-color-on-surface-variant);
+  }
+
+  .mission-values {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-top: 28px;
+  }
+
+  .value-tag {
+    background-color: var(--md-sys-color-surface-container-highest);
+    color: var(--md-sys-color-on-surface);
+    padding: 9px 18px;
+    border-radius: 100px;
+    font-size: 14px;
+    font-weight: 600;
+    border: 1px solid var(--md-sys-color-outline-variant);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .value-tag:hover {
+    border-color: var(--md-sys-color-primary);
+    background-color: var(--md-sys-color-surface-container-high);
+    transform: translateY(-2px);
+  }
+
+  .projects-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(370px, 1fr));
+    gap: 28px;
+  }
+
+  .join-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
+    gap: 24px;
+  }
+
+  .join-card {
+    background-color: var(--md-sys-color-surface-container);
+    border-radius: 20px;
+    padding: 36px 28px;
+    text-align: center;
+    border: 1px solid var(--md-sys-color-outline-variant);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .join-card:hover {
+    border-color: var(--md-sys-color-primary);
+    background-color: var(--md-sys-color-surface-container-high);
+    transform: translateY(-6px);
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4);
+  }
+
+  .join-icon {
+    width: 68px;
+    height: 68px;
+    background: linear-gradient(135deg, var(--md-sys-color-primary-container), var(--md-sys-color-tertiary));
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 20px;
+    color: var(--md-sys-color-on-primary-container);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .join-icon .material-icons {
+    font-size: 34px;
+  }
+
+  .join-card:hover .join-icon {
+    transform: scale(1.1) rotate(5deg);
+  }
+
+  .join-card h4 {
+    font-size: 19px;
+    margin-bottom: 10px;
+    color: var(--md-sys-color-on-surface);
+    font-weight: 700;
+  }
+
+  .join-card p {
+    color: var(--md-sys-color-on-surface-variant);
+    font-size: 15px;
+    line-height: 1.6;
+  }
+
+  .join-cta {
+    text-align: center;
+    margin-top: 52px;
+  }
+
+  .cta-section {
+    background: linear-gradient(135deg, var(--md-sys-color-primary-container), var(--md-sys-color-secondary-container));
+    border-radius: 28px;
+    padding: 60px 48px;
+    border: 1px solid var(--md-sys-color-primary);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+    display: grid;
+    grid-template-columns: 1.2fr 1fr;
+    gap: 60px;
+    align-items: center;
+  }
+
+  .cta-section::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at top right, rgba(255, 255, 255, 0.1) 0%, transparent 50%);
+    opacity: 0;
+    transition: opacity 0.4s;
+  }
+
+  .cta-section:hover::before {
+    opacity: 1;
+  }
+
+  .cta-section:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 16px 48px rgba(0, 0, 0, 0.5);
+  }
+
+  .cta-content h2 {
+    font-size: 44px;
+    font-weight: 800;
+    margin-bottom: 18px;
+    color: var(--md-sys-color-on-primary-container);
+  }
+
+  .cta-content p {
+    font-size: 18px;
+    margin-bottom: 32px;
+    color: var(--md-sys-color-on-primary-container);
+    opacity: 0.95;
+    line-height: 1.7;
+  }
+
+  :global(.donate-btn) {
+    background: white !important;
+    color: var(--md-sys-color-primary-container) !important;
+  }
+
+  .cta-mascot .mascot-placeholder {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.2);
+    height: 350px;
+  }
+
+  .contact-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 24px;
+  }
+
+  .contact-card {
+    background-color: var(--md-sys-color-surface-container);
+    border-radius: 20px;
+    padding: 32px;
+    text-align: center;
+    border: 1px solid var(--md-sys-color-outline-variant);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    cursor: pointer;
+  }
+
+  .contact-card:hover {
+    border-color: var(--md-sys-color-primary);
+    transform: translateY(-6px);
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4);
+  }
+
+  .contact-card .material-icons {
+    font-size: 44px;
+    color: var(--md-sys-color-primary);
+    margin-bottom: 16px;
+    transition: all 0.4s;
+  }
+
+  .contact-card:hover .material-icons {
+    transform: scale(1.15);
+  }
+
+  .contact-card h4 {
+    font-size: 18px;
+    margin-bottom: 8px;
+    color: var(--md-sys-color-on-surface);
+    font-weight: 600;
+  }
+
+  .contact-card p {
+    color: var(--md-sys-color-on-surface-variant);
+    font-size: 14px;
+  }
+
+  @media (max-width: 1024px) {
+    .hero-container,
+    .mission-layout,
+    .cta-section {
+      grid-template-columns: 1fr;
+    }
+
+    .hero h1 {
+      font-size: 52px;
+    }
+
+    .section-header h2 {
+      font-size: 40px;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .hero {
+      padding: 80px 20px 50px;
+    }
+
+    .hero h1 {
+      font-size: 36px;
+    }
+
+    .hero p {
+      font-size: 17px;
+    }
+
+    section {
+      padding: 60px 20px;
+    }
+
+    .section-header h2 {
+      font-size: 32px;
+    }
+
+    .projects-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

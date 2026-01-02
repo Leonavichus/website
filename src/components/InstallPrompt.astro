@@ -1,0 +1,180 @@
+---
+---
+
+<div class="install-prompt" id="install-prompt">
+  <div class="install-content">
+    <div class="install-icon">
+      <span class="material-icons">get_app</span>
+    </div>
+    <div class="install-text">
+      <strong>Установите приложение</strong>
+      <span>Быстрый доступ с главного экрана</span>
+    </div>
+    <button class="install-btn" id="install-btn">
+      Установить
+    </button>
+    <button class="install-close" id="install-close">
+      <span class="material-icons">close</span>
+    </button>
+  </div>
+</div>
+
+<script>
+  let deferredPrompt: any;
+  const installPrompt = document.getElementById('install-prompt');
+  const installBtn = document.getElementById('install-btn');
+  const installClose = document.getElementById('install-close');
+
+  // Слушаем событие beforeinstallprompt
+  window.addEventListener('beforeinstallprompt', (e) => {
+    // Предотвращаем автоматический показ
+    e.preventDefault();
+    deferredPrompt = e;
+
+    // Показываем наш промпт (только если не устанавливали ранее)
+    if (!localStorage.getItem('pwa-dismissed')) {
+      setTimeout(() => {
+        installPrompt?.classList.add('show');
+      }, 3000); // Показываем через 3 секунды
+    }
+  });
+
+  // Установка
+  installBtn?.addEventListener('click', async () => {
+    if (!deferredPrompt) return;
+
+    deferredPrompt.prompt();
+    const { outcome } = await deferredPrompt.userChoice;
+
+    console.log(`User response: ${outcome}`);
+    deferredPrompt = null;
+    installPrompt?.classList.remove('show');
+  });
+
+  // Закрыть промпт
+  installClose?.addEventListener('click', () => {
+    installPrompt?.classList.remove('show');
+    localStorage.setItem('pwa-dismissed', 'true');
+  });
+
+  // Проверяем установлено ли приложение
+  window.addEventListener('appinstalled', () => {
+    console.log('PWA installed');
+    installPrompt?.classList.remove('show');
+  });
+</script>
+
+<style>
+  .install-prompt {
+    position: fixed;
+    bottom: -200px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1000;
+    transition: bottom 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    width: calc(100% - 40px);
+    max-width: 500px;
+  }
+
+  .install-prompt.show {
+    bottom: 20px;
+  }
+
+  .install-content {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 16px 20px;
+    background-color: var(--md-sys-color-surface-container-high);
+    border-radius: 16px;
+    border: 1px solid var(--md-sys-color-outline-variant);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+  }
+
+  .install-icon {
+    width: 48px;
+    height: 48px;
+    background: linear-gradient(135deg, var(--md-sys-color-primary-container), var(--md-sys-color-tertiary));
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--md-sys-color-on-primary-container);
+    flex-shrink: 0;
+  }
+
+  .install-icon .material-icons {
+    font-size: 28px;
+  }
+
+  .install-text {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .install-text strong {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--md-sys-color-on-surface);
+  }
+
+  .install-text span {
+    font-size: 13px;
+    color: var(--md-sys-color-on-surface-variant);
+  }
+
+  .install-btn {
+    padding: 10px 24px;
+    background-color: var(--md-sys-color-primary);
+    color: var(--md-sys-color-on-primary);
+    border: none;
+    border-radius: 100px;
+    font-weight: 700;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.3s;
+    font-family: inherit;
+    white-space: nowrap;
+  }
+
+  .install-btn:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 12px rgba(166, 196, 255, 0.4);
+  }
+
+  .install-close {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 8px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--md-sys-color-on-surface-variant);
+    transition: all 0.3s;
+    flex-shrink: 0;
+  }
+
+  .install-close:hover {
+    background-color: var(--md-sys-color-surface-container-highest);
+    color: var(--md-sys-color-error);
+  }
+
+  .install-close .material-icons {
+    font-size: 20px;
+  }
+
+  @media (max-width: 600px) {
+    .install-text span {
+      display: none;
+    }
+
+    .install-btn {
+      padding: 10px 16px;
+      font-size: 13px;
+    }
+  }
+</style>

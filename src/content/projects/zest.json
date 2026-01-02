@@ -1,0 +1,73 @@
+{
+  "title": "Zest",
+  "tagline": "Современный менеджер задач для Android",
+  "description": "Zest — это красивый и функциональный менеджер задач, созданный с использованием Material Design 3. Управляйте своими делами эффективно с поддержкой динамических цветов, темной темы и интуитивным интерфейсом.",
+  "icon": "task_alt",
+  "tech": "Flutter • Dart • Material Design",
+  "version": "v2.0",
+  "badges": ["Android", "Open Source", "Material You"],
+  "github": "https://github.com/darkmoonight/Zest",
+  "downloadLink": "https://github.com/darkmoonight/Zest/releases",
+  "order": 1,
+  "published": true,
+  "stats": {
+    "downloads": "10K+",
+    "rating": "4.8",
+    "stars": "500+",
+    "contributors": "50+"
+  },
+  "features": [
+    {
+      "icon": "palette",
+      "title": "Material Design 3",
+      "description": "Современный дизайн с поддержкой динамических цветов и Material You"
+    },
+    {
+      "icon": "dark_mode",
+      "title": "Темная тема",
+      "description": "AMOLED темная тема для комфортного использования в любое время суток"
+    },
+    {
+      "icon": "category",
+      "title": "Категории и теги",
+      "description": "Организуйте задачи с помощью категорий, тегов и приоритетов"
+    },
+    {
+      "icon": "notifications",
+      "title": "Напоминания",
+      "description": "Настраиваемые уведомления, чтобы не пропустить важные дела"
+    },
+    {
+      "icon": "cloud_off",
+      "title": "Оффлайн работа",
+      "description": "Все данные хранятся локально, никаких облачных сервисов"
+    },
+    {
+      "icon": "lock_open",
+      "title": "Open Source",
+      "description": "Полностью открытый исходный код под MIT лицензией"
+    }
+  ],
+  "techStack": [
+    {
+      "emoji": "🎯",
+      "title": "Flutter",
+      "subtitle": "Cross-platform framework"
+    },
+    {
+      "emoji": "💙",
+      "title": "Dart",
+      "subtitle": "Programming language"
+    },
+    {
+      "emoji": "🗄️",
+      "title": "Isar Database",
+      "subtitle": "Local storage"
+    },
+    {
+      "emoji": "🎨",
+      "title": "Material Design 3",
+      "subtitle": "UI design system"
+    }
+  ]
+}

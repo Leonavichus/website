@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <style>
+    .raven { fill: #A6C4FF; }
+    @media (prefers-color-scheme: light) {
+      .raven { fill: #0061A6; }
+    }
+  </style>
+  <circle cx="50" cy="50" r="48" fill="#1B1B1F"/>
+  <text x="50" y="70" font-size="60" text-anchor="middle" class="raven">🐦‍⬛</text>
+</svg>

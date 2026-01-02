@@ -1,0 +1,428 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import Button from '../components/Button.astro';
+
+const team = [
+  {
+    name: 'Основатель',
+    role: 'Full Stack Developer',
+    avatar: '👨‍💻',
+    bio: 'Разработчик с страстью к open-source и созданию полезных приложений',
+    skills: ['Flutter', 'Dart', 'Docker', 'Backend'],
+    github: 'https://github.com/darkmoonight',
+  },
+  // Добавьте других членов команды
+];
+
+const values = [
+  {
+    icon: 'code',
+    title: 'Open Source',
+    description: 'Мы верим в открытость кода и делимся всем с сообществом'
+  },
+  {
+    icon: 'handshake',
+    title: 'Сотрудничество',
+    description: 'Работаем вместе, учимся друг у друга и растем как команда'
+  },
+  {
+    icon: 'rocket_launch',
+    title: 'Инновации',
+    description: 'Экспериментируем с новыми технологиями и подходами'
+  },
+  {
+    icon: 'favorite',
+    title: 'Качество',
+    description: 'Создаем продукты, которыми сами гордимся и пользуемся'
+  },
+];
+
+const stats = [
+  { value: '3+', label: 'Лет разработки' },
+  { value: '10+', label: 'Проектов' },
+  { value: '1000+', label: 'Пользователей' },
+  { value: '50+', label: 'Контрибьюторов' },
+];
+---
+
+<Layout title="О команде" description="Узнайте больше о команде DARK NIGHT - разработчиках инди-игр и приложений с открытым исходным кодом">
+  <Header />
+
+  <!-- Hero -->
+  <section class="about-hero">
+    <div class="hero-content">
+      <h1>О команде DARK NIGHT</h1>
+      <p class="hero-subtitle">
+        Мы — команда энтузиастов, создающих инди-игры и приложения 
+        с открытым исходным кодом для всего мира
+      </p>
+    </div>
+    <div class="hero-mascot">🐦‍⬛</div>
+  </section>
+
+  <!-- Story -->
+  <section class="story-section">
+    <div class="container">
+      <h2>Наша история</h2>
+      <div class="story-content">
+        <p>
+          DARK NIGHT начался как личный проект одного разработчика, 
+          увлеченного созданием полезных приложений и игр. Со временем 
+          вокруг проектов сформировалось сообщество единомышленников, 
+          готовых вносить свой вклад.
+        </p>
+        <p>
+          Сегодня мы — команда разработчиков, дизайнеров и энтузиастов 
+          из разных стран, объединенных общей целью: создавать качественное 
+          ПО и делиться им с миром бесплатно.
+        </p>
+        <p>
+          Все наши проекты имеют открытый исходный код, потому что мы верим 
+          в силу сообщества и прозрачность разработки. Мы учимся друг у друга, 
+          помогаем новичкам и вместе делаем технологии лучше.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Values -->
+  <section class="values-section">
+    <div class="container">
+      <h2>Наши ценности</h2>
+      <div class="values-grid">
+        {values.map(value => (
+          <div class="value-card">
+            <div class="value-icon">
+              <span class="material-icons">{value.icon}</span>
+            </div>
+            <h3>{value.title}</h3>
+            <p>{value.description}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- Stats -->
+  <section class="stats-section">
+    <div class="container">
+      <div class="stats-grid">
+        {stats.map(stat => (
+          <div class="stat-card">
+            <div class="stat-value">{stat.value}</div>
+            <div class="stat-label">{stat.label}</div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- Team -->
+  <section class="team-section">
+    <div class="container">
+      <h2>Команда</h2>
+      <div class="team-grid">
+        {team.map(member => (
+          <div class="team-card">
+            <div class="member-avatar">{member.avatar}</div>
+            <h3>{member.name}</h3>
+            <p class="member-role">{member.role}</p>
+            <p class="member-bio">{member.bio}</p>
+            <div class="member-skills">
+              {member.skills.map(skill => (
+                <span class="skill-tag">{skill}</span>
+              ))}
+            </div>
+            {member.github && (
+              <a href={member.github} class="member-link" target="_blank" rel="noopener">
+                <span class="material-icons">link</span>
+                GitHub
+              </a>
+            )}
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="join-cta">
+    <div class="container">
+      <h2>Присоединяйтесь к нам</h2>
+      <p>Станьте частью нашей команды и помогите создавать крутые проекты</p>
+      <div class="cta-buttons">
+        <Button href="/#join" icon="group_add">Присоединиться</Button>
+        <Button href="https://github.com/darkmoonight" variant="secondary" icon="code">GitHub</Button>
+      </div>
+    </div>
+  </section>
+
+  <Footer />
+</Layout>
+
+<style>
+  .about-hero {
+    padding: 140px 32px 80px;
+    text-align: center;
+    background: linear-gradient(165deg, var(--md-sys-color-background) 0%, var(--md-sys-color-surface) 100%);
+  }
+
+  .hero-content h1 {
+    font-size: 56px;
+    font-weight: 900;
+    margin-bottom: 20px;
+    letter-spacing: -1px;
+  }
+
+  .hero-subtitle {
+    font-size: 20px;
+    color: var(--md-sys-color-on-surface-variant);
+    max-width: 700px;
+    margin: 0 auto 40px;
+    line-height: 1.7;
+  }
+
+  .hero-mascot {
+    font-size: 120px;
+    animation: float 3s ease-in-out infinite;
+  }
+
+  @keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-20px); }
+  }
+
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 80px 32px;
+  }
+
+  .container h2 {
+    font-size: 40px;
+    font-weight: 800;
+    text-align: center;
+    margin-bottom: 48px;
+    letter-spacing: -0.5px;
+  }
+
+  .story-content {
+    max-width: 800px;
+    margin: 0 auto;
+  }
+
+  .story-content p {
+    font-size: 18px;
+    line-height: 1.8;
+    color: var(--md-sys-color-on-surface-variant);
+    margin-bottom: 24px;
+  }
+
+  .values-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 28px;
+  }
+
+  .value-card {
+    background-color: var(--md-sys-color-surface-container);
+    border-radius: 20px;
+    padding: 36px;
+    border: 1px solid var(--md-sys-color-outline-variant);
+    transition: all 0.4s;
+  }
+
+  .value-card:hover {
+    border-color: var(--md-sys-color-primary);
+    transform: translateY(-6px);
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4);
+  }
+
+  .value-icon {
+    width: 64px;
+    height: 64px;
+    background: linear-gradient(135deg, var(--md-sys-color-primary-container), var(--md-sys-color-tertiary));
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 20px;
+    color: var(--md-sys-color-on-primary-container);
+  }
+
+  .value-icon .material-icons {
+    font-size: 32px;
+  }
+
+  .value-card h3 {
+    font-size: 22px;
+    margin-bottom: 12px;
+    color: var(--md-sys-color-on-surface);
+  }
+
+  .value-card p {
+    font-size: 15px;
+    line-height: 1.6;
+    color: var(--md-sys-color-on-surface-variant);
+  }
+
+  .stats-section {
+    background-color: var(--md-sys-color-surface-container);
+  }
+
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 24px;
+  }
+
+  .stat-card {
+    text-align: center;
+    padding: 32px;
+    background-color: var(--md-sys-color-surface-container-high);
+    border-radius: 16px;
+    transition: all 0.3s;
+  }
+
+  .stat-card:hover {
+    transform: translateY(-4px);
+  }
+
+  .stat-value {
+    font-size: 48px;
+    font-weight: 900;
+    color: var(--md-sys-color-primary);
+    margin-bottom: 8px;
+  }
+
+  .stat-label {
+    font-size: 16px;
+    color: var(--md-sys-color-on-surface-variant);
+  }
+
+  .team-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 28px;
+  }
+
+  .team-card {
+    background-color: var(--md-sys-color-surface-container);
+    border-radius: 20px;
+    padding: 36px;
+    border: 1px solid var(--md-sys-color-outline-variant);
+    text-align: center;
+    transition: all 0.4s;
+  }
+
+  .team-card:hover {
+    border-color: var(--md-sys-color-primary);
+    transform: translateY(-6px);
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4);
+  }
+
+  .member-avatar {
+    font-size: 80px;
+    margin-bottom: 20px;
+  }
+
+  .team-card h3 {
+    font-size: 22px;
+    margin-bottom: 6px;
+    color: var(--md-sys-color-on-surface);
+  }
+
+  .member-role {
+    font-size: 14px;
+    color: var(--md-sys-color-secondary);
+    font-weight: 600;
+    margin-bottom: 16px;
+  }
+
+  .member-bio {
+    font-size: 15px;
+    line-height: 1.6;
+    color: var(--md-sys-color-on-surface-variant);
+    margin-bottom: 20px;
+  }
+
+  .member-skills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: center;
+    margin-bottom: 20px;
+  }
+
+  .skill-tag {
+    padding: 6px 14px;
+    background-color: var(--md-sys-color-surface-container-highest);
+    border: 1px solid var(--md-sys-color-outline-variant);
+    border-radius: 100px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--md-sys-color-on-surface);
+  }
+
+  .member-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--md-sys-color-primary);
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 14px;
+    transition: all 0.3s;
+  }
+
+  .member-link:hover {
+    gap: 10px;
+  }
+
+  .member-link .material-icons {
+    font-size: 18px;
+  }
+
+  .join-cta {
+    background: linear-gradient(135deg, var(--md-sys-color-primary-container), var(--md-sys-color-secondary-container));
+    text-align: center;
+  }
+
+  .join-cta h2 {
+    font-size: 40px;
+    font-weight: 800;
+    margin-bottom: 16px;
+    color: var(--md-sys-color-on-primary-container);
+  }
+
+  .join-cta p {
+    font-size: 18px;
+    margin-bottom: 32px;
+    color: var(--md-sys-color-on-primary-container);
+    opacity: 0.95;
+  }
+
+  .cta-buttons {
+    display: flex;
+    gap: 14px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  @media (max-width: 768px) {
+    .hero-content h1 {
+      font-size: 36px;
+    }
+
+    .container {
+      padding: 60px 20px;
+    }
+
+    .values-grid,
+    .team-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
