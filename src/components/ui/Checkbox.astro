@@ -1,0 +1,151 @@
+---
+// src/components/ui/Checkbox.astro
+/**
+ * Material Design 3 Checkbox Component
+ */
+
+export interface Props {
+  name: string;
+  label?: string;
+  checked?: boolean;
+  disabled?: boolean;
+  indeterminate?: boolean;
+  value?: string;
+  class?: string;
+}
+
+const {
+  name,
+  label,
+  checked = false,
+  disabled = false,
+  indeterminate = false,
+  value,
+  class: className = '',
+} = Astro.props;
+
+import Icon from './Icon.astro';
+---
+
+<label
+  class:list={[
+    'checkbox-wrapper',
+    { 'checkbox-disabled': disabled },
+    className,
+  ]}
+>
+  <input
+    type="checkbox"
+    name={name}
+    checked={checked}
+    disabled={disabled}
+    value={value}
+    class="checkbox-input"
+    aria-checked={indeterminate ? 'mixed' : checked}
+  />
+
+  <span class="checkbox-box">
+    <Icon name={indeterminate ? 'indeterminate_check_box' : checked ? 'check' : ''} />
+    <span class="checkbox-state-layer"></span>
+  </span>
+
+  {label && <span class="checkbox-label">{label}</span>}
+</label>
+
+<style>
+  .checkbox-wrapper {
+    display: inline-flex;
+    align-items: center;
+    gap: 16px;
+    cursor: pointer;
+    user-select: none;
+    position: relative;
+  }
+
+  .checkbox-input {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+  }
+
+  .checkbox-box {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 18px;
+    height: 18px;
+    border: 2px solid var(--md-sys-color-on-surface-variant);
+    border-radius: var(--md-sys-shape-corner-extra-small);
+    transition: all var(--md-sys-motion-duration-short4) var(--md-sys-motion-easing-standard);
+    flex-shrink: 0;
+  }
+
+  .checkbox-box :global(.icon) {
+    position: relative;
+    z-index: 1;
+    color: var(--md-sys-color-on-primary);
+    font-size: 18px;
+    opacity: 0;
+    transform: scale(0);
+    transition: all var(--md-sys-motion-duration-short2) var(--md-sys-motion-easing-standard);
+  }
+
+  /* State layer */
+  .checkbox-state-layer {
+    position: absolute;
+    inset: -10px;
+    border-radius: 50%;
+    background-color: var(--md-sys-color-on-surface);
+    opacity: 0;
+    transition: opacity var(--md-sys-motion-duration-short4) var(--md-sys-motion-easing-standard);
+  }
+
+  .checkbox-wrapper:hover .checkbox-state-layer {
+    opacity: var(--md-sys-state-hover-opacity);
+  }
+
+  .checkbox-input:focus-visible ~ .checkbox-box .checkbox-state-layer {
+    opacity: var(--md-sys-state-focus-opacity);
+  }
+
+  .checkbox-wrapper:active .checkbox-state-layer {
+    opacity: var(--md-sys-state-pressed-opacity);
+  }
+
+  /* Checked state */
+  .checkbox-input:checked ~ .checkbox-box {
+    background-color: var(--md-sys-color-primary);
+    border-color: var(--md-sys-color-primary);
+  }
+
+  .checkbox-input:checked ~ .checkbox-box :global(.icon) {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  .checkbox-input:checked ~ .checkbox-box .checkbox-state-layer {
+    background-color: var(--md-sys-color-primary);
+  }
+
+  /* Label */
+  .checkbox-label {
+    font-family: var(--md-sys-typescale-body-large-font);
+    font-size: var(--md-sys-typescale-body-large-size);
+    color: var(--md-sys-color-on-surface);
+    line-height: 1.5;
+  }
+
+  /* Disabled */
+  .checkbox-disabled {
+    opacity: 0.38;
+    pointer-events: none;
+  }
+
+  /* Focus visible */
+  .checkbox-input:focus-visible ~ .checkbox-box {
+    outline: 2px solid var(--md-sys-color-primary);
+    outline-offset: 2px;
+  }
+</style>

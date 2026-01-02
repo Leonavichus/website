@@ -1,0 +1,141 @@
+---
+// src/components/ui/ThemeToggle.astro - CORRECT with Icon.astro
+/**
+ * Material Design 3 Theme Toggle
+ * Переключатель светлой/тёмной темы
+ */
+
+export interface Props {
+  class?: string;
+}
+
+const { class: className = '' } = Astro.props;
+
+import Icon from './Icon.astro';
+---
+
+<button
+  id="theme-toggle"
+  class:list={['theme-toggle', className]}
+  aria-label="Toggle theme"
+  title="Переключить тему"
+>
+  <span class="theme-toggle-icon-wrapper">
+    <span class="theme-toggle-icon theme-toggle-light">
+      <Icon name="light_mode" />
+    </span>
+    <span class="theme-toggle-icon theme-toggle-dark">
+      <Icon name="dark_mode" />
+    </span>
+  </span>
+</button>
+
+<style>
+  .theme-toggle {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    height: 48px;
+    padding: 0;
+    border: none;
+    border-radius: 24px;
+    background-color: var(--md-sys-color-surface-container-high);
+    color: var(--md-sys-color-on-surface-variant);
+    cursor: pointer;
+    transition: all 200ms cubic-bezier(0.4, 0, 0.2, 1);
+    overflow: hidden;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  }
+
+  .theme-toggle:hover {
+    background-color: var(--md-sys-color-surface-container-highest);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+  }
+
+  .theme-toggle:active {
+    transform: scale(0.95);
+  }
+
+  .theme-toggle-icon-wrapper {
+    position: relative;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .theme-toggle-icon {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 300ms cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  /* Light mode visible by default */
+  .theme-toggle-light {
+    opacity: 1;
+    transform: rotate(0deg) scale(1);
+    color: var(--md-sys-color-primary);
+  }
+
+  .theme-toggle-dark {
+    opacity: 0;
+    transform: rotate(180deg) scale(0.5);
+    color: var(--md-sys-color-on-surface-variant);
+  }
+</style>
+
+<style is:global>
+  /* Dark mode active - GLOBAL селектор */
+  html[data-theme="dark"] .theme-toggle-light {
+    opacity: 0;
+    transform: rotate(-180deg) scale(0.5);
+  }
+
+  html[data-theme="dark"] .theme-toggle-dark {
+    opacity: 1;
+    transform: rotate(0deg) scale(1);
+    color: var(--md-sys-color-primary);
+  }
+</style>
+
+<script>
+  // Theme toggle functionality
+  function initThemeToggle() {
+    const themeToggle = document.getElementById('theme-toggle');
+    const html = document.documentElement;
+
+    if (!themeToggle) return;
+
+    // Get saved theme or default to light
+    const savedTheme = localStorage.getItem('theme') || 'light';
+    html.setAttribute('data-theme', savedTheme);
+
+    console.log('🎨 Initial theme:', savedTheme);
+
+    themeToggle.addEventListener('click', () => {
+      const currentTheme = html.getAttribute('data-theme');
+      const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+
+      html.setAttribute('data-theme', newTheme);
+      localStorage.setItem('theme', newTheme);
+
+      console.log('🎨 Theme changed to:', newTheme);
+    });
+  }
+
+  // Init on load
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initThemeToggle);
+  } else {
+    initThemeToggle();
+  }
+</script>

@@ -1,0 +1,80 @@
+---
+// src/components/ui/Avatar.astro
+/**
+ * Material Design 3 Avatar Component
+ */
+
+export interface Props {
+  src?: string;
+  alt?: string;
+  initials?: string;
+  icon?: string;
+  size?: number;
+  class?: string;
+}
+
+const {
+  src,
+  alt = 'Avatar',
+  initials,
+  icon,
+  size = 40,
+  class: className = '',
+} = Astro.props;
+
+import Icon from './Icon.astro';
+---
+
+<div
+  class:list={['avatar', className]}
+  style={`width: ${size}px; height: ${size}px;`}
+>
+  {src && (
+    <img src={src} alt={alt} class="avatar-image" />
+  )}
+  {!src && initials && (
+    <span class="avatar-initials">{initials}</span>
+  )}
+  {!src && !initials && icon && (
+    <span class="avatar-icon">
+      <Icon name={icon} />
+    </span>
+  )}
+  {!src && !initials && !icon && (
+    <span class="avatar-icon">
+      <Icon name="person" />
+    </span>
+  )}
+</div>
+
+<style>
+  .avatar {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background-color: var(--md-sys-color-primary-container);
+    color: var(--md-sys-color-on-primary-container);
+    overflow: hidden;
+    flex-shrink: 0;
+  }
+
+  .avatar-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .avatar-initials {
+    font-family: var(--md-sys-typescale-title-medium-font);
+    font-size: var(--md-sys-typescale-title-medium-size);
+    font-weight: var(--md-sys-typescale-title-medium-weight);
+  }
+
+  .avatar-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+</style>

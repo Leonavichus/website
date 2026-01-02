@@ -1,0 +1,254 @@
+---
+// src/components/ui/Button.astro
+/**
+ * Material Design 3 Button Component
+ */
+
+import Icon from './Icon.astro';
+
+export interface Props {
+  variant?: 'text' | 'filled' | 'outlined' | 'elevated' | 'tonal' | 'fab';
+  size?: 'small' | 'medium' | 'large';
+  icon?: string;
+  trailingIcon?: string;
+  disabled?: boolean;
+  href?: string;
+  target?: string;
+  type?: 'button' | 'submit' | 'reset';
+  extended?: boolean;
+  ariaLabel?: string;
+  class?: string;
+  onclick?: string;
+}
+
+const {
+  variant = 'filled',
+  size = 'medium',
+  icon,
+  trailingIcon,
+  disabled = false,
+  href,
+  target,
+  type = 'button',
+  extended = false,
+  ariaLabel,
+  class: className = '',
+  onclick,
+} = Astro.props;
+
+const Tag = href ? 'a' : 'button';
+const isFab = variant === 'fab';
+const hasText = Astro.slots.has('default');
+const iconOnly = (icon && !hasText && !extended) || (isFab && !extended);
+---
+
+<Tag
+  class:list={[
+    'btn',
+    `btn-${variant}`,
+    `btn-${size}`,
+    { 'btn-icon-only': iconOnly },
+    { 'btn-extended': extended && isFab },
+    className,
+  ]}
+  href={href}
+  target={target}
+  type={!href ? type : undefined}
+  disabled={disabled}
+  aria-label={ariaLabel || (iconOnly ? icon : undefined)}
+  onclick={onclick}
+>
+  {icon && (
+    <span class="btn-icon btn-icon-leading">
+      <Icon name={icon} />
+    </span>
+  )}
+
+  {(hasText || extended) && (
+    <span class="btn-label">
+      <slot />
+    </span>
+  )}
+
+  {trailingIcon && (
+    <span class="btn-icon btn-icon-trailing">
+      <Icon name={trailingIcon} />
+    </span>
+  )}
+
+  <span class="btn-state-layer"></span>
+</Tag>
+
+<style>
+  .btn {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    border: none;
+    font-family: var(--md-sys-typescale-label-large-font);
+    font-size: var(--md-sys-typescale-label-large-size);
+    font-weight: var(--md-sys-typescale-label-large-weight);
+    line-height: var(--md-sys-typescale-label-large-line-height);
+    text-decoration: none;
+    cursor: pointer;
+    user-select: none;
+    overflow: hidden;
+    transition: all var(--md-sys-motion-duration-short2) var(--md-sys-motion-easing-standard);
+  }
+
+  /* State layer */
+  .btn-state-layer {
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background-color: currentColor;
+    opacity: 0;
+    transition: opacity var(--md-sys-motion-duration-short1) var(--md-sys-motion-easing-standard);
+    pointer-events: none;
+  }
+
+  .btn:hover .btn-state-layer {
+    opacity: 0.08;
+  }
+
+  .btn:focus-visible .btn-state-layer {
+    opacity: 0.12;
+  }
+
+  .btn:active .btn-state-layer {
+    opacity: 0.12;
+  }
+
+  .btn-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    z-index: 1;
+  }
+
+  .btn-label {
+    position: relative;
+    z-index: 1;
+  }
+
+  /* Regular buttons */
+  .btn-filled,
+  .btn-outlined,
+  .btn-text,
+  .btn-elevated,
+  .btn-tonal {
+    min-height: 40px;
+    padding: 10px 24px;
+    border-radius: 20px;
+  }
+
+  .btn-filled.btn-icon-only,
+  .btn-outlined.btn-icon-only,
+  .btn-text.btn-icon-only,
+  .btn-elevated.btn-icon-only,
+  .btn-tonal.btn-icon-only {
+    width: 40px;
+    min-width: 40px;
+    padding: 0;
+  }
+
+  /* Filled */
+  .btn-filled {
+    background-color: var(--md-sys-color-primary);
+    color: var(--md-sys-color-on-primary);
+  }
+
+  /* Outlined */
+  .btn-outlined {
+    background-color: transparent;
+    color: var(--md-sys-color-primary);
+    border: 1px solid var(--md-sys-color-outline);
+  }
+
+  /* Text */
+  .btn-text {
+    background-color: transparent;
+    color: var(--md-sys-color-primary);
+    padding: 10px 12px;
+  }
+
+  /* Elevated */
+  .btn-elevated {
+    background-color: var(--md-sys-color-surface-container-low);
+    color: var(--md-sys-color-primary);
+    box-shadow: var(--md-sys-elevation-level1);
+  }
+
+  .btn-elevated:hover {
+    box-shadow: var(--md-sys-elevation-level2);
+  }
+
+  /* Tonal */
+  .btn-tonal {
+    background-color: var(--md-sys-color-secondary-container);
+    color: var(--md-sys-color-on-secondary-container);
+  }
+
+  /* FAB - FIXED SIZES */
+  .btn-fab {
+    width: 56px;
+    height: 56px;
+    min-width: 56px;
+    min-height: 56px;
+    padding: 16px;
+    border-radius: 16px;
+    background-color: var(--md-sys-color-primary-container);
+    color: var(--md-sys-color-on-primary-container);
+    box-shadow: var(--md-sys-elevation-level3);
+  }
+
+  .btn-fab:hover {
+    box-shadow: var(--md-sys-elevation-level4);
+  }
+
+  /* FAB Small */
+  .btn-fab.btn-small {
+    width: 40px;
+    height: 40px;
+    min-width: 40px;
+    min-height: 40px;
+    padding: 8px;
+    border-radius: 12px;
+  }
+
+  /* FAB Large */
+  .btn-fab.btn-large {
+    width: 96px;
+    height: 96px;
+    min-width: 96px;
+    min-height: 96px;
+    padding: 30px;
+    border-radius: 28px;
+  }
+
+  /* Extended FAB */
+  .btn-fab.btn-extended {
+    width: auto;
+    min-width: auto;
+    padding: 16px 20px;
+    gap: 12px;
+    border-radius: 16px;
+  }
+
+  /* Disabled */
+  .btn:disabled,
+  .btn[disabled] {
+    opacity: 0.38;
+    pointer-events: none;
+    box-shadow: none;
+  }
+
+  /* Focus visible */
+  .btn:focus-visible {
+    outline: 2px solid var(--md-sys-color-primary);
+    outline-offset: 2px;
+  }
+</style>

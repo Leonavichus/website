@@ -1,0 +1,108 @@
+---
+// src/components/layout/Grid.astro
+/**
+ * Material Design 3 Grid Component (FIXED)
+ * Адаптивная сетка с inline стилями
+ */
+
+export interface Props {
+  columns?: number | 'auto-fit' | 'auto-fill';
+  columnsmd?: number;
+  columnslg?: number;
+  columnsxl?: number;
+  gap?: 'xs' | 'sm' | 'md' | 'lg' | 'xl' | '2xl';
+  minColumnWidth?: string;
+  class?: string;
+}
+
+const {
+  columns = 1,
+  columnsmd,
+  columnslg,
+  columnsxl,
+  gap = 'md',
+  minColumnWidth = '250px',
+  class: className = '',
+} = Astro.props;
+
+// Gap размеры
+const gapMap = {
+  'xs': '4px',
+  'sm': '8px',
+  'md': '16px',
+  'lg': '24px',
+  'xl': '32px',
+  '2xl': '48px',
+};
+
+const gapValue = gapMap[gap];
+
+// Базовые grid стили
+let gridTemplateColumns = '';
+
+if (columns === 'auto-fit') {
+  gridTemplateColumns = `repeat(auto-fit, minmax(${minColumnWidth}, 1fr))`;
+} else if (columns === 'auto-fill') {
+  gridTemplateColumns = `repeat(auto-fill, minmax(${minColumnWidth}, 1fr))`;
+} else {
+  gridTemplateColumns = `repeat(${columns}, 1fr)`;
+}
+---
+
+<div
+  class:list={['grid-container', className]}
+  style={`
+    --columns-base: ${columns === 'auto-fit' || columns === 'auto-fill' ? 1 : columns};
+    --columns-md: ${columnsmd || columns};
+    --columns-lg: ${columnslg || columnsmd || columns};
+    --columns-xl: ${columnsxl || columnslg || columnsmd || columns};
+    --gap-value: ${gapValue};
+    --min-col-width: ${minColumnWidth};
+  `}
+  data-grid-type={columns === 'auto-fit' || columns === 'auto-fill' ? columns : 'fixed'}
+>
+  <slot />
+</div>
+
+<style>
+  .grid-container {
+    display: grid;
+    gap: var(--gap-value, 16px);
+    width: 100%;
+  }
+
+  /* Auto-fit/fill сетки */
+  .grid-container[data-grid-type="auto-fit"] {
+    grid-template-columns: repeat(auto-fit, minmax(var(--min-col-width, 250px), 1fr));
+  }
+
+  .grid-container[data-grid-type="auto-fill"] {
+    grid-template-columns: repeat(auto-fill, minmax(var(--min-col-width, 250px), 1fr));
+  }
+
+  /* Фиксированные сетки - Mobile First */
+  .grid-container[data-grid-type="fixed"] {
+    grid-template-columns: repeat(var(--columns-base, 1), 1fr);
+  }
+
+  /* Medium (Tablet) - 600px+ */
+  @media (min-width: 600px) {
+    .grid-container[data-grid-type="fixed"] {
+      grid-template-columns: repeat(var(--columns-md, var(--columns-base, 1)), 1fr);
+    }
+  }
+
+  /* Expanded (Desktop) - 840px+ */
+  @media (min-width: 840px) {
+    .grid-container[data-grid-type="fixed"] {
+      grid-template-columns: repeat(var(--columns-lg, var(--columns-md, var(--columns-base, 1))), 1fr);
+    }
+  }
+
+  /* Large (Large Desktop) - 1240px+ */
+  @media (min-width: 1240px) {
+    .grid-container[data-grid-type="fixed"] {
+      grid-template-columns: repeat(var(--columns-xl, var(--columns-lg, var(--columns-md, var(--columns-base, 1)))), 1fr);
+    }
+  }
+</style>

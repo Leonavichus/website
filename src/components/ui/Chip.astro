@@ -1,0 +1,109 @@
+---
+// src/components/ui/Chip.astro
+/**
+ * Material Design 3 Chip Component
+ */
+
+export interface Props {
+  label: string;
+  variant?: 'assist' | 'filter' | 'input' | 'suggestion';
+  leadingIcon?: string;
+  trailingIcon?: string;
+  selected?: boolean;
+  disabled?: boolean;
+  class?: string;
+}
+
+const {
+  label,
+  variant = 'assist',
+  leadingIcon,
+  trailingIcon,
+  selected = false,
+  disabled = false,
+  class: className = '',
+} = Astro.props;
+
+import Icon from './Icon.astro';
+---
+
+<button
+  class:list={[
+    'chip',
+    `chip-${variant}`,
+    { 'chip-selected': selected },
+    { 'chip-disabled': disabled },
+    className,
+  ]}
+  disabled={disabled}
+  type="button"
+>
+  {leadingIcon && (
+    <span class="chip-icon chip-leading">
+      <Icon name={leadingIcon} />
+    </span>
+  )}
+  <span class="chip-label">{label}</span>
+  {trailingIcon && (
+    <span class="chip-icon chip-trailing">
+      <Icon name={trailingIcon} />
+    </span>
+  )}
+</button>
+
+<style>
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 16px;
+    border-radius: 8px;
+    border: 1px solid var(--md-sys-color-outline);
+    background-color: transparent;
+    color: var(--md-sys-color-on-surface);
+    font-family: var(--md-sys-typescale-label-large-font);
+    font-size: var(--md-sys-typescale-label-large-size);
+    font-weight: var(--md-sys-typescale-label-large-weight);
+    cursor: pointer;
+    transition: all 200ms cubic-bezier(0.4, 0, 0.2, 1);
+    height: 32px;
+  }
+
+  .chip:hover:not(.chip-disabled) {
+    background-color: var(--md-sys-color-surface-container-highest);
+  }
+
+  .chip-filter.chip-selected {
+    background-color: var(--md-sys-color-secondary-container);
+    color: var(--md-sys-color-on-secondary-container);
+    border-color: transparent;
+  }
+
+  .chip-input {
+    background-color: var(--md-sys-color-surface-container-low);
+    border-color: transparent;
+  }
+
+  .chip-suggestion {
+    border-style: dashed;
+  }
+
+  .chip-icon {
+    display: flex;
+    align-items: center;
+    font-size: 18px;
+  }
+
+  .chip-trailing {
+    margin-right: -8px;
+  }
+
+  .chip-disabled {
+    opacity: 0.38;
+    cursor: not-allowed;
+  }
+
+  .chip-label {
+    line-height: 1;
+  }
+</style>

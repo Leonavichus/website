@@ -1,0 +1,123 @@
+---
+// src/components/ui/Radio.astro
+/**
+ * Material Design 3 Radio Button Component
+ */
+
+export interface Props {
+  name: string;
+  value: string;
+  label?: string;
+  checked?: boolean;
+  disabled?: boolean;
+  required?: boolean;
+  class?: string;
+}
+
+const {
+  name,
+  value,
+  label,
+  checked = false,
+  disabled = false,
+  required = false,
+  class: className = '',
+} = Astro.props;
+
+const radioId = `radio-${Math.random().toString(36).substr(2, 9)}`;
+---
+
+<div class:list={['radio-wrapper', { 'radio-disabled': disabled }, className]}>
+  <input
+    type="radio"
+    id={radioId}
+    name={name}
+    value={value}
+    checked={checked}
+    disabled={disabled}
+    required={required}
+    class="radio-input"
+  />
+  <label for={radioId} class="radio-label">
+    <span class="radio-button">
+      <span class="radio-inner"></span>
+    </span>
+    {label && <span class="radio-text">{label}</span>}
+  </label>
+</div>
+
+<style>
+  .radio-wrapper {
+    display: inline-flex;
+    align-items: center;
+    cursor: pointer;
+  }
+
+  .radio-input {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+  }
+
+  .radio-label {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    cursor: pointer;
+    user-select: none;
+  }
+
+  .radio-button {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    border: 2px solid var(--md-sys-color-on-surface-variant);
+    border-radius: 50%;
+    transition: all 200ms cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .radio-inner {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background-color: var(--md-sys-color-primary);
+    transform: scale(0);
+    transition: transform 200ms cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  /* Checked state */
+  .radio-input:checked ~ .radio-label .radio-button {
+    border-color: var(--md-sys-color-primary);
+  }
+
+  .radio-input:checked ~ .radio-label .radio-inner {
+    transform: scale(1);
+  }
+
+  /* Hover */
+  .radio-wrapper:hover .radio-button {
+    background-color: rgba(0, 0, 0, 0.04);
+  }
+
+  /* Focus */
+  .radio-input:focus-visible ~ .radio-label .radio-button {
+    outline: 2px solid var(--md-sys-color-primary);
+    outline-offset: 2px;
+  }
+
+  /* Disabled */
+  .radio-disabled {
+    opacity: 0.38;
+    pointer-events: none;
+  }
+
+  .radio-text {
+    font-family: var(--md-sys-typescale-body-large-font);
+    font-size: var(--md-sys-typescale-body-large-size);
+    color: var(--md-sys-color-on-surface);
+  }
+</style>

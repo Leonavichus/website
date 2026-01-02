@@ -1,0 +1,602 @@
+---
+// src/pages/showcase.astro - ОБНОВЛЕННЫЙ
+// Добавлен TopAppBar + исправлены изображения
+
+import Layout from '../layouts/Layout.astro';
+
+// Theme
+import ThemeToggle from '../components/ui/ThemeToggle.astro';
+
+// Navigation
+import TopAppBar from '../components/ui/TopAppBar.astro';
+import NavigationBar from '../components/ui/NavigationBar.astro';
+import NavigationItem from '../components/ui/NavigationItem.astro';
+import Tabs from '../components/ui/Tabs.astro';
+import Tab from '../components/ui/Tab.astro';
+
+// Buttons & FABs
+import Button from '../components/ui/Button.astro';
+
+// Selection controls
+import Switch from '../components/ui/Switch.astro';
+import Checkbox from '../components/ui/Checkbox.astro';
+import Radio from '../components/ui/Radio.astro';
+
+// Chips
+import Chip from '../components/ui/Chip.astro';
+
+// Text fields
+import TextField from '../components/ui/TextField.astro';
+import Select from '../components/ui/Select.astro';
+import Slider from '../components/ui/Slider.astro';
+
+// Communication
+import Badge from '../components/ui/Badge.astro';
+import Snackbar from '../components/ui/Snackbar.astro';
+import Tooltip from '../components/ui/Tooltip.astro';
+
+// Containment
+import Card from '../components/ui/Card.astro';
+import Dialog from '../components/ui/Dialog.astro';
+import Divider from '../components/ui/Divider.astro';
+import BottomSheet from '../components/ui/BottomSheet.astro';
+
+// Menus
+import Menu from '../components/ui/Menu.astro';
+import MenuItem from '../components/ui/MenuItem.astro';
+
+// Lists
+import List from '../components/ui/List.astro';
+import ListItem from '../components/ui/ListItem.astro';
+import ListDivider from '../components/ui/ListDivider.astro';
+
+// Progress
+import LinearProgress from '../components/ui/LinearProgress.astro';
+import CircularProgress from '../components/ui/CircularProgress.astro';
+
+// Images
+import Carousel from '../components/ui/Carousel.astro';
+import ImageGallery from '../components/ui/ImageGallery.astro';
+
+// Basic
+import Icon from '../components/ui/Icon.astro';
+import Avatar from '../components/ui/Avatar.astro';
+
+// Демо изображения (замените на свои)
+const demoImages = Array.from({ length: 8 }, (_, i) => ({
+  src: `https://placehold.co/600x600/6750A4/FFFFFF?text=Image+${i + 1}`,
+  alt: `Gallery Image ${i + 1}`
+}));
+
+const carouselImages = Array.from({ length: 4 }, (_, i) => ({
+  src: `https://placehold.co/800x450/6750A4/FFFFFF?text=Slide+${i + 1}`,
+  alt: `Slide ${i + 1}`,
+  caption: i === 0 ? 'Новая коллекция' : i === 1 ? 'Скидки до 50%' : i === 2 ? 'Бесплатная доставка' : undefined
+}));
+---
+
+<Layout title="Material Design 3 - Complete Showcase">
+  <!-- Top App Bar -->
+  <TopAppBar title="Material Design 3">
+    <div slot="trailing" style="display: flex; gap: 8px;">
+      <ThemeToggle />
+      <Button variant="text" icon="search" ariaLabel="Search" />
+      <Button variant="text" icon="more_vert" ariaLabel="More" />
+    </div>
+  </TopAppBar>
+
+  <main style="padding: 24px 20px 120px; max-width: 1400px; margin: 0 auto;">
+
+    <!-- Header -->
+    <header style="margin-bottom: 60px; text-align: center;">
+      <h1 style="font-size: 3rem; margin-bottom: 16px; color: var(--md-sys-color-primary);">
+        Material Design 3
+      </h1>
+      <p style="font-size: 1.25rem; color: var(--md-sys-color-on-surface-variant); margin-bottom: 12px;">
+        Полная коллекция из 33 компонентов
+      </p>
+      <p style="font-size: 0.875rem; color: var(--md-sys-color-on-surface-variant);">
+        ✨ С поддержкой Dark Mode и полной интерактивностью
+      </p>
+    </header>
+
+    <!-- 1. Buttons & FAB -->
+    <section style="margin-bottom: 80px;">
+      <h2 style="margin-bottom: 32px; font-size: 2rem;">1. Buttons & FAB</h2>
+
+      <div style="margin-bottom: 32px;">
+        <h3 style="margin-bottom: 16px; font-size: 1.25rem; color: var(--md-sys-color-on-surface-variant);">
+          Standard Buttons
+        </h3>
+        <div style="display: flex; gap: 16px; flex-wrap: wrap; align-items: center;">
+          <Button variant="filled">Filled</Button>
+          <Button variant="filled" icon="add">With Icon</Button>
+          <Button variant="outlined">Outlined</Button>
+          <Button variant="text">Text</Button>
+          <Button variant="elevated">Elevated</Button>
+          <Button variant="tonal">Tonal</Button>
+          <Button variant="filled" disabled>Disabled</Button>
+        </div>
+      </div>
+
+      <div style="margin-bottom: 32px;">
+        <h3 style="margin-bottom: 16px; font-size: 1.25rem; color: var(--md-sys-color-on-surface-variant);">
+          Icon Buttons
+        </h3>
+        <div style="display: flex; gap: 16px; flex-wrap: wrap; align-items: center;">
+          <Button variant="filled" icon="favorite" ariaLabel="Favorite" />
+          <Button variant="outlined" icon="settings" ariaLabel="Settings" />
+          <Button variant="text" icon="share" ariaLabel="Share" />
+          <Button variant="tonal" icon="delete" ariaLabel="Delete" />
+        </div>
+      </div>
+
+      <div>
+        <h3 style="margin-bottom: 16px; font-size: 1.25rem; color: var(--md-sys-color-on-surface-variant);">
+          FAB (Floating Action Button)
+        </h3>
+        <div style="display: flex; gap: 16px; flex-wrap: wrap; align-items: center;">
+          <Button variant="fab" icon="add" ariaLabel="Add" />
+          <Button variant="fab" icon="edit" ariaLabel="Edit" />
+          <Button variant="fab" icon="share" extended>Share</Button>
+          <Button variant="fab" icon="filter_list" extended>Filter</Button>
+        </div>
+      </div>
+    </section>
+
+    <!-- 2. Selection Controls -->
+    <section style="margin-bottom: 80px;">
+      <h2 style="margin-bottom: 32px; font-size: 2rem;">2. Selection Controls</h2>
+
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 32px;">
+        <div>
+          <h3 style="margin-bottom: 16px; font-size: 1.25rem; color: var(--md-sys-color-on-surface-variant);">
+            Checkbox
+          </h3>
+          <div style="display: flex; flex-direction: column; gap: 16px;">
+            <Checkbox name="check1" label="Checkbox" />
+            <Checkbox name="check2" label="Checked" checked />
+            <Checkbox name="check3" label="Disabled" disabled />
+          </div>
+        </div>
+
+        <div>
+          <h3 style="margin-bottom: 16px; font-size: 1.25rem; color: var(--md-sys-color-on-surface-variant);">
+            Switch
+          </h3>
+          <div style="display: flex; flex-direction: column; gap: 16px;">
+            <Switch name="switch1" label="Switch" />
+            <Switch name="switch2" label="Enabled" checked />
+            <Switch name="switch3" label="Disabled" disabled />
+          </div>
+        </div>
+
+        <div>
+          <h3 style="margin-bottom: 16px; font-size: 1.25rem; color: var(--md-sys-color-on-surface-variant);">
+            Radio
+          </h3>
+          <div style="display: flex; flex-direction: column; gap: 16px;">
+            <Radio name="radio-group" value="option1" label="Option 1" checked />
+            <Radio name="radio-group" value="option2" label="Option 2" />
+            <Radio name="radio-group" value="option3" label="Option 3" />
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3. Chips -->
+    <section style="margin-bottom: 80px;">
+      <h2 style="margin-bottom: 32px; font-size: 2rem;">3. Chips</h2>
+
+      <div style="margin-bottom: 24px;">
+        <h3 style="margin-bottom: 16px; font-size: 1.25rem; color: var(--md-sys-color-on-surface-variant);">
+          Chip Variants
+        </h3>
+        <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+          <Chip label="Assist" variant="assist" />
+          <Chip label="Filter" variant="filter" />
+          <Chip label="Input" variant="input" />
+          <Chip label="Suggestion" variant="suggestion" />
+        </div>
+      </div>
+
+      <div>
+        <h3 style="margin-bottom: 16px; font-size: 1.25rem; color: var(--md-sys-color-on-surface-variant);">
+          With Icons
+        </h3>
+        <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+          <Chip label="Home" variant="assist" leadingIcon="home" />
+          <Chip label="Favorite" variant="filter" leadingIcon="favorite" selected />
+          <Chip label="Email" variant="input" leadingIcon="email" trailingIcon="close" />
+        </div>
+      </div>
+    </section>
+
+    <!-- 4. Text Fields & Select -->
+    <section style="margin-bottom: 80px;">
+      <h2 style="margin-bottom: 32px; font-size: 2rem;">4. Input Fields</h2>
+
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 32px;">
+        <div>
+          <h3 style="margin-bottom: 16px; font-size: 1.25rem; color: var(--md-sys-color-on-surface-variant);">
+            Text Fields
+          </h3>
+          <div style="display: flex; flex-direction: column; gap: 24px;">
+            <TextField 
+              label="Username" 
+              variant="filled"
+              name="username"
+            />
+
+            <TextField 
+              label="Email" 
+              type="email"
+              variant="filled"
+              leadingIcon="email"
+            />
+
+            <TextField 
+              label="Password" 
+              type="password"
+              variant="outlined"
+              required
+            />
+
+            <TextField 
+              label="Search" 
+              type="search"
+              variant="filled"
+              leadingIcon="search"
+            />
+          </div>
+        </div>
+
+        <div>
+          <h3 style="margin-bottom: 16px; font-size: 1.25rem; color: var(--md-sys-color-on-surface-variant);">
+            Select
+          </h3>
+          <div style="display: flex; flex-direction: column; gap: 24px;">
+            <Select 
+              label="Country" 
+              variant="filled"
+              leadingIcon="public"
+            >
+              <option value="">Выберите страну</option>
+              <option value="ru">Россия</option>
+              <option value="us">США</option>
+              <option value="uk">Великобритания</option>
+              <option value="de">Германия</option>
+            </Select>
+
+            <Select 
+              label="Category" 
+              variant="outlined"
+            >
+              <option value="">Выберите категорию</option>
+              <option value="tech">Технологии</option>
+              <option value="design">Дизайн</option>
+              <option value="business">Бизнес</option>
+            </Select>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 5. Slider -->
+    <section style="margin-bottom: 80px;">
+      <h2 style="margin-bottom: 32px; font-size: 2rem;">5. Slider</h2>
+
+      <div style="max-width: 600px;">
+        <div style="margin-bottom: 32px;">
+          <h3 style="margin-bottom: 16px; font-size: 1.25rem; color: var(--md-sys-color-on-surface-variant);">
+            Volume Control
+          </h3>
+          <Slider name="volume" min={0} max={100} value={50} step={5} />
+        </div>
+
+        <div>
+          <h3 style="margin-bottom: 16px; font-size: 1.25rem; color: var(--md-sys-color-on-surface-variant);">
+            Price Range
+          </h3>
+          <Slider name="price" min={0} max={10000} value={5000} step={100} />
+        </div>
+      </div>
+    </section>
+
+    <!-- 6. Lists -->
+    <section style="margin-bottom: 80px;">
+      <h2 style="margin-bottom: 32px; font-size: 2rem;">6. Lists</h2>
+
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 32px;">
+        <Card variant="outlined">
+          <h3 style="padding: 16px 16px 0; font-size: 1.25rem; color: var(--md-sys-color-on-surface-variant);">
+            Simple List
+          </h3>
+          <List>
+            <ListItem headline="Inbox" leadingIcon="inbox" trailingIcon="chevron_right" href="#" />
+            <ListItem headline="Starred" leadingIcon="star" trailingIcon="chevron_right" href="#" />
+            <ListItem headline="Sent" leadingIcon="send" trailingIcon="chevron_right" href="#" />
+            <ListDivider />
+            <ListItem headline="Drafts" leadingIcon="drafts" trailingIcon="chevron_right" href="#" />
+          </List>
+        </Card>
+
+        <Card variant="outlined">
+          <h3 style="padding: 16px 16px 0; font-size: 1.25rem; color: var(--md-sys-color-on-surface-variant);">
+            Two-line List
+          </h3>
+          <List>
+            <ListItem 
+              headline="Alice Johnson" 
+              supportingText="Hey, how are you doing today?"
+              leadingImage="https://i.pravatar.cc/150?img=1"
+              lines={2}
+              href="#"
+            />
+            <ListItem 
+              headline="Bob Smith" 
+              supportingText="Can we meet tomorrow?"
+              leadingImage="https://i.pravatar.cc/150?img=2"
+              lines={2}
+              href="#"
+            />
+          </List>
+        </Card>
+      </div>
+    </section>
+
+    <!-- 7. Cards -->
+    <section style="margin-bottom: 80px;">
+      <h2 style="margin-bottom: 32px; font-size: 2rem;">7. Cards</h2>
+
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px;">
+        <Card variant="elevated">
+          <div style="padding: 24px;">
+            <h3 style="font-size: 1.5rem; margin-bottom: 12px;">Elevated Card</h3>
+            <p style="color: var(--md-sys-color-on-surface-variant); margin-bottom: 16px;">
+              This is an elevated card with shadow effect.
+            </p>
+            <Button variant="text">Action</Button>
+          </div>
+        </Card>
+
+        <Card variant="filled">
+          <div style="padding: 24px;">
+            <h3 style="font-size: 1.5rem; margin-bottom: 12px;">Filled Card</h3>
+            <p style="color: var(--md-sys-color-on-surface-variant); margin-bottom: 16px;">
+              This is a filled card with background.
+            </p>
+            <Button variant="text">Action</Button>
+          </div>
+        </Card>
+
+        <Card variant="outlined">
+          <div style="padding: 24px;">
+            <h3 style="font-size: 1.5rem; margin-bottom: 12px;">Outlined Card</h3>
+            <p style="color: var(--md-sys-color-on-surface-variant); margin-bottom: 16px;">
+              This is an outlined card with border.
+            </p>
+            <Button variant="text">Action</Button>
+          </div>
+        </Card>
+      </div>
+    </section>
+
+    <!-- 8. Tabs -->
+    <section style="margin-bottom: 80px;">
+      <h2 style="margin-bottom: 32px; font-size: 2rem;">8. Tabs</h2>
+
+      <Tabs activeTab="tab1">
+        <Tab id="tab1" label="Overview" icon="home" />
+        <Tab id="tab2" label="Details" icon="info" />
+        <Tab id="tab3" label="Settings" icon="settings" />
+      </Tabs>
+    </section>
+
+    <!-- 9. Badges & Tooltip -->
+    <section style="margin-bottom: 80px;">
+      <h2 style="margin-bottom: 32px; font-size: 2rem;">9. Badges & Tooltip</h2>
+
+      <div style="display: flex; gap: 48px; flex-wrap: wrap; align-items: flex-start;">
+        <div>
+          <h3 style="margin-bottom: 16px; font-size: 1.25rem; color: var(--md-sys-color-on-surface-variant);">
+            Badges
+          </h3>
+          <div style="display: flex; gap: 32px; align-items: center;">
+            <Badge count={5}>
+              <Button variant="text" icon="notifications" ariaLabel="Notifications" />
+            </Badge>
+
+            <Badge count={99}>
+              <Button variant="text" icon="email" ariaLabel="Email" />
+            </Badge>
+
+            <Badge dot>
+              <Button variant="text" icon="inbox" ariaLabel="Inbox" />
+            </Badge>
+          </div>
+        </div>
+
+        <div>
+          <h3 style="margin-bottom: 16px; font-size: 1.25rem; color: var(--md-sys-color-on-surface-variant);">
+            Tooltip
+          </h3>
+          <Tooltip text="Add to favorites">
+            <Button variant="text" icon="favorite" ariaLabel="Favorite" />
+          </Tooltip>
+        </div>
+      </div>
+    </section>
+
+    <!-- 10. Progress Indicators -->
+    <section style="margin-bottom: 80px;">
+      <h2 style="margin-bottom: 32px; font-size: 2rem;">10. Progress Indicators</h2>
+
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 48px;">
+        <div>
+          <h3 style="margin-bottom: 16px; font-size: 1.25rem; color: var(--md-sys-color-on-surface-variant);">
+            Linear Progress
+          </h3>
+          <div style="display: flex; flex-direction: column; gap: 24px;">
+            <LinearProgress value={0} />
+            <LinearProgress value={50} />
+            <LinearProgress value={100} />
+            <LinearProgress indeterminate />
+          </div>
+        </div>
+
+        <div>
+          <h3 style="margin-bottom: 16px; font-size: 1.25rem; color: var(--md-sys-color-on-surface-variant);">
+            Circular Progress
+          </h3>
+          <div style="display: flex; gap: 24px; align-items: center;">
+            <CircularProgress value={0} />
+            <CircularProgress value={50} />
+            <CircularProgress value={100} />
+            <CircularProgress indeterminate />
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 11. Divider -->
+    <section style="margin-bottom: 80px;">
+      <h2 style="margin-bottom: 32px; font-size: 2rem;">11. Dividers</h2>
+
+      <div style="max-width: 600px;">
+        <p>Content above</p>
+        <Divider />
+        <p>Content below</p>
+        <Divider inset />
+        <p>With inset</p>
+      </div>
+    </section>
+
+    <!-- 12. Carousel -->
+    <section style="margin-bottom: 80px;">
+      <h2 style="margin-bottom: 32px; font-size: 2rem;">12. Carousel</h2>
+
+      <Carousel
+        images={carouselImages}
+        autoplay={true}
+        interval={4000}
+        aspectRatio="16:9"
+      />
+    </section>
+
+    <!-- 13. Image Gallery -->
+    <section style="margin-bottom: 80px;">
+      <h2 style="margin-bottom: 32px; font-size: 2rem;">13. Image Gallery</h2>
+
+      <ImageGallery
+        images={demoImages}
+        showMainImage={true}
+        columns={4}
+        aspectRatio="1:1"
+      />
+    </section>
+
+    <!-- 14. Avatar & Icon -->
+    <section style="margin-bottom: 80px;">
+      <h2 style="margin-bottom: 32px; font-size: 2rem;">14. Avatar & Icon</h2>
+
+      <div style="display: flex; gap: 48px; flex-wrap: wrap;">
+        <div>
+          <h3 style="margin-bottom: 16px; font-size: 1.25rem; color: var(--md-sys-color-on-surface-variant);">
+            Avatars
+          </h3>
+          <div style="display: flex; gap: 16px; align-items: center;">
+            <Avatar src="https://i.pravatar.cc/150?img=1" alt="User 1" size={40} />
+            <Avatar src="https://i.pravatar.cc/150?img=2" alt="User 2" size={56} />
+            <Avatar initials="AB" size={40} />
+            <Avatar icon="person" size={40} />
+          </div>
+        </div>
+
+        <div>
+          <h3 style="margin-bottom: 16px; font-size: 1.25rem; color: var(--md-sys-color-on-surface-variant);">
+            Icons
+          </h3>
+          <div style="display: flex; gap: 16px; align-items: center;">
+            <Icon name="home" />
+            <Icon name="favorite" />
+            <Icon name="settings" />
+            <Icon name="search" />
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 15. Dialogs, Menus, Snackbars, Bottom Sheet -->
+    <section style="margin-bottom: 80px;">
+      <h2 style="margin-bottom: 32px; font-size: 2rem;">15. Overlays & Modals</h2>
+
+      <div style="display: flex; gap: 16px; flex-wrap: wrap;">
+        <Button variant="outlined" onclick="document.getElementById('demo-dialog').classList.add('active')">
+          Open Dialog
+        </Button>
+
+        <Button variant="outlined" onclick="document.getElementById('demo-menu').classList.toggle('active')">
+          Open Menu
+        </Button>
+
+        <Button variant="outlined" onclick="document.getElementById('demo-snackbar').classList.add('active')">
+          Show Snackbar
+        </Button>
+
+        <Button variant="outlined" onclick="openBottomSheet('demo-sheet')">
+          Open Bottom Sheet
+        </Button>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Navigation Bar (fixed bottom) -->
+  <NavigationBar>
+    <NavigationItem icon="home" label="Home" active href="#" />
+    <NavigationItem icon="search" label="Search" href="#" />
+    <NavigationItem icon="favorite" label="Favorites" badge={3} href="#" />
+    <NavigationItem icon="person" label="Profile" href="#" />
+  </NavigationBar>
+
+  <!-- Dialog Example -->
+  <Dialog id="demo-dialog" title="Confirm Action">
+    <p>Are you sure you want to proceed with this action?</p>
+
+    <div slot="actions">
+      <Button variant="text" onclick="document.getElementById('demo-dialog').classList.remove('active')">
+        Cancel
+      </Button>
+      <Button variant="text" onclick="document.getElementById('demo-dialog').classList.remove('active')">
+        Confirm
+      </Button>
+    </div>
+  </Dialog>
+
+  <!-- Menu Example -->
+  <Menu id="demo-menu">
+    <MenuItem label="Edit" icon="edit" />
+    <MenuItem label="Share" icon="share" />
+    <MenuItem label="Delete" icon="delete" />
+  </Menu>
+
+  <!-- Snackbar Example -->
+  <Snackbar id="demo-snackbar" message="Action completed successfully!" />
+
+  <!-- Bottom Sheet Example -->
+  <BottomSheet id="demo-sheet" title="Quick Actions">
+    <div style="display: flex; flex-direction: column; gap: 16px;">
+      <Button variant="outlined" icon="share">Share</Button>
+      <Button variant="outlined" icon="link">Copy Link</Button>
+      <Button variant="outlined" icon="download">Download</Button>
+      <Button variant="outlined" icon="delete">Delete</Button>
+    </div>
+  </BottomSheet>
+
+</Layout>
+
+<script>
+  console.log('🎨 Material Design 3 Showcase loaded!');
+  console.log('📦 Total components: 33');
+</script>

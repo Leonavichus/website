@@ -1,0 +1,87 @@
+---
+// src/components/ui/Tabs.astro
+/**
+ * Material Design 3 Tabs Component
+ */
+
+export interface Props {
+  activeTab?: string;
+  class?: string;
+}
+
+const {
+  activeTab,
+  class: className = '',
+} = Astro.props;
+---
+
+<div class:list={['tabs', className]} data-active-tab={activeTab}>
+  <div class="tabs-list" role="tablist">
+    <slot />
+  </div>
+  <div class="tabs-indicator"></div>
+</div>
+
+<style>
+  .tabs {
+    position: relative;
+    width: 100%;
+    border-bottom: 1px solid var(--md-sys-color-surface-variant);
+  }
+
+  .tabs-list {
+    display: flex;
+    gap: 0;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  .tabs-list::-webkit-scrollbar {
+    display: none;
+  }
+
+  .tabs-indicator {
+    position: absolute;
+    bottom: 0;
+    height: 3px;
+    background-color: var(--md-sys-color-primary);
+    transition: all 300ms cubic-bezier(0.4, 0, 0.2, 1);
+  }
+</style>
+
+<script>
+  document.querySelectorAll('.tabs').forEach(tabsEl => {
+    const tabs = tabsEl.querySelectorAll('.tab');
+    const indicator = tabsEl.querySelector('.tabs-indicator') as HTMLElement;
+    const activeTab = tabsEl.getAttribute('data-active-tab');
+
+    function updateIndicator(tab: Element) {
+      const tabRect = tab.getBoundingClientRect();
+      const tabsRect = tabsEl.getBoundingClientRect();
+
+      indicator.style.left = `${tabRect.left - tabsRect.left}px`;
+      indicator.style.width = `${tabRect.width}px`;
+    }
+
+    // Set initial active tab
+    if (activeTab) {
+      const activeTabEl = tabsEl.querySelector(`[data-tab-id="${activeTab}"]`);
+      if (activeTabEl) {
+        activeTabEl.classList.add('tab-active');
+        updateIndicator(activeTabEl);
+      }
+    } else if (tabs.length > 0) {
+      tabs[0].classList.add('tab-active');
+      updateIndicator(tabs[0]);
+    }
+
+    // Tab click handler
+    tabs.forEach(tab => {
+      tab.addEventListener('click', () => {
+        tabs.forEach(t => t.classList.remove('tab-active'));
+        tab.classList.add('tab-active');
+        updateIndicator(tab);
+      });
+    });
+  });
+</script>

@@ -1,0 +1,285 @@
+---
+// src/components/ui/Dialog.astro
+/**
+ * Material Design 3 Dialog Component
+ * Модальное окно для важных взаимодействий
+ */
+
+import Icon from './Icon.astro';
+import Button from './Button.astro';
+
+export interface Props {
+  id: string;
+  title?: string;
+  icon?: string;
+  fullscreen?: boolean;
+  class?: string;
+}
+
+const {
+  id,
+  title,
+  icon,
+  fullscreen = false,
+  class: className = '',
+} = Astro.props;
+---
+
+<div
+  class:list={[
+    'dialog-container',
+    { 'dialog-fullscreen': fullscreen },
+    className,
+  ]}
+  data-dialog={id}
+  role="dialog"
+  aria-modal="true"
+  aria-labelledby={title ? `${id}-title` : undefined}
+>
+  <div class="dialog-scrim" data-dialog-close={id}></div>
+
+  <div class="dialog">
+    {icon && (
+      <div class="dialog-icon">
+        <Icon name={icon} size="medium" />
+      </div>
+    )}
+
+    {title && (
+      <h2 id={`${id}-title`} class="dialog-title">
+        {title}
+      </h2>
+    )}
+
+    <div class="dialog-content">
+      <slot />
+    </div>
+
+    <div class="dialog-actions">
+      <slot name="actions">
+        <Button variant="text" data-dialog-close={id}>
+          Отмена
+        </Button>
+        <Button variant="filled">
+          ОК
+        </Button>
+      </slot>
+    </div>
+
+    <button
+      class="dialog-close-button"
+      aria-label="Close dialog"
+      data-dialog-close={id}
+    >
+      <Icon name="close" size="medium" />
+    </button>
+  </div>
+</div>
+
+<style>
+  .dialog-container {
+    position: fixed;
+    inset: 0;
+    z-index: 300;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity var(--md-sys-motion-duration-medium4) var(--md-sys-motion-easing-standard);
+  }
+
+  .dialog-container.open {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  /* Scrim */
+  .dialog-scrim {
+    position: absolute;
+    inset: 0;
+    background-color: var(--md-sys-color-scrim);
+    opacity: 0;
+    transition: opacity var(--md-sys-motion-duration-medium4) var(--md-sys-motion-easing-standard);
+  }
+
+  .dialog-container.open .dialog-scrim {
+    opacity: 0.4;
+  }
+
+  /* Dialog */
+  .dialog {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    max-width: 560px;
+    max-height: 90vh;
+    background-color: var(--md-sys-color-surface-container-high);
+    color: var(--md-sys-color-on-surface);
+    border-radius: var(--md-sys-shape-corner-extra-large);
+    box-shadow: var(--md-sys-elevation-level3);
+    padding: 24px;
+    transform: scale(0.8);
+    opacity: 0;
+    transition: all var(--md-sys-motion-duration-medium4) var(--md-sys-motion-easing-emphasized-decelerate);
+  }
+
+  .dialog-container.open .dialog {
+    transform: scale(1);
+    opacity: 1;
+  }
+
+  /* Icon */
+  .dialog-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--md-sys-color-secondary);
+    margin-bottom: 16px;
+  }
+
+  /* Title */
+  .dialog-title {
+    font-family: var(--md-sys-typescale-headline-small-font);
+    font-size: var(--md-sys-typescale-headline-small-size);
+    font-weight: var(--md-sys-typescale-headline-small-weight);
+    line-height: var(--md-sys-typescale-headline-small-line-height);
+    margin: 0 0 16px 0;
+    color: var(--md-sys-color-on-surface);
+  }
+
+  /* Content */
+  .dialog-content {
+    flex: 1;
+    overflow-y: auto;
+    font-family: var(--md-sys-typescale-body-medium-font);
+    font-size: var(--md-sys-typescale-body-medium-size);
+    line-height: var(--md-sys-typescale-body-medium-line-height);
+    color: var(--md-sys-color-on-surface-variant);
+    margin-bottom: 24px;
+  }
+
+  /* Actions */
+  .dialog-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  /* Close button */
+  .dialog-close-button {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border: none;
+    background: transparent;
+    color: var(--md-sys-color-on-surface-variant);
+    border-radius: 50%;
+    cursor: pointer;
+    transition: background-color var(--md-sys-motion-duration-short4) var(--md-sys-motion-easing-standard);
+  }
+
+  .dialog-close-button:hover {
+    background-color: var(--md-sys-color-surface-container-highest);
+  }
+
+  /* Fullscreen variant */
+  .dialog-fullscreen .dialog {
+    max-width: 100%;
+    max-height: 100%;
+    width: 100%;
+    height: 100%;
+    border-radius: 0;
+  }
+
+  /* Responsive */
+  @media (max-width: 599px) {
+    .dialog {
+      max-width: 100%;
+      padding: 16px;
+    }
+
+    .dialog-actions {
+      flex-direction: column-reverse;
+    }
+
+    .dialog-actions :global(.btn) {
+      width: 100%;
+    }
+  }
+</style>
+
+<script>
+  // Dialog functionality
+  function initDialogs() {
+    const dialogs = document.querySelectorAll('[data-dialog]');
+
+    dialogs.forEach((dialogContainer) => {
+      const dialogId = dialogContainer.getAttribute('data-dialog');
+      const openButtons = document.querySelectorAll(`[data-dialog-open="${dialogId}"]`);
+      const closeButtons = dialogContainer.querySelectorAll(`[data-dialog-close="${dialogId}"]`);
+
+      function openDialog() {
+        dialogContainer.classList.add('open');
+        document.body.style.overflow = 'hidden';
+
+        // Focus trap
+        const focusableElements = dialogContainer.querySelectorAll(
+          'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+        );
+        const firstElement = focusableElements[0] as HTMLElement;
+        const lastElement = focusableElements[focusableElements.length - 1] as HTMLElement;
+
+        firstElement?.focus();
+
+        dialogContainer.addEventListener('keydown', (e: KeyboardEvent) => {
+          if (e.key === 'Tab') {
+            if (e.shiftKey && document.activeElement === firstElement) {
+              e.preventDefault();
+              lastElement?.focus();
+            } else if (!e.shiftKey && document.activeElement === lastElement) {
+              e.preventDefault();
+              firstElement?.focus();
+            }
+          }
+        });
+      }
+
+      function closeDialog() {
+        dialogContainer.classList.remove('open');
+        document.body.style.overflow = '';
+      }
+
+      openButtons.forEach(button => {
+        button.addEventListener('click', openDialog);
+      });
+
+      closeButtons.forEach(button => {
+        button.addEventListener('click', closeDialog);
+      });
+
+      // Close on escape
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && dialogContainer.classList.contains('open')) {
+          closeDialog();
+        }
+      });
+    });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initDialogs);
+  } else {
+    initDialogs();
+  }
+
+  document.addEventListener('astro:page-load', initDialogs);
+</script>

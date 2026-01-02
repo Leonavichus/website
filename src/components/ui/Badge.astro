@@ -1,0 +1,70 @@
+---
+// src/components/ui/Badge.astro
+/**
+ * Material Design 3 Badge Component
+ */
+
+export interface Props {
+  count?: number;
+  dot?: boolean;
+  max?: number;
+  class?: string;
+}
+
+const {
+  count,
+  dot = false,
+  max = 99,
+  class: className = '',
+} = Astro.props;
+
+const displayCount = count && count > max ? `${max}+` : count;
+---
+
+<div class:list={['badge-wrapper', className]}>
+  <slot />
+  {(count || dot) && (
+    <span class:list={['badge', { 'badge-dot': dot }]}>
+      {!dot && displayCount}
+    </span>
+  )}
+</div>
+
+<style>
+  .badge-wrapper {
+    position: relative;
+    display: inline-flex;
+  }
+
+  .badge {
+    position: absolute;
+    top: -2px;
+    right: -2px;
+    transform: translate(50%, -50%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 20px;
+    height: 20px;
+    padding: 0 6px;
+    border-radius: 10px;
+    background-color: var(--md-sys-color-error);
+    color: var(--md-sys-color-on-error);
+    font-family: var(--md-sys-typescale-label-small-font);
+    font-size: 11px;
+    font-weight: 600;
+    line-height: 20px;
+    white-space: nowrap;
+    box-sizing: border-box;
+  }
+
+  .badge-dot {
+    min-width: 10px;
+    width: 10px;
+    height: 10px;
+    padding: 0;
+    border-radius: 5px;
+    top: 0;
+    right: 0;
+  }
+</style>

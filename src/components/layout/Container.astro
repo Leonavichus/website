@@ -1,0 +1,48 @@
+---
+// src/components/layout/Container.astro
+/**
+ * Material Design 3 Container Component
+ * Ограничивает ширину контента и центрирует его
+ */
+
+export interface Props {
+  maxWidth?: 'compact' | 'medium' | 'expanded' | 'large' | 'extra-large' | 'full';
+  padding?: boolean;
+  class?: string;
+}
+
+const {
+  maxWidth = 'expanded',
+  padding = true,
+  class: className = '',
+} = Astro.props;
+
+const maxWidthMap = {
+  'compact': 'var(--container-compact)',
+  'medium': 'var(--container-medium)',
+  'expanded': 'var(--container-expanded)',
+  'large': 'var(--container-large)',
+  'extra-large': 'var(--container-extra-large)',
+  'full': '100%',
+};
+---
+
+<div
+  class:list={['container', { 'container-padding': padding }, className]}
+  style={`max-width: ${maxWidthMap[maxWidth]}`}
+>
+  <slot />
+</div>
+
+<style>
+  .container {
+    width: 100%;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .container-padding {
+    padding-left: var(--container-padding, 16px);
+    padding-right: var(--container-padding, 16px);
+  }
+</style>

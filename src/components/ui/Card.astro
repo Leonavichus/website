@@ -1,0 +1,122 @@
+---
+// src/components/ui/Card.astro
+/**
+ * Material Design 3 Card Component
+ * Универсальный контейнер для контента
+ */
+
+export interface Props {
+  variant?: 'filled' | 'elevated' | 'outlined';
+  clickable?: boolean;
+  href?: string;
+  class?: string;
+  padding?: 'none' | 'small' | 'medium' | 'large';
+}
+
+const {
+  variant = 'filled',
+  clickable = false,
+  href,
+  class: className = '',
+  padding = 'medium',
+} = Astro.props;
+
+const Tag = href ? 'a' : 'div';
+const isClickable = clickable || !!href;
+
+const attrs = href ? { href } : {};
+---
+
+<Tag
+  class:list={[
+    'card',
+    `card-${variant}`,
+    `card-padding-${padding}`,
+    { 'card-clickable': isClickable },
+    className,
+  ]}
+  {...attrs}
+>
+  <slot />
+</Tag>
+
+<style>
+  .card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    border-radius: var(--md-sys-shape-corner-medium);
+    overflow: hidden;
+    transition: all var(--md-sys-motion-duration-medium2) var(--md-sys-motion-easing-standard);
+    text-decoration: none;
+    color: inherit;
+  }
+
+  /* Variants */
+  .card-filled {
+    background-color: var(--md-sys-color-surface-container-highest);
+    color: var(--md-sys-color-on-surface);
+  }
+
+  .card-elevated {
+    background-color: var(--md-sys-color-surface-container-low);
+    color: var(--md-sys-color-on-surface);
+    box-shadow: var(--md-sys-elevation-level1);
+  }
+
+  .card-outlined {
+    background-color: var(--md-sys-color-surface);
+    color: var(--md-sys-color-on-surface);
+    border: 1px solid var(--md-sys-color-outline-variant);
+  }
+
+  /* Padding variants */
+  .card-padding-none {
+    padding: 0;
+  }
+
+  .card-padding-small {
+    padding: 12px;
+  }
+
+  .card-padding-medium {
+    padding: 16px;
+  }
+
+  .card-padding-large {
+    padding: 24px;
+  }
+
+  /* Clickable state */
+  .card-clickable {
+    cursor: pointer;
+  }
+
+  .card-clickable:hover {
+    transform: translateY(-2px);
+  }
+
+  .card-elevated.card-clickable:hover {
+    box-shadow: var(--md-sys-elevation-level2);
+  }
+
+  .card-clickable:active {
+    transform: translateY(0);
+  }
+
+  .card-clickable:focus-visible {
+    outline: 2px solid var(--md-sys-color-primary);
+    outline-offset: 2px;
+  }
+
+  /* Responsive */
+  @media (max-width: 600px) {
+    .card-padding-medium {
+      padding: 12px;
+    }
+
+    .card-padding-large {
+      padding: 16px;
+    }
+  }
+</style>

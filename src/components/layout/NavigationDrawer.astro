@@ -1,0 +1,341 @@
+---
+// src/components/layout/NavigationDrawer.astro
+/**
+ * Material Design 3 Navigation Drawer
+ * Боковая навигация для планшетов и десктопов
+ */
+
+import Icon from '../ui/Icon.astro';
+import { NAVIGATION_ITEMS } from '../../utils/constants';
+
+export interface Props {
+  currentPath?: string;
+  variant?: 'modal' | 'standard';
+  class?: string;
+}
+
+const {
+  currentPath = '/',
+  variant = 'modal',
+  class: className = '',
+} = Astro.props;
+---
+
+<aside
+  class:list={[
+    'drawer',
+    `drawer-${variant}`,
+    className,
+  ]}
+  data-drawer
+  aria-label="Navigation drawer"
+>
+  <div class="drawer-scrim" data-drawer-close></div>
+
+  <nav class="drawer-content">
+    <!-- Header -->
+    <div class="drawer-header">
+      <div class="drawer-logo">
+        <Icon name="nights_stay" size="large" />
+        <span class="drawer-logo-text">DARK NIGHT</span>
+      </div>
+
+      <button
+        class="drawer-close-button"
+        aria-label="Close drawer"
+        data-drawer-close
+      >
+        <Icon name="close" size="medium" />
+      </button>
+    </div>
+
+    <!-- Navigation items -->
+    <ul class="drawer-list">
+      {NAVIGATION_ITEMS.map((item) => {
+        const isActive = currentPath === item.href;
+        return (
+          <li>
+            <a
+              href={item.href}
+              class:list={['drawer-item', { active: isActive }]}
+              aria-current={isActive ? 'page' : undefined}
+            >
+              <div class="drawer-item-icon">
+                <Icon name={item.icon} size="medium" filled={isActive} />
+              </div>
+              <span class="drawer-item-label">{item.label}</span>
+              <div class="drawer-item-indicator"></div>
+            </a>
+          </li>
+        );
+      })}
+    </ul>
+
+    <!-- Divider -->
+    <div class="drawer-divider"></div>
+
+    <!-- Secondary items -->
+    <ul class="drawer-list">
+      <li>
+        <button class="drawer-item" data-theme-toggle>
+          <div class="drawer-item-icon">
+            <Icon name="dark_mode" size="medium" />
+          </div>
+          <span class="drawer-item-label">Тема</span>
+        </button>
+      </li>
+      <li>
+        <a href="/settings" class="drawer-item">
+          <div class="drawer-item-icon">
+            <Icon name="settings" size="medium" />
+          </div>
+          <span class="drawer-item-label">Настройки</span>
+        </a>
+      </li>
+    </ul>
+  </nav>
+</aside>
+
+<style>
+  .drawer {
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    z-index: 200;
+    pointer-events: none;
+  }
+
+  .drawer.open {
+    pointer-events: auto;
+  }
+
+  /* Scrim (backdrop) */
+  .drawer-scrim {
+    position: fixed;
+    inset: 0;
+    background-color: var(--md-sys-color-scrim);
+    opacity: 0;
+    transition: opacity var(--md-sys-motion-duration-medium4) var(--md-sys-motion-easing-standard);
+    pointer-events: none;
+  }
+
+  .drawer.open .drawer-scrim {
+    opacity: 0.4;
+    pointer-events: auto;
+  }
+
+  /* Content */
+  .drawer-content {
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: 360px;
+    max-width: 80vw;
+    background-color: var(--md-sys-color-surface-container-low);
+    color: var(--md-sys-color-on-surface);
+    box-shadow: var(--md-sys-elevation-level1);
+    transform: translateX(-100%);
+    transition: transform var(--md-sys-motion-duration-medium4) var(--md-sys-motion-easing-emphasized-decelerate);
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .drawer.open .drawer-content {
+    transform: translateX(0);
+  }
+
+  /* Header */
+  .drawer-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px;
+    min-height: 64px;
+  }
+
+  .drawer-logo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .drawer-logo-text {
+    font-family: var(--md-sys-typescale-title-large-font);
+    font-size: var(--md-sys-typescale-title-large-size);
+    font-weight: var(--md-sys-typescale-title-large-weight);
+  }
+
+  .drawer-close-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    height: 48px;
+    border: none;
+    background: transparent;
+    color: var(--md-sys-color-on-surface-variant);
+    border-radius: 50%;
+    cursor: pointer;
+    transition: background-color var(--md-sys-motion-duration-short4) var(--md-sys-motion-easing-standard);
+  }
+
+  .drawer-close-button:hover {
+    background-color: var(--md-sys-color-surface-container-highest);
+  }
+
+  /* List */
+  .drawer-list {
+    list-style: none;
+    padding: 0;
+    margin: 12px 0;
+  }
+
+  /* Items */
+  .drawer-item {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+    padding: 16px 24px 16px 16px;
+    border: none;
+    background: transparent;
+    color: var(--md-sys-color-on-surface-variant);
+    text-decoration: none;
+    cursor: pointer;
+    transition: all var(--md-sys-motion-duration-short4) var(--md-sys-motion-easing-standard);
+    border-radius: 0 var(--md-sys-shape-corner-full) var(--md-sys-shape-corner-full) 0;
+    margin-right: 12px;
+  }
+
+  .drawer-item:hover {
+    background-color: var(--md-sys-color-surface-container-highest);
+  }
+
+  .drawer-item.active {
+    background-color: var(--md-sys-color-secondary-container);
+    color: var(--md-sys-color-on-secondary-container);
+  }
+
+  .drawer-item-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+  }
+
+  .drawer-item-label {
+    flex: 1;
+    font-family: var(--md-sys-typescale-label-large-font);
+    font-size: var(--md-sys-typescale-label-large-size);
+    font-weight: var(--md-sys-typescale-label-large-weight);
+    text-align: left;
+  }
+
+  .drawer-item-indicator {
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 0;
+    height: 32px;
+    background-color: var(--md-sys-color-primary);
+    border-radius: 0 var(--md-sys-shape-corner-full) var(--md-sys-shape-corner-full) 0;
+    transition: width var(--md-sys-motion-duration-medium2) var(--md-sys-motion-easing-emphasized);
+  }
+
+  .drawer-item.active .drawer-item-indicator {
+    width: 4px;
+  }
+
+  /* Divider */
+  .drawer-divider {
+    height: 1px;
+    background-color: var(--md-sys-color-outline-variant);
+    margin: 12px 28px;
+  }
+
+  /* Standard variant (always visible on desktop) */
+  .drawer-standard {
+    pointer-events: auto;
+  }
+
+  .drawer-standard .drawer-scrim {
+    display: none;
+  }
+
+  .drawer-standard .drawer-content {
+    transform: translateX(0);
+    box-shadow: none;
+    border-right: 1px solid var(--md-sys-color-outline-variant);
+  }
+
+  /* Responsive */
+  @media (max-width: 839px) {
+    .drawer-standard {
+      display: none;
+    }
+  }
+
+  @media (min-width: 840px) {
+    .drawer-modal .drawer-close-button {
+      display: none;
+    }
+  }
+</style>
+
+<script>
+  // Drawer toggle functionality
+  function initDrawer() {
+    const drawer = document.querySelector('[data-drawer]');
+    const toggleButtons = document.querySelectorAll('[data-drawer-toggle]');
+    const closeButtons = document.querySelectorAll('[data-drawer-close]');
+
+    if (!drawer) return;
+
+    function openDrawer() {
+      drawer.classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeDrawer() {
+      drawer.classList.remove('open');
+      document.body.style.overflow = '';
+    }
+
+    toggleButtons.forEach(button => {
+      button.addEventListener('click', () => {
+        if (drawer.classList.contains('open')) {
+          closeDrawer();
+        } else {
+          openDrawer();
+        }
+      });
+    });
+
+    closeButtons.forEach(button => {
+      button.addEventListener('click', closeDrawer);
+    });
+
+    // Close on escape key
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && drawer.classList.contains('open')) {
+        closeDrawer();
+      }
+    });
+  }
+
+  // Initialize on page load
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initDrawer);
+  } else {
+    initDrawer();
+  }
+
+  // Re-initialize after navigation (for Astro View Transitions)
+  document.addEventListener('astro:page-load', initDrawer);
+</script>

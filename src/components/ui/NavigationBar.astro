@@ -1,0 +1,32 @@
+---
+// src/components/ui/NavigationBar.astro
+/**
+ * Material Design 3 Navigation Bar Component
+ */
+
+export interface Props {
+  class?: string;
+  style?: string;
+}
+
+const {
+  class: className = '',
+  style = '',
+} = Astro.props;
+---
+
+<nav class:list={['navigation-bar', className]} style={style}>
+  <slot />
+</nav>
+
+<style>
+  .navigation-bar {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    height: 80px;
+    background-color: var(--md-sys-color-surface-container);
+    border-top: 1px solid var(--md-sys-color-outline-variant);
+    padding: 0 8px;
+  }
+</style>

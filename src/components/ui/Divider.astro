@@ -1,0 +1,57 @@
+---
+// src/components/ui/Divider.astro
+/**
+ * Material Design 3 Divider Component
+ */
+
+export interface Props {
+  inset?: boolean;
+  vertical?: boolean;
+  style?: string;
+  class?: string;
+}
+
+const {
+  inset = false,
+  vertical = false,
+  style = '',
+  class: className = '',
+} = Astro.props;
+---
+
+<hr
+  class:list={[
+    'divider',
+    { 'divider-inset': inset },
+    { 'divider-vertical': vertical },
+    className,
+  ]}
+  style={style}
+  role="separator"
+/>
+
+<style>
+  .divider {
+    border: none;
+    background-color: var(--md-sys-color-outline-variant);
+    margin: 0;
+  }
+
+  /* Horizontal divider (default) */
+  .divider:not(.divider-vertical) {
+    width: 100%;
+    height: 1px;
+  }
+
+  /* Inset horizontal */
+  .divider-inset:not(.divider-vertical) {
+    margin-left: 16px;
+  }
+
+  /* Vertical divider */
+  .divider-vertical {
+    width: 1px;
+    height: 100%;
+    display: inline-block;
+  }
+</style>

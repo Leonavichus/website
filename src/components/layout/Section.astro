@@ -1,0 +1,64 @@
+---
+// src/components/layout/Section.astro
+/**
+ * Material Design 3 Section Component
+ * Секция контента с вертикальными отступами
+ */
+
+export interface Props {
+  spacing?: 'none' | 'sm' | 'md' | 'lg' | 'xl';
+  background?: 'surface' | 'surface-variant' | 'primary' | 'secondary' | 'none';
+  class?: string;
+}
+
+const {
+  spacing = 'md',
+  background = 'none',
+  class: className = '',
+} = Astro.props;
+
+const spacingMap = {
+  'none': '0',
+  'sm': 'var(--section-spacing-compact, 40px)',
+  'md': 'var(--section-spacing, 60px)',
+  'lg': 'var(--section-spacing-expanded, 80px)',
+  'xl': 'var(--section-spacing-large, 100px)',
+};
+---
+
+<section
+  class:list={['section', `section-bg-${background}`, className]}
+  style={`padding-top: ${spacingMap[spacing]}; padding-bottom: ${spacingMap[spacing]}`}
+>
+  <slot />
+</section>
+
+<style>
+  .section {
+    width: 100%;
+  }
+
+  .section-bg-surface {
+    background-color: var(--md-sys-color-surface);
+    color: var(--md-sys-color-on-surface);
+  }
+
+  .section-bg-surface-variant {
+    background-color: var(--md-sys-color-surface-variant);
+    color: var(--md-sys-color-on-surface-variant);
+  }
+
+  .section-bg-primary {
+    background-color: var(--md-sys-color-primary);
+    color: var(--md-sys-color-on-primary);
+  }
+
+  .section-bg-secondary {
+    background-color: var(--md-sys-color-secondary);
+    color: var(--md-sys-color-on-secondary);
+  }
+
+  .section-bg-none {
+    background: transparent;
+  }
+</style>

@@ -1,0 +1,42 @@
+---
+// src/components/layout/Spacer.astro
+/**
+ * Material Design 3 Spacer Component
+ * Создает вертикальный или горизонтальный отступ
+ */
+
+export interface Props {
+  size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl' | '2xl';
+  axis?: 'vertical' | 'horizontal';
+  class?: string;
+}
+
+const {
+  size = 'md',
+  axis = 'vertical',
+  class: className = '',
+} = Astro.props;
+
+const sizeMap = {
+  'xs': '4px',
+  'sm': '8px',
+  'md': '16px',
+  'lg': '24px',
+  'xl': '32px',
+  '2xl': '48px',
+};
+
+const dimension = axis === 'vertical' ? 'height' : 'width';
+---
+
+<div
+  class:list={['spacer', className]}
+  style={`${dimension}: ${sizeMap[size]}`}
+  aria-hidden="true"
+></div>
+
+<style>
+  .spacer {
+    flex-shrink: 0;
+  }
+</style>
