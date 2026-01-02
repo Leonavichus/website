@@ -1,10 +1,10 @@
 ---
 import Layout from '../layouts/Layout.astro';
-import Header from '../components/Header.astro';
-import Footer from '../components/Footer.astro';
-import Button from '../components/Button.astro';
-import ProjectCard from '../components/ProjectCard.astro';
-import JsonLd from '../components/JsonLd.astro';
+import Header from '../components/layout/Header.astro';
+import Footer from '../components/layout/Footer.astro';
+import Button from '../components/ui/Button.astro';
+import ProjectCard from '../components/features/ProjectCard.astro';
+import JsonLd from '../components/widgets/JsonLd.astro';
 import { getCollection } from 'astro:content';
 import type { CollectionEntry } from 'astro:content';
 
@@ -54,7 +54,7 @@ const projects = allProjects
         </p>
         <div class="hero-buttons">
           <Button href="/#projects" icon="apps">Наши проекты</Button>
-          <Button href="/#join" variant="secondary" icon="group_add">Присоединиться</Button>
+          <Button href="/#join" icon="group_add">Присоединиться</Button>
         </div>
       </div>
       <div class="mascot-container">

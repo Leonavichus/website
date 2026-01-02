@@ -1,8 +1,8 @@
 ---
 import Layout from '../layouts/Layout.astro';
-import Header from '../components/Header.astro';
-import Footer from '../components/Footer.astro';
-import Button from '../components/Button.astro';
+import Header from '../components/layout/Header.astro';
+import Footer from '../components/layout/Footer.astro';
+import Button from '../components/ui/Button.astro';
 
 const team = [
   {
@@ -47,7 +47,7 @@ const stats = [
 ];
 ---
 
-<Layout title="О команде" description="Узнайте больше о команде DARK NIGHT - разработчиках инди-игр и приложений с открытым исходным кодом">
+<Layout title="О команде">
   <Header />
 
   <!-- Hero -->
@@ -155,7 +155,7 @@ const stats = [
         <p>Станьте частью нашей команды и помогите создавать крутые проекты</p>
         <div class="cta-buttons">
           <Button href="/#join" icon="group_add" class="donate-btn">Присоединиться</Button>
-          <Button href="https://github.com/darkmoonight" variant="secondary" icon="code" class="donate-btn">GitHub</Button>
+          <Button href="https://github.com/darkmoonight" icon="code" class="donate-btn">GitHub</Button>
         </div>
       </div>
       <div class="cta-mascot">

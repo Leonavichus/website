@@ -1,9 +1,9 @@
 ---
 import Layout from '../../layouts/Layout.astro';
-import Header from '../../components/Header.astro';
-import Footer from '../../components/Footer.astro';
-import Button from '../../components/Button.astro';
-import GitHubBadge from '../../components/GitHubBadge.astro';
+import Header from '../../components/layout/Header.astro';
+import Footer from '../../components/layout/Footer.astro';
+import Button from '../../components/ui/Button.astro';
+import GitHubBadge from '../../components/features/GitHubBadge.astro';
 import { getCollection } from 'astro:content';
 import type { CollectionEntry } from 'astro:content';
 
@@ -23,7 +23,7 @@ const { project } = Astro.props;
 const data = project.data;
 ---
 
-<Layout title={`${data.title} - DARK NIGHT`} description={data.description}>
+<Layout title={`${data.title} - DARK NIGHT`}>
   <Header />
 
   <section class="project-hero">
@@ -46,10 +46,10 @@ const data = project.data;
             <Button href={data.downloadLink} icon="download">Скачать</Button>
           )}
           {data.github && (
-            <Button href={data.github} variant="secondary" icon="code">GitHub</Button>
+            <Button href={data.github} icon="code">GitHub</Button>
           )}
           {data.demoLink && (
-            <Button href={data.demoLink} variant="secondary" icon="visibility">Демо</Button>
+            <Button href={data.demoLink} icon="visibility">Демо</Button>
           )}
         </div>
       </div>
@@ -143,7 +143,7 @@ const data = project.data;
   </section>
 
   <section class="content-section back-section">
-    <Button href="/#projects" variant="secondary" icon="arrow_back">Все проекты</Button>
+    <Button href="/#projects" icon="arrow_back">Все проекты</Button>
   </section>
 
   <Footer />

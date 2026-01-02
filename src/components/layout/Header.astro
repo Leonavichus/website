@@ -1,7 +1,7 @@
 ---
-import ThemeToggle from './ThemeToggle.astro';
-import Search from './Search.astro';
-import LangSwitcher from './LangSwitcher.astro';
+import ThemeToggle from '../widgets/ThemeToggle.astro';
+import Search from '../features/Search.astro';
+import LangSwitcher from '../widgets/LangSwitcher.astro';
 ---
 
 <header class="header">
@@ -21,7 +21,7 @@ import LangSwitcher from './LangSwitcher.astro';
 
     <div class="nav-actions">
       <Search />
-      <LangSwitcher />
+      <!-- <LangSwitcher /> -->
       <ThemeToggle />
       <a href="https://github.com/darkmoonight" class="github-link" target="_blank" rel="noopener">
         <span class="material-icons">code</span>

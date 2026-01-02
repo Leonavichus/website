@@ -1,7 +1,7 @@
 ---
 import Layout from '../layouts/Layout.astro';
-import Header from '../components/Header.astro';
-import Footer from '../components/Footer.astro';
+import Header from '../components/layout/Header.astro';
+import Footer from '../components/layout/Footer.astro';
 
 const faqs = [
   {
@@ -95,10 +95,7 @@ const faqs = [
 ];
 ---
 
-<Layout 
-  title="FAQ - Часто задаваемые вопросы" 
-  description="Ответы на часто задаваемые вопросы о проектах DARK NIGHT"
->
+<Layout title="FAQ - Часто задаваемые вопросы" >
   <Header />
 
   <!-- Hero -->

@@ -8,7 +8,7 @@ export interface Props {
 const { repo, owner = 'darkmoonight', type = 'stars' } = Astro.props;
 
 // Импортируем утилиту
-import { getRepo } from '../utils/github';
+import { getRepo } from '../../utils/github';
 
 // Получаем данные
 const repoData = await getRepo(owner, repo);
