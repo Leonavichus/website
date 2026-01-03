@@ -1,0 +1,97 @@
+---
+/**
+ * FormField Component
+ * Wrapper for form inputs with label, helper text, and error handling
+ */
+interface Props {
+  label?: string;
+  helperText?: string;
+  errorText?: string;
+  error?: boolean;
+  required?: boolean;
+  fullWidth?: boolean;
+  class?: string;
+}
+
+const {
+  label,
+  helperText,
+  errorText,
+  error = false,
+  required = false,
+  fullWidth = false,
+  class: className
+} = Astro.props;
+---
+
+<div 
+  class:list={[
+    'form-field',
+    { 'form-field--error': error },
+    { 'form-field--full-width': fullWidth },
+    className
+  ]}
+  data-form-field
+>
+  {label && (
+    <label class="form-field__label">
+      {label}
+      {required && <span class="form-field__required">*</span>}
+    </label>
+  )}
+
+  <div class="form-field__control">
+    <slot />
+  </div>
+
+  {(helperText || errorText) && (
+    <div class="form-field__helper-text" data-helper-text={helperText}>
+      {error && errorText ? errorText : helperText}
+    </div>
+  )}
+</div>
+
+<style>
+  .form-field {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .form-field--full-width {
+    width: 100%;
+  }
+
+  .form-field__label {
+    color: var(--md-sys-color-on-surface);
+    font: var(--md-sys-typescale-body-medium);
+    font-weight: 500;
+  }
+
+  .form-field__required {
+    color: var(--md-sys-color-error);
+    margin-left: 2px;
+  }
+
+  .form-field__control {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .form-field__helper-text {
+    padding-left: 16px;
+    color: var(--md-sys-color-on-surface-variant);
+    font: var(--md-sys-typescale-body-small);
+  }
+
+  .form-field--error .form-field__helper-text {
+    color: var(--md-sys-color-error);
+  }
+
+  /* Make child inputs full width */
+  .form-field--full-width :global(input),
+  .form-field--full-width :global(select),
+  .form-field--full-width :global(textarea) {
+    width: 100%;
+  }
+</style>

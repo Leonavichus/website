@@ -1,0 +1,160 @@
+---
+/**
+ * DatePicker Component - Enhanced Material Design 3
+ * Modern date picker with smooth transitions
+ */
+import Icon from './Icon.astro';
+
+interface Props {
+  id: string;
+  label?: string;
+  value?: string;
+  min?: string;
+  max?: string;
+  disabled?: boolean;
+  required?: boolean;
+}
+
+const {
+  id,
+  label,
+  value,
+  min,
+  max,
+  disabled = false,
+  required = false
+} = Astro.props;
+---
+
+<div class="date-picker">
+  {label && (
+    <label for={id} class="date-picker__label">{label}</label>
+  )}
+
+  <div class="date-picker__wrapper">
+    <div class="date-picker__icon">
+      <Icon name="calendar_today" />
+    </div>
+    
+    <input
+      type="date"
+      id={id}
+      class="date-picker__input"
+      value={value}
+      min={min}
+      max={max}
+      disabled={disabled}
+      required={required}
+    />
+  </div>
+</div>
+
+<style>
+  .date-picker {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .date-picker__label {
+    color: var(--md-sys-color-on-surface);
+    font: var(--md-sys-typescale-body-small);
+    font-weight: 600;
+    letter-spacing: 0.4px;
+    transition: color 0.2s;
+  }
+
+  .date-picker__wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
+
+  .date-picker__icon {
+    position: absolute;
+    left: 16px;
+    display: flex;
+    align-items: center;
+    color: var(--md-sys-color-primary);
+    font-size: 20px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    pointer-events: none;
+    z-index: 10;
+    mix-blend-mode: normal;
+  }
+
+  .date-picker__wrapper:hover .date-picker__icon {
+    color: var(--md-sys-color-primary);
+    transform: scale(1.15);
+  }
+
+  .date-picker__input:focus ~ .date-picker__icon {
+    color: var(--md-sys-color-primary);
+  }
+
+  .date-picker__input {
+    width: 100%;
+    padding: 16px 16px 16px 48px;
+    border: 1px solid var(--md-sys-color-outline);
+    border-radius: var(--md-sys-shape-corner-small, 8px);
+    background: var(--md-sys-color-surface);
+    color: var(--md-sys-color-on-surface);
+    font: var(--md-sys-typescale-body-large);
+    outline: none;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    cursor: pointer;
+  }
+
+  .date-picker__input:hover:not(:disabled) {
+    border-color: var(--md-sys-color-on-surface);
+    background: var(--md-sys-color-surface-container-low);
+  }
+
+  .date-picker__input:focus {
+    border-color: var(--md-sys-color-primary);
+    border-width: 2px;
+    padding: 15px 15px 15px 47px;
+    box-shadow: 0 0 0 4px rgba(103, 80, 164, 0.1);
+  }
+
+  .date-picker__input:focus {
+    transform: scaleX(1);
+  }
+
+  .date-picker__input:disabled {
+    opacity: 0.38;
+    cursor: not-allowed;
+    border-color: var(--md-sys-color-on-surface);
+    background: var(--md-sys-color-surface-variant);
+  }
+
+  /* Calendar picker indicator */
+  .date-picker__input::-webkit-calendar-picker-indicator {
+    position: absolute;
+    right: 12px;
+    cursor: pointer;
+    opacity: 0.6;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    padding: 8px;
+    border-radius: 50%;
+  }
+
+  .date-picker__input::-webkit-calendar-picker-indicator:hover {
+    opacity: 1;
+    background: var(--md-sys-color-surface-container-highest);
+  }
+
+  /* Date input value styling */
+  .date-picker__input::-webkit-datetime-edit {
+    padding: 0;
+  }
+
+  .date-picker__input::-webkit-datetime-edit-fields-wrapper {
+    display: flex;
+    gap: 4px;
+  }
+
+  .date-picker__input::-webkit-datetime-edit-text {
+    color: var(--md-sys-color-on-surface-variant);
+  }
+</style>

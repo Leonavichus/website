@@ -1,0 +1,254 @@
+---
+/**
+ * DateRangePicker Component - Enhanced Material Design 3
+ * Modern date range picker with connecting animation
+ */
+import Icon from './Icon.astro';
+
+interface Props {
+  id: string;
+  label?: string;
+  startValue?: string;
+  endValue?: string;
+  min?: string;
+  max?: string;
+  disabled?: boolean;
+  required?: boolean;
+}
+
+const {
+  id,
+  label,
+  startValue,
+  endValue,
+  min,
+  max,
+  disabled = false,
+  required = false
+} = Astro.props;
+---
+
+<div class="date-range-picker">
+  {label && (
+    <label class="date-range-picker__label">{label}</label>
+  )}
+
+  <div class="date-range-picker__inputs">
+    <div class="date-range-picker__field">
+      <div class="date-range-picker__icon">
+        <Icon name="calendar_today" />
+      </div>
+      <input
+        type="date"
+        id={`${id}-start`}
+        class="date-range-picker__input"
+        value={startValue}
+        min={min}
+        max={endValue || max}
+        disabled={disabled}
+        required={required}
+        placeholder="Start date"
+      />
+    </div>
+
+    <div class="date-range-picker__connector">
+      <Icon name="arrow_forward" class="date-range-picker__arrow" />
+      <div class="date-range-picker__line"></div>
+    </div>
+
+    <div class="date-range-picker__field">
+      <div class="date-range-picker__icon">
+        <Icon name="event" />
+      </div>
+      <input
+        type="date"
+        id={`${id}-end`}
+        class="date-range-picker__input"
+        value={endValue}
+        min={startValue || min}
+        max={max}
+        disabled={disabled}
+        required={required}
+        placeholder="End date"
+      />
+    </div>
+  </div>
+</div>
+
+<style>
+  .date-range-picker {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .date-range-picker__label {
+    color: var(--md-sys-color-on-surface);
+    font: var(--md-sys-typescale-title-small);
+    font-weight: 600;
+    letter-spacing: 0.1px;
+  }
+
+  .date-range-picker__inputs {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .date-range-picker__field {
+    flex: 1;
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
+
+  .date-range-picker__icon {
+    position: absolute;
+    left: 16px;
+    display: flex;
+    align-items: center;
+    color: var(--md-sys-color-primary);
+    font-size: 20px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    pointer-events: none;
+    z-index: 10;
+    mix-blend-mode: normal;
+  }
+
+  .date-range-picker__field:hover .date-range-picker__icon {
+    color: var(--md-sys-color-primary);
+    transform: scale(1.15) rotate(5deg);
+  }
+
+  .date-range-picker__input:focus ~ .date-range-picker__icon {
+    color: var(--md-sys-color-primary);
+  }
+
+  .date-range-picker__input {
+    width: 100%;
+    padding: 16px 16px 16px 48px;
+    border: 1px solid var(--md-sys-color-outline);
+    border-radius: var(--md-sys-shape-corner-small, 8px);
+    background: var(--md-sys-color-surface);
+    color: var(--md-sys-color-on-surface);
+    font: var(--md-sys-typescale-body-large);
+    outline: none;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    cursor: pointer;
+  }
+
+  .date-range-picker__input:hover:not(:disabled) {
+    border-color: var(--md-sys-color-on-surface);
+    background: var(--md-sys-color-surface-container-low);
+  }
+
+  .date-range-picker__input:focus {
+    border-color: var(--md-sys-color-primary);
+    border-width: 2px;
+    padding: 15px 15px 15px 47px;
+    box-shadow: 0 0 0 4px rgba(103, 80, 164, 0.1);
+  }
+
+  .date-range-picker__input:focus {
+    transform: scaleX(1);
+  }
+
+  .date-range-picker__input:disabled {
+    opacity: 0.38;
+    cursor: not-allowed;
+    border-color: var(--md-sys-color-on-surface);
+    background: var(--md-sys-color-surface-variant);
+  }
+
+  /* Calendar picker indicator */
+  .date-range-picker__input::-webkit-calendar-picker-indicator {
+    position: absolute;
+    right: 12px;
+    cursor: pointer;
+    opacity: 0.6;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    padding: 8px;
+    border-radius: 50%;
+  }
+
+  .date-range-picker__input::-webkit-calendar-picker-indicator:hover {
+    opacity: 1;
+    background: var(--md-sys-color-surface-container-highest);
+  }
+
+  /* Connector */
+  .date-range-picker__connector {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 40px;
+    height: 40px;
+  }
+
+  .date-range-picker__line {
+    position: absolute;
+    width: 100%;
+    height: 2px;
+    background: linear-gradient(
+      to right,
+      var(--md-sys-color-outline-variant),
+      transparent 20%,
+      transparent 80%,
+      var(--md-sys-color-outline-variant)
+    );
+    animation: line-pulse 2s ease-in-out infinite;
+  }
+
+  @keyframes line-pulse {
+    0%, 100% {
+      opacity: 0.3;
+    }
+    50% {
+      opacity: 0.6;
+    }
+  }
+
+  .date-range-picker__arrow {
+    position: relative;
+    color: var(--md-sys-color-on-surface-variant);
+    font-size: 24px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 1;
+    background: var(--md-sys-color-surface);
+    padding: 4px;
+    border-radius: 50%;
+  }
+
+  .date-range-picker:hover .date-range-picker__arrow {
+    color: var(--md-sys-color-primary);
+    transform: translateX(4px) scale(1.1);
+  }
+
+  /* Date input value styling */
+  .date-range-picker__input::-webkit-datetime-edit-fields-wrapper {
+    display: flex;
+    gap: 4px;
+  }
+
+  .date-range-picker__input::-webkit-datetime-edit-text {
+    color: var(--md-sys-color-on-surface-variant);
+  }
+
+  /* Responsive */
+  @media (max-width: 640px) {
+    .date-range-picker__inputs {
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .date-range-picker__connector {
+      transform: rotate(90deg);
+    }
+
+    .date-range-picker:hover .date-range-picker__arrow {
+      transform: rotate(90deg) translateX(4px) scale(1.1);
+    }
+  }
+</style>

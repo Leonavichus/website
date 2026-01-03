@@ -1,0 +1,169 @@
+---
+/**
+ * Backdrop Component
+ * Material Design 3 backdrop overlay for dialogs, menus, etc.
+ */
+interface Props {
+  id?: string;
+  visible?: boolean;
+  persistent?: boolean;
+  blur?: boolean;
+  class?: string;
+}
+
+const {
+  id,
+  visible = false,
+  persistent = false,
+  blur = false,
+  class: className
+} = Astro.props;
+---
+
+<div
+  id={id}
+  class:list={[
+    'backdrop',
+    { 'backdrop--visible': visible },
+    { 'backdrop--blur': blur },
+    className
+  ]}
+  data-backdrop
+  data-persistent={persistent}
+  hidden={!visible}
+  aria-hidden={!visible}
+>
+  <slot />
+</div>
+
+<style>
+  .backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.4);
+    opacity: 0;
+    transition: opacity 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    pointer-events: none;
+  }
+
+  .backdrop--visible {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .backdrop--blur {
+    backdrop-filter: blur(4px);
+  }
+
+  .backdrop[hidden] {
+    display: none;
+  }
+
+  /* Animation */
+  @keyframes backdrop-fade-in {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  @keyframes backdrop-fade-out {
+    from {
+      opacity: 1;
+    }
+    to {
+      opacity: 0;
+    }
+  }
+
+  /* Reduced motion */
+  @media (prefers-reduced-motion: reduce) {
+    .backdrop {
+      transition: none;
+    }
+  }
+</style>
+
+<script>
+  function initBackdrops() {
+    const backdrops = document.querySelectorAll('[data-backdrop]');
+
+    backdrops.forEach(backdrop => {
+      const isPersistent = (backdrop as HTMLElement).dataset.persistent === 'true';
+
+      if (!isPersistent) {
+        backdrop.addEventListener('click', (e) => {
+          if (e.target === backdrop) {
+            backdrop.dispatchEvent(new CustomEvent('backdrop-click', {
+              bubbles: true,
+              cancelable: true
+            }));
+
+            // Hide backdrop if not prevented
+            if (!(e as any).defaultPrevented) {
+              hideBackdrop(backdrop as HTMLElement);
+            }
+          }
+        });
+      }
+
+      // ESC key support
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && !backdrop.hasAttribute('hidden') && !isPersistent) {
+          hideBackdrop(backdrop as HTMLElement);
+        }
+      });
+    });
+  }
+
+  function showBackdrop(backdrop: HTMLElement) {
+    backdrop.removeAttribute('hidden');
+    backdrop.setAttribute('aria-hidden', 'false');
+    backdrop.classList.add('backdrop--visible');
+
+    // Prevent body scroll
+    document.body.style.overflow = 'hidden';
+
+    backdrop.dispatchEvent(new CustomEvent('backdrop-show', {
+      bubbles: true
+    }));
+  }
+
+  function hideBackdrop(backdrop: HTMLElement) {
+    backdrop.classList.remove('backdrop--visible');
+    backdrop.setAttribute('aria-hidden', 'true');
+
+    // Wait for animation
+    setTimeout(() => {
+      backdrop.setAttribute('hidden', '');
+
+      // Restore body scroll if no other backdrops visible
+      const visibleBackdrops = document.querySelectorAll('.backdrop--visible');
+      if (visibleBackdrops.length === 0) {
+        document.body.style.overflow = '';
+      }
+    }, 200);
+
+    backdrop.dispatchEvent(new CustomEvent('backdrop-hide', {
+      bubbles: true
+    }));
+  }
+
+  // Export functions for use in other components
+  (window as any).showBackdrop = showBackdrop;
+  (window as any).hideBackdrop = hideBackdrop;
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initBackdrops);
+  } else {
+    initBackdrops();
+  }
+
+  document.addEventListener('astro:page-load', initBackdrops);
+</script>

@@ -1,0 +1,423 @@
+---
+/**
+ * Autocomplete Component
+ * Material Design 3 autocomplete with filtering and suggestions
+ */
+import Icon from './Icon.astro';
+
+interface Option {
+  value: string;
+  label: string;
+  description?: string;
+  icon?: string;
+  disabled?: boolean;
+}
+
+interface Props {
+  id: string;
+  name?: string;
+  label?: string;
+  options?: Option[];
+  value?: string;
+  placeholder?: string;
+  disabled?: boolean;
+  required?: boolean;
+  helperText?: string;
+  errorText?: string;
+  error?: boolean;
+  fullWidth?: boolean;
+  multiple?: boolean;
+  freeSolo?: boolean; // Allow custom values
+  loading?: boolean;
+}
+
+const {
+  id,
+  name = id,
+  label,
+  options = [],
+  value = '',
+  placeholder = 'Type to search...',
+  disabled = false,
+  required = false,
+  helperText,
+  errorText,
+  error = false,
+  fullWidth = false,
+  multiple = false,
+  freeSolo = false,
+  loading = false
+} = Astro.props;
+---
+
+<div 
+  class:list={[
+    'autocomplete',
+    { 'autocomplete--full-width': fullWidth },
+    { 'autocomplete--disabled': disabled },
+    { 'autocomplete--error': error },
+    { 'autocomplete--multiple': multiple }
+  ]}
+  data-autocomplete={id}
+  data-multiple={multiple}
+  data-free-solo={freeSolo}
+>
+  {label && (
+    <label class="autocomplete__label" for={id}>
+      {label}
+      {required && <span class="autocomplete__required">*</span>}
+    </label>
+  )}
+
+  <div class="autocomplete__input-wrapper">
+    <!-- Hidden input for form submission -->
+    <input
+      type="hidden"
+      name={name}
+      value={value}
+      data-hidden-input
+    />
+
+    <!-- Selected chips (for multiple) -->
+    {multiple && (
+      <div class="autocomplete__chips" data-chips></div>
+    )}
+
+    <!-- Search input -->
+    <input
+      type="text"
+      id={id}
+      class="autocomplete__input"
+      placeholder={placeholder}
+      disabled={disabled}
+      required={required}
+      autocomplete="off"
+      role="combobox"
+      aria-autocomplete="list"
+      aria-expanded="false"
+      aria-controls={`${id}-listbox`}
+      data-search-input
+    />
+
+    <!-- Icons -->
+    <div class="autocomplete__icons">
+      {loading && (
+        <div class="autocomplete__loading" data-loading>
+          <Icon name="progress_activity" class="autocomplete__loading-icon" />
+        </div>
+      )}
+      <button
+        type="button"
+        class="autocomplete__clear-button"
+        data-clear-button
+        hidden
+        aria-label="Clear"
+      >
+        <Icon name="close" />
+      </button>
+      <button
+        type="button"
+        class="autocomplete__dropdown-button"
+        disabled={disabled}
+        aria-label="Toggle dropdown"
+        data-dropdown-button
+      >
+        <Icon name="arrow_drop_down" />
+      </button>
+    </div>
+  </div>
+
+  {(helperText || errorText) && (
+    <div class="autocomplete__helper-text">
+      {error && errorText ? errorText : helperText}
+    </div>
+  )}
+
+  <!-- Dropdown listbox -->
+  <div 
+    class="autocomplete__listbox"
+    id={`${id}-listbox`}
+    role="listbox"
+    hidden
+    data-listbox
+  >
+    <div class="autocomplete__options" data-options>
+      {options.map((option, index) => (
+        <div
+          class:list={[
+            'autocomplete__option',
+            { 'autocomplete__option--disabled': option.disabled }
+          ]}
+          role="option"
+          data-value={option.value}
+          data-index={index}
+          aria-disabled={option.disabled}
+        >
+          {option.icon && <Icon name={option.icon} class="autocomplete__option-icon" />}
+          <div class="autocomplete__option-content">
+            <div class="autocomplete__option-label">{option.label}</div>
+            {option.description && (
+              <div class="autocomplete__option-description">{option.description}</div>
+            )}
+          </div>
+        </div>
+      ))}
+    </div>
+
+    <!-- No results -->
+    <div class="autocomplete__no-results" data-no-results hidden>
+      No results found
+    </div>
+  </div>
+</div>
+
+<style>
+  .autocomplete {
+    position: relative;
+    display: inline-block;
+  }
+
+  .autocomplete--full-width {
+    width: 100%;
+  }
+
+  /* Label */
+  .autocomplete__label {
+    display: block;
+    margin-bottom: 8px;
+    color: var(--md-sys-color-on-surface);
+    font: var(--md-sys-typescale-body-small);
+  }
+
+  .autocomplete__required {
+    color: var(--md-sys-color-error);
+  }
+
+  /* Input wrapper */
+  .autocomplete__input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    border: 1px solid var(--md-sys-color-outline);
+    border-radius: var(--md-sys-shape-corner-small);
+    background: var(--md-sys-color-surface);
+    transition: border-color 0.2s;
+  }
+
+  .autocomplete__input-wrapper:hover {
+    border-color: var(--md-sys-color-on-surface);
+  }
+
+  .autocomplete__input-wrapper:focus-within {
+    border-color: var(--md-sys-color-primary);
+    border-width: 2px;
+    padding: 7px 11px;
+  }
+
+  .autocomplete--error .autocomplete__input-wrapper {
+    border-color: var(--md-sys-color-error);
+  }
+
+  .autocomplete--disabled .autocomplete__input-wrapper {
+    opacity: 0.38;
+    cursor: not-allowed;
+  }
+
+  /* Chips (for multiple selection) */
+  .autocomplete__chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+  }
+
+  .autocomplete__chip {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 8px;
+    border-radius: var(--md-sys-shape-corner-small);
+    background: var(--md-sys-color-secondary-container);
+    color: var(--md-sys-color-on-secondary-container);
+    font: var(--md-sys-typescale-label-small);
+  }
+
+  .autocomplete__chip-remove {
+    display: flex;
+    padding: 0;
+    border: none;
+    background: transparent;
+    color: inherit;
+    cursor: pointer;
+    opacity: 0.7;
+    transition: opacity 0.2s;
+  }
+
+  .autocomplete__chip-remove:hover {
+    opacity: 1;
+  }
+
+  .autocomplete__chip-remove :global(.icon) {
+    font-size: 16px;
+  }
+
+  /* Input */
+  .autocomplete__input {
+    flex: 1;
+    min-width: 120px;
+    padding: 0;
+    border: none;
+    background: transparent;
+    color: var(--md-sys-color-on-surface);
+    font: var(--md-sys-typescale-body-large);
+    outline: none;
+  }
+
+  .autocomplete__input::placeholder {
+    color: var(--md-sys-color-on-surface-variant);
+  }
+
+  /* Icons */
+  .autocomplete__icons {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .autocomplete__loading-icon {
+    animation: spin 1s linear infinite;
+  }
+
+  @keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+
+  .autocomplete__clear-button,
+  .autocomplete__dropdown-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    padding: 0;
+    border: none;
+    border-radius: 50%;
+    background: transparent;
+    color: var(--md-sys-color-on-surface-variant);
+    cursor: pointer;
+    transition: background-color 0.2s;
+  }
+
+  .autocomplete__clear-button:hover,
+  .autocomplete__dropdown-button:hover {
+    background: var(--md-sys-color-surface-container-highest);
+  }
+
+  /* Helper text */
+  .autocomplete__helper-text {
+    margin-top: 4px;
+    padding-left: 16px;
+    color: var(--md-sys-color-on-surface-variant);
+    font: var(--md-sys-typescale-body-small);
+  }
+
+  .autocomplete--error .autocomplete__helper-text {
+    color: var(--md-sys-color-error);
+  }
+
+  /* Listbox */
+  .autocomplete__listbox {
+    position: absolute;
+    top: calc(100% + 4px);
+    left: 0;
+    right: 0;
+    z-index: 10;
+    max-height: 300px;
+    overflow-y: auto;
+    border-radius: var(--md-sys-shape-corner-small);
+    background: var(--md-sys-color-surface-container);
+    box-shadow: var(--md-sys-elevation-2);
+  }
+
+  .autocomplete__options {
+    padding: 8px 0;
+  }
+
+  /* Option */
+  .autocomplete__option {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+  }
+
+  .autocomplete__option:hover {
+    background: var(--md-sys-color-surface-container-highest);
+  }
+
+  .autocomplete__option--selected {
+    background: var(--md-sys-color-secondary-container);
+  }
+
+  .autocomplete__option--focused {
+    background: var(--md-sys-color-surface-container-high);
+  }
+
+  .autocomplete__option--disabled {
+    opacity: 0.38;
+    cursor: not-allowed;
+  }
+
+  .autocomplete__option--disabled:hover {
+    background: transparent;
+  }
+
+  .autocomplete__option-icon {
+    color: var(--md-sys-color-on-surface-variant);
+  }
+
+  .autocomplete__option-content {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .autocomplete__option-label {
+    color: var(--md-sys-color-on-surface);
+    font: var(--md-sys-typescale-body-large);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .autocomplete__option-description {
+    color: var(--md-sys-color-on-surface-variant);
+    font: var(--md-sys-typescale-body-small);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  /* No results */
+  .autocomplete__no-results {
+    padding: 24px 16px;
+    text-align: center;
+    color: var(--md-sys-color-on-surface-variant);
+    font: var(--md-sys-typescale-body-medium);
+  }
+
+  /* Reduced motion */
+  @media (prefers-reduced-motion: reduce) {
+    .autocomplete__loading-icon {
+      animation: none;
+    }
+  }
+</style>
+
+<script>
+  // Autocomplete implementation
+  console.log('Autocomplete component loaded');
+</script>

@@ -1,0 +1,76 @@
+---
+/**
+ * TreeNode Component (Internal)
+ * Recursive tree node component
+ */
+import Icon from './Icon.astro';
+
+interface TreeNode {
+  id: string;
+  label: string;
+  icon?: string;
+  children?: TreeNode[];
+  expanded?: boolean;
+  selected?: boolean;
+  disabled?: boolean;
+}
+
+interface Props {
+  node: TreeNode;
+  level: number;
+  showIcons: boolean;
+}
+
+const { node, level, showIcons } = Astro.props;
+const hasChildren = node.children && node.children.length > 0;
+const indent = level * 20;
+---
+
+<div 
+  class:list={[
+    'tree-node',
+    { 'tree-node--disabled': node.disabled },
+    { 'tree-node--selected': node.selected }
+  ]}
+  role="treeitem"
+  aria-expanded={hasChildren ? node.expanded : undefined}
+  aria-selected={node.selected}
+  data-node-id={node.id}
+  data-level={level}
+  style={`padding-left: ${indent}px`}
+>
+  <button 
+    type="button" 
+    class:list={[
+      'tree-node__toggle',
+      { 'tree-node__toggle--hidden': !hasChildren }
+    ]}
+    disabled={node.disabled}
+    data-toggle
+  >
+    <Icon name="chevron_right" />
+  </button>
+
+  <div class="tree-node__content" data-content>
+    {showIcons && node.icon && (
+      <Icon name={node.icon} class="tree-node__icon" />
+    )}
+    <span class="tree-node__label">{node.label}</span>
+  </div>
+</div>
+
+{hasChildren && (
+  <div 
+    class="tree-node__children" 
+    hidden={!node.expanded}
+    data-children
+  >
+    {node.children!.map((child) => (
+      <Astro.self 
+        node={child} 
+        level={level + 1} 
+        showIcons={showIcons} 
+      />
+    ))}
+  </div>
+)}

@@ -1,0 +1,262 @@
+---
+/**
+ * Rating Component - Enhanced Material Design 3
+ * Interactive star rating with smooth animations
+ */
+interface Props {
+  id: string;
+  value?: number;
+  max?: number;
+  readonly?: boolean;
+  size?: 'small' | 'medium' | 'large';
+  showValue?: boolean;
+  label?: string;
+}
+
+const {
+  id,
+  value = 0,
+  max = 5,
+  readonly = false,
+  size = 'medium',
+  showValue = false,
+  label
+} = Astro.props;
+---
+
+<div class="rating-wrapper">
+  {label && <label class="rating__label">{label}</label>}
+
+  <div 
+    class:list={['rating', `rating--${size}`, { 'rating--readonly': readonly }]}
+    data-rating
+    data-value={value}
+    data-max={max}
+  >
+    {Array.from({ length: max }, (_, i) => (
+      <button
+        type="button"
+        class:list={['rating__star', { 'rating__star--filled': i < value }]}
+        data-star={i + 1}
+        disabled={readonly}
+      >
+        <span class="material-symbols-outlined rating__star-icon">
+          star
+        </span>
+        <span class="rating__star-glow"></span>
+      </button>
+    ))}
+
+    {showValue && (
+      <span class="rating__value">
+        <span class="rating__value-number">{value}</span>
+        <span class="rating__value-max">/ {max}</span>
+      </span>
+    )}
+  </div>
+</div>
+
+<style>
+  .rating-wrapper {
+    display: inline-flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .rating__label {
+    color: var(--md-sys-color-on-surface);
+    font: var(--md-sys-typescale-title-small);
+    font-weight: 600;
+  }
+
+  .rating {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .rating__star {
+    position: relative;
+    padding: 4px;
+    border: none;
+    background: none;
+    cursor: pointer;
+    line-height: 1;
+    transition: transform 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  }
+
+  .rating__star:hover:not(:disabled) {
+    transform: scale(1.25) rotate(-10deg);
+  }
+
+  .rating__star:active:not(:disabled) {
+    transform: scale(1.1);
+  }
+
+  .rating__star:disabled {
+    cursor: default;
+  }
+
+  .rating__star-icon {
+    display: block;
+    color: var(--md-sys-color-outline);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    filter: drop-shadow(0 0 0 transparent);
+  }
+
+  .rating__star--filled .rating__star-icon {
+    color: #FFA726;
+    animation: star-pop 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  }
+
+  .rating:not(.rating--readonly) .rating__star:hover .rating__star-icon,
+  .rating:not(.rating--readonly) .rating__star:hover ~ .rating__star .rating__star-icon {
+    color: var(--md-sys-color-outline-variant);
+  }
+
+  .rating:not(.rating--readonly) .rating__star:hover .rating__star-icon {
+    color: #FFB74D;
+    filter: drop-shadow(0 0 8px rgba(255, 167, 38, 0.5));
+  }
+
+  @keyframes star-pop {
+    0% {
+      transform: scale(0);
+      opacity: 0;
+    }
+    50% {
+      transform: scale(1.3);
+    }
+    100% {
+      transform: scale(1);
+      opacity: 1;
+    }
+  }
+
+  /* Glow effect */
+  .rating__star-glow {
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(255, 167, 38, 0.4) 0%, transparent 70%);
+    opacity: 0;
+    transform: scale(0.8);
+    transition: all 0.3s;
+    pointer-events: none;
+  }
+
+  .rating__star--filled .rating__star-glow {
+    opacity: 1;
+    transform: scale(1);
+    animation: glow-pulse 2s ease-in-out infinite;
+  }
+
+  @keyframes glow-pulse {
+    0%, 100% {
+      opacity: 0.3;
+      transform: scale(1);
+    }
+    50% {
+      opacity: 0.6;
+      transform: scale(1.2);
+    }
+  }
+
+  /* Sizes */
+  .rating--small .rating__star-icon {
+    font-size: 20px;
+  }
+
+  .rating--medium .rating__star-icon {
+    font-size: 28px;
+  }
+
+  .rating--large .rating__star-icon {
+    font-size: 36px;
+  }
+
+  /* Value display */
+  .rating__value {
+    margin-left: 12px;
+    display: flex;
+    align-items: baseline;
+    gap: 2px;
+    font-weight: 600;
+  }
+
+  .rating__value-number {
+    color: var(--md-sys-color-on-surface);
+    font: var(--md-sys-typescale-title-large);
+  }
+
+  .rating__value-max {
+    color: var(--md-sys-color-on-surface-variant);
+    font: var(--md-sys-typescale-title-small);
+  }
+</style>
+
+<script>
+  function initRating() {
+    document.querySelectorAll('[data-rating]').forEach(rating => {
+      if (rating.classList.contains('rating--readonly')) return;
+
+      let currentValue = parseFloat((rating as HTMLElement).dataset.value || '0');
+      const stars = rating.querySelectorAll('[data-star]');
+
+      stars.forEach((star, index) => {
+        star.addEventListener('click', () => {
+          const value = parseInt((star as HTMLElement).dataset.star!);
+          currentValue = value;
+          (rating as HTMLElement).dataset.value = value.toString();
+          updateStars(rating, value);
+        });
+
+        star.addEventListener('mouseenter', () => {
+          const value = parseInt((star as HTMLElement).dataset.star!);
+          updateStarsPreview(rating, value);
+        });
+      });
+
+      rating.addEventListener('mouseleave', () => {
+        updateStars(rating, currentValue);
+      });
+
+      updateStars(rating, currentValue);
+    });
+  }
+
+  function updateStarsPreview(rating: Element, value: number) {
+    rating.querySelectorAll('[data-star]').forEach((star) => {
+      const starValue = parseInt((star as HTMLElement).dataset.star!);
+      if (starValue <= value) {
+        star.classList.add('rating__star--filled');
+      } else {
+        star.classList.remove('rating__star--filled');
+      }
+    });
+  }
+
+  function updateStars(rating: Element, value: number) {
+    rating.querySelectorAll('[data-star]').forEach((star) => {
+      const starValue = parseInt((star as HTMLElement).dataset.star!);
+      if (starValue <= value) {
+        star.classList.add('rating__star--filled');
+      } else {
+        star.classList.remove('rating__star--filled');
+      }
+    });
+
+    const valueNumber = rating.querySelector('.rating__value-number');
+    if (valueNumber) {
+      valueNumber.textContent = value.toString();
+    }
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initRating);
+  } else {
+    initRating();
+  }
+
+  document.addEventListener('astro:page-load', initRating);
+</script>

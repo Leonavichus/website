@@ -1,0 +1,201 @@
+---
+/**
+ * Alert Component
+ * Material Design 3 alert/banner for important messages
+ */
+import Icon from './Icon.astro';
+import Button from './Button.astro';
+
+interface Props {
+  variant?: 'info' | 'success' | 'warning' | 'error';
+  title?: string;
+  icon?: string;
+  dismissible?: boolean;
+  actions?: Array<{ label: string; onClick?: string }>;
+  class?: string;
+}
+
+const {
+  variant = 'info',
+  title,
+  icon,
+  dismissible = false,
+  actions = [],
+  class: className
+} = Astro.props;
+
+const defaultIcons = {
+  info: 'info',
+  success: 'check_circle',
+  warning: 'warning',
+  error: 'error'
+};
+---
+
+<div 
+  class:list={[
+    'alert',
+    `alert--${variant}`,
+    className
+  ]}
+  role="alert"
+  data-alert
+>
+  {(icon || defaultIcons[variant]) && (
+    <Icon name={icon || defaultIcons[variant]} class="alert__icon" />
+  )}
+
+  <div class="alert__content">
+    {title && <div class="alert__title">{title}</div>}
+    <div class="alert__message">
+      <slot />
+    </div>
+  </div>
+
+  {(actions.length > 0 || dismissible) && (
+    <div class="alert__actions">
+      {actions.map((action) => (
+        <Button 
+          variant="text" 
+          size="small"
+          onclick={action.onClick}
+        >
+          {action.label}
+        </Button>
+      ))}
+      {dismissible && (
+        <button
+          type="button"
+          class="alert__close"
+          aria-label="Close"
+          data-close
+        >
+          <Icon name="close" />
+        </button>
+      )}
+    </div>
+  )}
+</div>
+
+<style>
+  .alert {
+    display: flex;
+    gap: 16px;
+    padding: 16px;
+    border-radius: var(--md-sys-shape-corner-medium);
+    animation: slideDown 0.3s ease-out;
+  }
+
+  @keyframes slideDown {
+    from {
+      opacity: 0;
+      transform: translateY(-8px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* Variants */
+  .alert--info {
+    background: var(--md-sys-color-primary-container);
+    color: var(--md-sys-color-on-primary-container);
+  }
+
+  .alert--success {
+    background: #e8f5e9;
+    color: #1b5e20;
+  }
+
+  .alert--warning {
+    background: var(--md-sys-color-tertiary-container);
+    color: var(--md-sys-color-on-tertiary-container);
+  }
+
+  .alert--error {
+    background: var(--md-sys-color-error-container);
+    color: var(--md-sys-color-on-error-container);
+  }
+
+  .alert__icon {
+    flex-shrink: 0;
+    font-size: 24px;
+  }
+
+  .alert__content {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .alert__title {
+    margin-bottom: 4px;
+    font: var(--md-sys-typescale-title-small);
+    font-weight: 500;
+  }
+
+  .alert__message {
+    font: var(--md-sys-typescale-body-medium);
+  }
+
+  .alert__actions {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .alert__close {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    border: none;
+    border-radius: 50%;
+    background: transparent;
+    color: inherit;
+    cursor: pointer;
+    transition: background-color 0.2s;
+  }
+
+  .alert__close:hover {
+    background: rgba(0, 0, 0, 0.1);
+  }
+
+  /* Reduced motion */
+  @media (prefers-reduced-motion: reduce) {
+    .alert {
+      animation: none;
+    }
+  }
+</style>
+
+<script>
+  function initAlerts() {
+    const alerts = document.querySelectorAll('[data-alert]');
+
+    alerts.forEach(alert => {
+      const closeButton = alert.querySelector('[data-close]');
+
+      closeButton?.addEventListener('click', () => {
+        alert.dispatchEvent(new CustomEvent('alert-close', {
+          bubbles: true
+        }));
+
+        alert.classList.add('alert--closing');
+        setTimeout(() => {
+          alert.remove();
+        }, 300);
+      });
+    });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initAlerts);
+  } else {
+    initAlerts();
+  }
+
+  document.addEventListener('astro:page-load', initAlerts);
+</script>

@@ -1,0 +1,238 @@
+---
+/**
+ * AvatarGroup Component - Enhanced Material Design 3
+ * Modern avatar group with stacking and animations
+ */
+import Avatar from './Avatar.astro';
+
+interface AvatarItem {
+  src?: string;
+  alt: string;
+  fallback?: string;
+}
+
+interface Props {
+  avatars: AvatarItem[];
+  max?: number;
+  size?: 'small' | 'medium' | 'large';
+  spacing?: 'default' | 'compact';
+  total?: number;
+}
+
+const {
+  avatars,
+  max = 5,
+  size = 'medium',
+  spacing = 'default',
+  total
+} = Astro.props;
+
+const displayAvatars = avatars.slice(0, max);
+const remaining = (total || avatars.length) - max;
+---
+
+<div 
+  class:list={[
+    'avatar-group',
+    `avatar-group--${size}`,
+    `avatar-group--${spacing}`
+  ]}
+  data-avatar-group
+>
+  {displayAvatars.map((avatar, index) => (
+    <div 
+      class="avatar-group__item"
+      style={`--index: ${index}; --total: ${displayAvatars.length};`}
+    >
+      <Avatar 
+        src={avatar.src}
+        alt={avatar.alt}
+        size={size}
+      />
+    </div>
+  ))}
+
+  {remaining > 0 && (
+    <div 
+      class:list={[
+        'avatar-group__overflow',
+        `avatar-group__overflow--${size}`
+      ]}
+      title={`+${remaining} more`}
+      style={`--index: ${displayAvatars.length};`}
+    >
+      <span class="avatar-group__overflow-count">+{remaining}</span>
+      <div class="avatar-group__overflow-bg"></div>
+    </div>
+  )}
+</div>
+
+<style>
+  .avatar-group {
+    display: inline-flex;
+    position: relative;
+  }
+
+  .avatar-group--default {
+    gap: -12px;
+  }
+
+  .avatar-group--compact {
+    gap: -16px;
+  }
+
+  .avatar-group__item {
+    position: relative;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    animation: avatar-slide-in 0.4s cubic-bezier(0.4, 0, 0.2, 1) backwards;
+    animation-delay: calc(var(--index) * 0.05s);
+  }
+
+  @keyframes avatar-slide-in {
+    from {
+      opacity: 0;
+      transform: translateX(-20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+
+  .avatar-group__item :global(.avatar__container) {
+    border: 3px solid var(--md-sys-color-surface);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  .avatar-group__item:hover {
+    z-index: 10;
+    transform: translateY(-6px) scale(1.1);
+  }
+
+  .avatar-group__item:hover :global(.avatar__container) {
+    border-color: var(--md-sys-color-primary);
+    box-shadow: 
+      0 4px 12px rgba(0, 0, 0, 0.15),
+      0 0 0 4px rgba(103, 80, 164, 0.1);
+  }
+
+  /* Stacking effect */
+  .avatar-group__item::before {
+    content: '';
+    position: absolute;
+    inset: -4px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(103, 80, 164, 0.1) 0%, transparent 70%);
+    opacity: 0;
+    transform: scale(0.9);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    pointer-events: none;
+  }
+
+  .avatar-group__item:hover::before {
+    opacity: 1;
+    transform: scale(1.2);
+  }
+
+  /* Overflow indicator */
+  .avatar-group__overflow {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: var(--md-sys-color-surface-container-highest);
+    color: var(--md-sys-color-on-surface);
+    border: 3px solid var(--md-sys-color-surface);
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    overflow: hidden;
+    animation: avatar-slide-in 0.4s cubic-bezier(0.4, 0, 0.2, 1) backwards;
+    animation-delay: calc(var(--index) * 0.05s);
+  }
+
+  .avatar-group__overflow::before {
+    content: '';
+    position: absolute;
+    inset: -4px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(103, 80, 164, 0.1) 0%, transparent 70%);
+    opacity: 0;
+    transform: scale(0.9);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .avatar-group__overflow:hover {
+    transform: translateY(-6px) scale(1.1);
+    background: var(--md-sys-color-primary-container);
+    color: var(--md-sys-color-on-primary-container);
+    border-color: var(--md-sys-color-primary);
+    box-shadow: 
+      0 4px 12px rgba(0, 0, 0, 0.15),
+      0 0 0 4px rgba(103, 80, 164, 0.1);
+    z-index: 10;
+  }
+
+  .avatar-group__overflow:hover::before {
+    opacity: 1;
+    transform: scale(1.2);
+  }
+
+  .avatar-group__overflow-count {
+    position: relative;
+    z-index: 1;
+  }
+
+  .avatar-group__overflow-bg {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      135deg,
+      rgba(255, 255, 255, 0.1) 0%,
+      transparent 100%
+    );
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+
+  .avatar-group__overflow:hover .avatar-group__overflow-bg {
+    opacity: 1;
+  }
+
+  /* Sizes */
+  .avatar-group__overflow--small {
+    width: 32px;
+    height: 32px;
+    font-size: 11px;
+  }
+
+  .avatar-group__overflow--medium {
+    width: 40px;
+    height: 40px;
+    font-size: 13px;
+  }
+
+  .avatar-group__overflow--large {
+    width: 56px;
+    height: 56px;
+    font-size: 16px;
+  }
+
+  /* Hover effect on parent */
+  .avatar-group:hover .avatar-group__item:not(:hover) {
+    opacity: 0.7;
+    filter: grayscale(0.3);
+  }
+
+  /* Responsive stacking */
+  @media (max-width: 640px) {
+    .avatar-group--default {
+      gap: -16px;
+    }
+
+    .avatar-group--compact {
+      gap: -20px;
+    }
+  }
+</style>

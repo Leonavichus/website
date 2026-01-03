@@ -1,0 +1,305 @@
+---
+/**
+ * Pagination Component
+ * Material Design 3 pagination for lists and tables
+ */
+import Icon from './Icon.astro';
+
+interface Props {
+  currentPage?: number;
+  totalPages: number;
+  siblingCount?: number;
+  boundaryCount?: number;
+  showFirstLast?: boolean;
+  variant?: 'text' | 'outlined';
+  size?: 'small' | 'medium' | 'large';
+  disabled?: boolean;
+}
+
+const {
+  currentPage = 1,
+  totalPages,
+  siblingCount = 1,
+  boundaryCount = 1,
+  showFirstLast = true,
+  variant = 'text',
+  size = 'medium',
+  disabled = false
+} = Astro.props;
+
+// Generate page numbers with ellipsis
+function generatePagination(current: number, total: number): (number | 'ellipsis')[] {
+  const range = (start: number, end: number) => {
+    return Array.from({ length: end - start + 1 }, (_, i) => start + i);
+  };
+
+  const startPages = range(1, Math.min(boundaryCount, total));
+  const endPages = range(Math.max(total - boundaryCount + 1, boundaryCount + 1), total);
+
+  const siblingsStart = Math.max(
+    Math.min(current - siblingCount, total - boundaryCount - siblingCount * 2 - 1),
+    boundaryCount + 2
+  );
+
+  const siblingsEnd = Math.min(
+    Math.max(current + siblingCount, boundaryCount + siblingCount * 2 + 2),
+    endPages.length > 0 ? endPages[0] - 2 : total - 1
+  );
+
+  const items: (number | 'ellipsis')[] = [
+    ...startPages,
+    ...(siblingsStart > boundaryCount + 2
+      ? ['ellipsis' as const]
+      : boundaryCount + 1 < total - boundaryCount
+      ? [boundaryCount + 1]
+      : []),
+    ...range(siblingsStart, siblingsEnd),
+    ...(siblingsEnd < total - boundaryCount - 1
+      ? ['ellipsis' as const]
+      : total - boundaryCount > boundaryCount
+      ? [total - boundaryCount]
+      : []),
+    ...endPages,
+  ];
+
+  return items;
+}
+
+const pages = generatePagination(currentPage, totalPages);
+---
+
+<nav 
+  class:list={[
+    'pagination',
+    `pagination--${variant}`,
+    `pagination--${size}`
+  ]}
+  aria-label="Pagination"
+  data-pagination
+  data-current-page={currentPage}
+  data-total-pages={totalPages}
+>
+  <ul class="pagination__list">
+    <!-- First page -->
+    {showFirstLast && (
+      <li class="pagination__item">
+        <button
+          type="button"
+          class="pagination__button"
+          disabled={currentPage === 1 || disabled}
+          aria-label="Go to first page"
+          data-page="1"
+        >
+          <Icon name="first_page" />
+        </button>
+      </li>
+    )}
+
+    <!-- Previous page -->
+    <li class="pagination__item">
+      <button
+        type="button"
+        class="pagination__button"
+        disabled={currentPage === 1 || disabled}
+        aria-label="Go to previous page"
+        data-page={currentPage - 1}
+      >
+        <Icon name="chevron_left" />
+      </button>
+    </li>
+
+    <!-- Page numbers -->
+    {pages.map((page) => (
+      <li class="pagination__item">
+        {page === 'ellipsis' ? (
+          <span class="pagination__ellipsis">...</span>
+        ) : (
+          <button
+            type="button"
+            class:list={[
+              'pagination__button',
+              'pagination__button--page',
+              { 'pagination__button--active': page === currentPage }
+            ]}
+            disabled={disabled}
+            aria-label={`Go to page ${page}`}
+            aria-current={page === currentPage ? 'page' : undefined}
+            data-page={page}
+          >
+            {page}
+          </button>
+        )}
+      </li>
+    ))}
+
+    <!-- Next page -->
+    <li class="pagination__item">
+      <button
+        type="button"
+        class="pagination__button"
+        disabled={currentPage === totalPages || disabled}
+        aria-label="Go to next page"
+        data-page={currentPage + 1}
+      >
+        <Icon name="chevron_right" />
+      </button>
+    </li>
+
+    <!-- Last page -->
+    {showFirstLast && (
+      <li class="pagination__item">
+        <button
+          type="button"
+          class="pagination__button"
+          disabled={currentPage === totalPages || disabled}
+          aria-label="Go to last page"
+          data-page={totalPages}
+        >
+          <Icon name="last_page" />
+        </button>
+      </li>
+    )}
+  </ul>
+</nav>
+
+<style>
+  .pagination {
+    display: flex;
+    justify-content: center;
+  }
+
+  .pagination__list {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .pagination__item {
+    display: flex;
+  }
+
+  .pagination__button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 40px;
+    height: 40px;
+    padding: 0 12px;
+    border: none;
+    border-radius: var(--md-sys-shape-corner-full);
+    background: transparent;
+    color: var(--md-sys-color-on-surface);
+    font: var(--md-sys-typescale-label-large);
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .pagination__button:hover:not(:disabled) {
+    background: var(--md-sys-color-surface-container-highest);
+  }
+
+  .pagination__button--active {
+    background: var(--md-sys-color-primary);
+    color: var(--md-sys-color-on-primary);
+  }
+
+  .pagination__button--active:hover {
+    background: var(--md-sys-color-primary);
+  }
+
+  .pagination__button:disabled {
+    opacity: 0.38;
+    cursor: not-allowed;
+  }
+
+  .pagination__ellipsis {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 40px;
+    height: 40px;
+    color: var(--md-sys-color-on-surface-variant);
+    font: var(--md-sys-typescale-label-large);
+  }
+
+  /* Outlined variant */
+  .pagination--outlined .pagination__button {
+    border: 1px solid var(--md-sys-color-outline);
+  }
+
+  .pagination--outlined .pagination__button--active {
+    border-color: var(--md-sys-color-primary);
+  }
+
+  /* Size variants */
+  .pagination--small .pagination__button {
+    min-width: 32px;
+    height: 32px;
+    padding: 0 8px;
+    font: var(--md-sys-typescale-label-medium);
+  }
+
+  .pagination--small .pagination__ellipsis {
+    min-width: 32px;
+    height: 32px;
+  }
+
+  .pagination--large .pagination__button {
+    min-width: 48px;
+    height: 48px;
+    padding: 0 16px;
+    font: var(--md-sys-typescale-label-large);
+  }
+
+  .pagination--large .pagination__ellipsis {
+    min-width: 48px;
+    height: 48px;
+  }
+
+  /* Responsive */
+  @media (max-width: 600px) {
+    .pagination__button--page {
+      display: none;
+    }
+
+    .pagination__button--active {
+      display: flex;
+    }
+
+    .pagination__ellipsis {
+      display: none;
+    }
+  }
+</style>
+
+<script>
+  function initPagination() {
+    const paginations = document.querySelectorAll('[data-pagination]');
+
+    paginations.forEach(pagination => {
+      const buttons = pagination.querySelectorAll('[data-page]');
+
+      buttons.forEach(button => {
+        button.addEventListener('click', () => {
+          const page = parseInt((button as HTMLElement).dataset.page!);
+
+          pagination.dispatchEvent(new CustomEvent('page-change', {
+            detail: { page },
+            bubbles: true
+          }));
+        });
+      });
+    });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initPagination);
+  } else {
+    initPagination();
+  }
+
+  document.addEventListener('astro:page-load', initPagination);
+</script>

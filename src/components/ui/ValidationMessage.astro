@@ -1,0 +1,163 @@
+---
+/**
+ * ValidationMessage Component
+ * Displays validation errors for forms
+ */
+import Icon from './Icon.astro';
+
+interface ValidationError {
+  field: string;
+  message: string;
+}
+
+interface Props {
+  errors?: ValidationError[];
+  title?: string;
+  visible?: boolean;
+  variant?: 'error' | 'warning' | 'info';
+}
+
+const {
+  errors = [],
+  title = 'Please fix the following errors:',
+  visible = false,
+  variant = 'error'
+} = Astro.props;
+
+const iconMap = {
+  error: 'error',
+  warning: 'warning',
+  info: 'info'
+};
+---
+
+<div 
+  class:list={[
+    'validation-message',
+    `validation-message--${variant}`,
+    { 'validation-message--visible': visible }
+  ]}
+  role="alert"
+  aria-live="polite"
+  data-validation-message
+>
+  <div class="validation-message__header">
+    <Icon name={iconMap[variant]} class="validation-message__icon" />
+    <h4 class="validation-message__title">{title}</h4>
+  </div>
+
+  {errors.length > 0 && (
+    <ul class="validation-message__list">
+      {errors.map(error => (
+        <li class="validation-message__item">
+          <strong>{error.field}:</strong> {error.message}
+        </li>
+      ))}
+    </ul>
+  )}
+
+  <slot />
+</div>
+
+<style>
+  .validation-message {
+    display: none;
+    padding: 16px;
+    border-radius: var(--md-sys-shape-corner-medium);
+    margin-bottom: 24px;
+  }
+
+  .validation-message--visible {
+    display: block;
+    animation: slideDown 0.3s ease-out;
+  }
+
+  @keyframes slideDown {
+    from {
+      opacity: 0;
+      transform: translateY(-8px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* Variants */
+  .validation-message--error {
+    background: var(--md-sys-color-error-container);
+    color: var(--md-sys-color-on-error-container);
+  }
+
+  .validation-message--warning {
+    background: var(--md-sys-color-tertiary-container);
+    color: var(--md-sys-color-on-tertiary-container);
+  }
+
+  .validation-message--info {
+    background: var(--md-sys-color-primary-container);
+    color: var(--md-sys-color-on-primary-container);
+  }
+
+  .validation-message__header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+
+  .validation-message__icon {
+    flex-shrink: 0;
+  }
+
+  .validation-message__title {
+    margin: 0;
+    font: var(--md-sys-typescale-title-small);
+    font-weight: 500;
+  }
+
+  .validation-message__list {
+    margin: 0;
+    padding-left: 44px;
+    list-style: disc;
+  }
+
+  .validation-message__item {
+    margin: 4px 0;
+    font: var(--md-sys-typescale-body-medium);
+  }
+
+  /* Reduced motion */
+  @media (prefers-reduced-motion: reduce) {
+    .validation-message--visible {
+      animation: none;
+    }
+  }
+</style>
+
+<script>
+  // Auto-dismiss after timeout (optional)
+  function initValidationMessages() {
+    const messages = document.querySelectorAll('[data-validation-message]');
+
+    messages.forEach(message => {
+      // Optional: auto-dismiss after 10 seconds
+      if (message.classList.contains('validation-message--visible')) {
+        const autoDismiss = (message as HTMLElement).dataset.autoDismiss;
+        if (autoDismiss !== 'false') {
+          setTimeout(() => {
+            message.classList.remove('validation-message--visible');
+          }, 10000);
+        }
+      }
+    });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initValidationMessages);
+  } else {
+    initValidationMessages();
+  }
+
+  document.addEventListener('astro:page-load', initValidationMessages);
+</script>

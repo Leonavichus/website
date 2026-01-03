@@ -1,0 +1,205 @@
+---
+/**
+ * ProgressCircle Component
+ * Material Design 3 circular progress indicator with percentage
+ */
+interface Props {
+  value: number; // 0-100
+  size?: number;
+  thickness?: number;
+  color?: 'primary' | 'secondary' | 'tertiary';
+  showValue?: boolean;
+  label?: string;
+}
+
+const {
+  value = 0,
+  size = 120,
+  thickness = 8,
+  color = 'primary',
+  showValue = true,
+  label
+} = Astro.props;
+
+const radius = (size - thickness) / 2;
+const circumference = 2 * Math.PI * radius;
+const offset = circumference - (value / 100) * circumference;
+---
+
+<div 
+  class:list={[
+    'progress-circle',
+    `progress-circle--${color}`
+  ]}
+  style={`width: ${size}px; height: ${size}px;`}
+  data-progress-circle
+  data-value={value}
+>
+  <svg 
+    class="progress-circle__svg"
+    width={size} 
+    height={size}
+    viewBox={`0 0 ${size} ${size}`}
+  >
+    <!-- Background circle -->
+    <circle
+      class="progress-circle__bg"
+      cx={size / 2}
+      cy={size / 2}
+      r={radius}
+      stroke-width={thickness}
+      fill="none"
+    />
+
+    <!-- Progress circle -->
+    <circle
+      class="progress-circle__progress"
+      cx={size / 2}
+      cy={size / 2}
+      r={radius}
+      stroke-width={thickness}
+      fill="none"
+      stroke-dasharray={circumference}
+      stroke-dashoffset={offset}
+      transform={`rotate(-90 ${size / 2} ${size / 2})`}
+    />
+  </svg>
+
+  {(showValue || label) && (
+    <div class="progress-circle__content">
+      {showValue && (
+        <span class="progress-circle__value">{Math.round(value)}%</span>
+      )}
+      {label && (
+        <span class="progress-circle__label">{label}</span>
+      )}
+    </div>
+  )}
+</div>
+
+<style>
+  .progress-circle {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .progress-circle__svg {
+    display: block;
+  }
+
+  .progress-circle__bg {
+    stroke: var(--md-sys-color-surface-container-highest);
+  }
+
+  .progress-circle__progress {
+    stroke: var(--md-sys-color-primary);
+    stroke-linecap: round;
+    transition: stroke-dashoffset 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .progress-circle--primary .progress-circle__progress {
+    stroke: var(--md-sys-color-primary);
+  }
+
+  .progress-circle--secondary .progress-circle__progress {
+    stroke: var(--md-sys-color-secondary);
+  }
+
+  .progress-circle--tertiary .progress-circle__progress {
+    stroke: var(--md-sys-color-tertiary);
+  }
+
+  .progress-circle__content {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .progress-circle__value {
+    color: var(--md-sys-color-on-surface);
+    font: var(--md-sys-typescale-headline-small);
+    font-weight: 500;
+    line-height: 1;
+  }
+
+  .progress-circle__label {
+    margin-top: 4px;
+    color: var(--md-sys-color-on-surface-variant);
+    font: var(--md-sys-typescale-label-small);
+  }
+
+  /* Reduced motion */
+  @media (prefers-reduced-motion: reduce) {
+    .progress-circle__progress {
+      transition: none;
+    }
+  }
+</style>
+
+<script>
+  function animateProgressCircle(circle: HTMLElement, targetValue: number) {
+    const svg = circle.querySelector('.progress-circle__progress') as SVGCircleElement;
+    const valueDisplay = circle.querySelector('.progress-circle__value');
+
+    if (!svg) return;
+
+    const radius = parseFloat(svg.getAttribute('r') || '0');
+    const circumference = 2 * Math.PI * radius;
+
+    let currentValue = 0;
+    const duration = 1000;
+    const startTime = performance.now();
+
+    function animate(currentTime: number) {
+      const elapsed = currentTime - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+
+      currentValue = progress * targetValue;
+
+      const offset = circumference - (currentValue / 100) * circumference;
+      svg.style.strokeDashoffset = offset.toString();
+
+      if (valueDisplay) {
+        valueDisplay.textContent = Math.round(currentValue) + '%';
+      }
+
+      if (progress < 1) {
+        requestAnimationFrame(animate);
+      }
+    }
+
+    requestAnimationFrame(animate);
+  }
+
+  function initProgressCircles() {
+    const circles = document.querySelectorAll('[data-progress-circle]');
+
+    circles.forEach(circle => {
+      const value = parseFloat((circle as HTMLElement).dataset.value || '0');
+
+      // Animate on intersection
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            animateProgressCircle(circle as HTMLElement, value);
+            observer.unobserve(circle);
+          }
+        });
+      }, { threshold: 0.5 });
+
+      observer.observe(circle);
+    });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initProgressCircles);
+  } else {
+    initProgressCircles();
+  }
+
+  document.addEventListener('astro:page-load', initProgressCircles);
+</script>

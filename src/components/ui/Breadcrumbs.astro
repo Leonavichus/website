@@ -1,0 +1,148 @@
+---
+/**
+ * Breadcrumbs Component
+ * Material Design 3 breadcrumb navigation
+ */
+import Icon from './Icon.astro';
+
+interface Breadcrumb {
+  label: string;
+  href?: string;
+  icon?: string;
+  disabled?: boolean;
+}
+
+interface Props {
+  items: Breadcrumb[];
+  separator?: string;
+  maxItems?: number;
+  showHome?: boolean;
+  homeIcon?: string;
+}
+
+const {
+  items,
+  separator = 'chevron_right',
+  maxItems,
+  showHome = true,
+  homeIcon = 'home'
+} = Astro.props;
+
+// Collapse breadcrumbs if maxItems is set
+let displayItems = items;
+if (maxItems && items.length > maxItems) {
+  const firstItems = items.slice(0, 1);
+  const lastItems = items.slice(-(maxItems - 2));
+  displayItems = [...firstItems, { label: '...', disabled: true }, ...lastItems];
+}
+---
+
+<nav class="breadcrumbs" aria-label="Breadcrumb">
+  <ol class="breadcrumbs__list">
+    {showHome && (
+      <li class="breadcrumbs__item">
+        <a href="/" class="breadcrumbs__link breadcrumbs__link--home">
+          <Icon name={homeIcon} />
+        </a>
+        <Icon name={separator} class="breadcrumbs__separator" aria-hidden="true" />
+      </li>
+    )}
+
+    {displayItems.map((item, index) => (
+      <li class="breadcrumbs__item">
+        {item.href && !item.disabled ? (
+          <a 
+            href={item.href} 
+            class:list={[
+              'breadcrumbs__link',
+              { 'breadcrumbs__link--disabled': item.disabled }
+            ]}
+            aria-current={index === displayItems.length - 1 ? 'page' : undefined}
+          >
+            {item.icon && <Icon name={item.icon} />}
+            <span>{item.label}</span>
+          </a>
+        ) : (
+          <span 
+            class:list={[
+              'breadcrumbs__text',
+              { 'breadcrumbs__text--current': index === displayItems.length - 1 }
+            ]}
+          >
+            {item.icon && <Icon name={item.icon} />}
+            {item.label}
+          </span>
+        )}
+
+        {index < displayItems.length - 1 && (
+          <Icon name={separator} class="breadcrumbs__separator" aria-hidden="true" />
+        )}
+      </li>
+    ))}
+  </ol>
+</nav>
+
+<style>
+  .breadcrumbs {
+    padding: 12px 0;
+  }
+
+  .breadcrumbs__list {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .breadcrumbs__item {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .breadcrumbs__link,
+  .breadcrumbs__text {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 8px;
+    border-radius: var(--md-sys-shape-corner-small);
+    color: var(--md-sys-color-on-surface);
+    font: var(--md-sys-typescale-body-medium);
+    text-decoration: none;
+    transition: all 0.2s;
+  }
+
+  .breadcrumbs__link:hover {
+    background: var(--md-sys-color-surface-container-highest);
+  }
+
+  .breadcrumbs__link--home {
+    padding: 6px;
+  }
+
+  .breadcrumbs__link--disabled {
+    opacity: 0.38;
+    pointer-events: none;
+  }
+
+  .breadcrumbs__text--current {
+    color: var(--md-sys-color-primary);
+    font-weight: 500;
+  }
+
+  .breadcrumbs__separator {
+    color: var(--md-sys-color-on-surface-variant);
+    font-size: 20px;
+  }
+
+  /* Responsive - show only last items on mobile */
+  @media (max-width: 600px) {
+    .breadcrumbs__item:not(:nth-last-child(-n+3)) {
+      display: none;
+    }
+  }
+</style>

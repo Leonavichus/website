@@ -1,0 +1,138 @@
+---
+/**
+ * EmptyState Component
+ * Material Design 3 empty state placeholder
+ */
+import Icon from './Icon.astro';
+import Button from './Button.astro';
+
+interface Props {
+  icon?: string;
+  title: string;
+  description?: string;
+  actionLabel?: string;
+  actionIcon?: string;
+  secondaryActionLabel?: string;
+  compact?: boolean;
+}
+
+const {
+  icon = 'inbox',
+  title,
+  description,
+  actionLabel,
+  actionIcon,
+  secondaryActionLabel,
+  compact = false
+} = Astro.props;
+---
+
+<div 
+  class:list={[
+    'empty-state',
+    { 'empty-state--compact': compact }
+  ]}
+>
+  <div class="empty-state__icon">
+    <Icon name={icon} />
+  </div>
+
+  <h3 class="empty-state__title">{title}</h3>
+
+  {description && (
+    <p class="empty-state__description">{description}</p>
+  )}
+
+  {(actionLabel || secondaryActionLabel) && (
+    <div class="empty-state__actions">
+      {actionLabel && (
+        <Button variant="filled" data-primary-action>
+          {actionIcon && <Icon name={actionIcon} slot="icon" />}
+          {actionLabel}
+        </Button>
+      )}
+      {secondaryActionLabel && (
+        <Button variant="outlined" data-secondary-action>
+          {secondaryActionLabel}
+        </Button>
+      )}
+    </div>
+  )}
+
+  <slot />
+</div>
+
+<style>
+  .empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 400px;
+    padding: 48px 24px;
+    text-align: center;
+  }
+
+  .empty-state--compact {
+    min-height: 200px;
+    padding: 24px;
+  }
+
+  .empty-state__icon {
+    margin-bottom: 24px;
+    color: var(--md-sys-color-on-surface-variant);
+    opacity: 0.6;
+  }
+
+  .empty-state__icon :global(.icon) {
+    font-size: 64px;
+  }
+
+  .empty-state--compact .empty-state__icon :global(.icon) {
+    font-size: 48px;
+  }
+
+  .empty-state__title {
+    margin: 0 0 12px;
+    color: var(--md-sys-color-on-surface);
+    font: var(--md-sys-typescale-headline-small);
+  }
+
+  .empty-state--compact .empty-state__title {
+    font: var(--md-sys-typescale-title-large);
+  }
+
+  .empty-state__description {
+    max-width: 480px;
+    margin: 0 0 24px;
+    color: var(--md-sys-color-on-surface-variant);
+    font: var(--md-sys-typescale-body-large);
+  }
+
+  .empty-state--compact .empty-state__description {
+    font: var(--md-sys-typescale-body-medium);
+  }
+
+  .empty-state__actions {
+    display: flex;
+    gap: 12px;
+    margin-top: 8px;
+  }
+
+  /* Responsive */
+  @media (max-width: 600px) {
+    .empty-state {
+      min-height: 300px;
+      padding: 32px 16px;
+    }
+
+    .empty-state__icon :global(.icon) {
+      font-size: 48px;
+    }
+
+    .empty-state__actions {
+      flex-direction: column;
+      width: 100%;
+    }
+  }
+</style>

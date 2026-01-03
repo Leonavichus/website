@@ -1,0 +1,270 @@
+---
+/**
+ * ColorPicker Component  
+ * Material Design 3 color picker with preset palette
+ */
+import Icon from './Icon.astro';
+
+interface Props {
+  id: string;
+  label?: string;
+  value?: string;
+  presets?: string[];
+  fullWidth?: boolean;
+}
+
+const {
+  id,
+  label,
+  value = '#6750A4',
+  presets = [
+    '#6750A4', // Primary
+    '#7D5260', // Tertiary
+    '#625B71', // Secondary
+    '#D0BCFF', // Light primary
+    '#FFB4AB', // Light error
+    '#CCC2DC', // Light secondary container
+    '#1C1B1F', // Dark surface
+    '#313033', // Dark surface variant
+    '#49454F'  // Dark outline
+  ],
+  fullWidth = false
+} = Astro.props;
+---
+
+<div class:list={['color-picker', { 'color-picker--full-width': fullWidth }]}>
+  {label && (
+    <label for={id} class="color-picker__label">{label}</label>
+  )}
+
+  <div class="color-picker__container">
+    <div class="color-picker__preview" data-preview>
+      <div 
+        class="color-picker__preview-swatch" 
+        style={`background-color: ${value}`}
+      >
+        <Icon name="colorize" />
+      </div>
+      <input
+        type="color"
+        id={id}
+        class="color-picker__input"
+        value={value}
+        data-color-input
+      />
+    </div>
+
+    <input
+      type="text"
+      class="color-picker__text-input"
+      value={value}
+      placeholder="#000000"
+      pattern="^#[0-9A-Fa-f]{6}$"
+      data-text-input
+    />
+  </div>
+
+  {presets && presets.length > 0 && (
+    <div class="color-picker__presets" data-presets>
+      {presets.map((color) => (
+        <button
+          type="button"
+          class="color-picker__preset"
+          style={`background-color: ${color}`}
+          data-color={color}
+          aria-label={`Select color ${color}`}
+        >
+          {value.toLowerCase() === color.toLowerCase() && (
+            <Icon name="check" class="color-picker__check" />
+          )}
+        </button>
+      ))}
+    </div>
+  )}
+</div>
+
+<style>
+  .color-picker {
+    display: inline-flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .color-picker--full-width {
+    width: 100%;
+  }
+
+  .color-picker__label {
+    color: var(--md-sys-color-on-surface);
+    font: var(--md-sys-typescale-body-small);
+    font-weight: 500;
+  }
+
+  .color-picker__container {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+  }
+
+  .color-picker__preview {
+    position: relative;
+    width: 56px;
+    height: 56px;
+    flex-shrink: 0;
+  }
+
+  .color-picker__preview-swatch {
+    width: 100%;
+    height: 100%;
+    border-radius: var(--md-sys-shape-corner-medium);
+    border: 1px solid var(--md-sys-color-outline-variant);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .color-picker__preview-swatch:hover {
+    border-color: var(--md-sys-color-primary);
+    box-shadow: var(--md-sys-elevation-1);
+  }
+
+  .color-picker__input {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    cursor: pointer;
+  }
+
+  .color-picker__text-input {
+    flex: 1;
+    padding: 16px;
+    border: 1px solid var(--md-sys-color-outline);
+    border-radius: var(--md-sys-shape-corner-small);
+    background: var(--md-sys-color-surface);
+    color: var(--md-sys-color-on-surface);
+    font: var(--md-sys-typescale-body-large);
+    font-family: 'Roboto Mono', monospace;
+    text-transform: uppercase;
+  }
+
+  .color-picker__text-input:focus {
+    outline: 2px solid var(--md-sys-color-primary);
+    outline-offset: -2px;
+    border-color: var(--md-sys-color-primary);
+  }
+
+  .color-picker--full-width .color-picker__text-input {
+    width: 100%;
+  }
+
+  /* Presets */
+  .color-picker__presets {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .color-picker__preset {
+    width: 48px;
+    height: 48px;
+    border-radius: var(--md-sys-shape-corner-small);
+    border: 2px solid transparent;
+    cursor: pointer;
+    transition: all 0.2s;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+  }
+
+  .color-picker__preset:hover {
+    border-color: var(--md-sys-color-primary);
+    transform: scale(1.05);
+  }
+
+  .color-picker__preset:focus-visible {
+    outline: 2px solid var(--md-sys-color-primary);
+    outline-offset: 2px;
+  }
+
+  .color-picker__check {
+    color: white;
+    font-size: 24px;
+    filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.3));
+  }
+</style>
+
+<script>
+  function initColorPicker() {
+    const pickers = document.querySelectorAll('.color-picker');
+
+    pickers.forEach(picker => {
+      const colorInput = picker.querySelector('[data-color-input]') as HTMLInputElement;
+      const textInput = picker.querySelector('[data-text-input]') as HTMLInputElement;
+      const preview = picker.querySelector('[data-preview] .color-picker__preview-swatch') as HTMLElement;
+      const presets = picker.querySelectorAll('[data-color]');
+
+      // Update from color input
+      colorInput?.addEventListener('input', (e) => {
+        const color = (e.target as HTMLInputElement).value;
+        updateColor(color);
+      });
+
+      // Update from text input
+      textInput?.addEventListener('input', (e) => {
+        const color = (e.target as HTMLInputElement).value;
+        if (/^#[0-9A-Fa-f]{6}$/.test(color)) {
+          updateColor(color);
+        }
+      });
+
+      // Preset selection
+      presets.forEach(preset => {
+        preset.addEventListener('click', () => {
+          const color = (preset as HTMLElement).dataset.color!;
+          updateColor(color);
+        });
+      });
+
+      function updateColor(color: string) {
+        if (colorInput) colorInput.value = color;
+        if (textInput) textInput.value = color.toUpperCase();
+        if (preview) preview.style.backgroundColor = color;
+
+        // Update checkmarks
+        presets.forEach(preset => {
+          const presetColor = (preset as HTMLElement).dataset.color!;
+          const check = preset.querySelector('.color-picker__check');
+
+          if (presetColor.toLowerCase() === color.toLowerCase()) {
+            if (!check) {
+              const icon = document.createElement('span');
+              icon.className = 'material-symbols-outlined color-picker__check';
+              icon.textContent = 'check';
+              preset.appendChild(icon);
+            }
+          } else {
+            check?.remove();
+          }
+        });
+
+        picker.dispatchEvent(new CustomEvent('color-change', {
+          detail: { color },
+          bubbles: true
+        }));
+      }
+    });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initColorPicker);
+  } else {
+    initColorPicker();
+  }
+
+  document.addEventListener('astro:page-load', initColorPicker);
+</script>

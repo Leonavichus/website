@@ -1,0 +1,596 @@
+---
+/**
+ * FileUpload Component - Enhanced Material Design 3
+ * Modern file upload with smooth animations and visual feedback
+ */
+import Icon from './Icon.astro';
+
+interface Props {
+  id: string;
+  label?: string;
+  accept?: string;
+  multiple?: boolean;
+  maxSize?: number;
+  disabled?: boolean;
+}
+
+const {
+  id,
+  label,
+  accept,
+  multiple = false,
+  maxSize,
+  disabled = false
+} = Astro.props;
+---
+
+<div class:list={['file-upload', { 'file-upload--disabled': disabled }]} data-file-upload>
+  {label && <label for={id} class="file-upload__label">{label}</label>}
+
+  <div class="file-upload__dropzone" data-dropzone>
+    <div class="file-upload__bg-pattern"></div>
+    
+    <div class="file-upload__icon-wrapper">
+      <Icon name="cloud_upload" class="file-upload__icon" />
+      <div class="file-upload__icon-ring"></div>
+    </div>
+    
+    <div class="file-upload__text">
+      <strong>Drop files here or click to browse</strong>
+      <span>
+        {accept && `Supported: ${accept.split(',').join(', ')}`}
+        {maxSize && ` • Max ${maxSize}MB per file`}
+      </span>
+    </div>
+
+    <input
+      type="file"
+      id={id}
+      class="file-upload__input"
+      accept={accept}
+      multiple={multiple}
+      disabled={disabled}
+      data-input
+    />
+  </div>
+
+  <div class="file-upload__files" data-files hidden></div>
+
+  {maxSize && (
+    <div class="file-upload__error" data-error hidden>
+      <Icon name="error" />
+      <span data-error-text></span>
+    </div>
+  )}
+</div>
+
+<style>
+  .file-upload {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .file-upload__label {
+    color: var(--md-sys-color-on-surface);
+    font: var(--md-sys-typescale-title-small);
+    font-weight: 600;
+  }
+
+  .file-upload__dropzone {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+    padding: 56px 32px;
+    border: 2px dashed var(--md-sys-color-outline-variant);
+    border-radius: var(--md-sys-shape-corner-extra-large, 28px);
+    background: var(--md-sys-color-surface-container-lowest);
+    cursor: pointer;
+    overflow: hidden;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .file-upload__bg-pattern {
+    position: absolute;
+    inset: 0;
+    background: 
+      radial-gradient(circle at 20% 50%, rgba(103, 80, 164, 0.03) 0%, transparent 50%),
+      radial-gradient(circle at 80% 80%, rgba(103, 80, 164, 0.03) 0%, transparent 50%);
+    opacity: 0;
+    transition: opacity 0.4s;
+  }
+
+  .file-upload__dropzone:hover {
+    border-color: var(--md-sys-color-primary);
+    background: var(--md-sys-color-surface-container-low);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+    transform: translateY(-2px);
+  }
+
+  .file-upload__dropzone:hover .file-upload__bg-pattern {
+    opacity: 1;
+  }
+
+  .file-upload__dropzone.file-upload__dropzone--drag-over {
+    border-color: var(--md-sys-color-primary);
+    border-width: 3px;
+    background: var(--md-sys-color-primary-container);
+    transform: scale(1.02);
+  }
+
+  .file-upload__icon-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .file-upload__icon {
+    font-size: 56px;
+    color: var(--md-sys-color-primary);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 1;
+  }
+
+  .file-upload__dropzone:hover .file-upload__icon {
+    transform: scale(1.1) translateY(-4px);
+    filter: drop-shadow(0 4px 8px rgba(103, 80, 164, 0.3));
+  }
+
+  .file-upload__icon-ring {
+    position: absolute;
+    inset: -12px;
+    border-radius: 50%;
+    border: 2px solid var(--md-sys-color-primary);
+    opacity: 0;
+    transform: scale(0.8);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .file-upload__dropzone:hover .file-upload__icon-ring {
+    opacity: 0.3;
+    transform: scale(1);
+  }
+
+  .file-upload__text {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    text-align: center;
+    z-index: 1;
+  }
+
+  .file-upload__text strong {
+    color: var(--md-sys-color-on-surface);
+    font: var(--md-sys-typescale-title-medium);
+    font-weight: 600;
+  }
+
+  .file-upload__text span {
+    color: var(--md-sys-color-on-surface-variant);
+    font: var(--md-sys-typescale-body-small);
+  }
+
+  .file-upload__input {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    cursor: pointer;
+  }
+
+  /* Files list */
+  .file-upload__files {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .file-upload__files[hidden] {
+    display: none;
+  }
+
+  .file-upload__file {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 20px;
+    border-radius: var(--md-sys-shape-corner-large, 16px);
+    background: var(--md-sys-color-surface-container-low);
+    border: 1px solid var(--md-sys-color-outline-variant);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    animation: file-slide-in 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    overflow: hidden;
+  }
+
+  .file-upload__file::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 4px;
+    height: 100%;
+    background: linear-gradient(to bottom, var(--md-sys-color-primary), var(--md-sys-color-tertiary));
+    transform: scaleY(0);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .file-upload__file:hover {
+    background: var(--md-sys-color-surface-container);
+    box-shadow: 
+      0 4px 12px rgba(0, 0, 0, 0.08),
+      0 0 0 1px var(--md-sys-color-primary);
+    transform: translateX(8px);
+  }
+
+  .file-upload__file:hover::before {
+    transform: scaleY(1);
+  }
+
+  @keyframes file-slide-in {
+    from {
+      opacity: 0;
+      transform: translateX(-20px) scale(0.95);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0) scale(1);
+    }
+  }
+
+  @keyframes file-slide-out {
+    from {
+      opacity: 1;
+      transform: translateX(0) scale(1);
+    }
+    to {
+      opacity: 0;
+      transform: translateX(20px) scale(0.95);
+    }
+  }
+
+  .file-upload__file-icon {
+    position: relative;
+    flex-shrink: 0;
+    width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--md-sys-shape-corner-medium, 12px);
+    background: linear-gradient(135deg, 
+      var(--md-sys-color-primary-container),
+      color-mix(in srgb, var(--md-sys-color-primary-container) 80%, var(--md-sys-color-primary))
+    );
+    color: var(--md-sys-color-on-primary-container);
+    font-size: 24px;
+    box-shadow: 0 2px 8px rgba(103, 80, 164, 0.2);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .file-upload__file-icon::after {
+    content: '';
+    position: absolute;
+    inset: -2px;
+    border-radius: var(--md-sys-shape-corner-medium, 12px);
+    background: linear-gradient(135deg, 
+      rgba(255, 255, 255, 0.3),
+      transparent
+    );
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+
+  .file-upload__file:hover .file-upload__file-icon {
+    transform: scale(1.1) rotate(-5deg);
+    box-shadow: 0 4px 16px rgba(103, 80, 164, 0.3);
+  }
+
+  .file-upload__file:hover .file-upload__file-icon::after {
+    opacity: 1;
+  }
+
+  .file-upload__file-info {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .file-upload__file-name {
+    color: var(--md-sys-color-on-surface);
+    font: var(--md-sys-typescale-body-large);
+    font-weight: 600;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    letter-spacing: 0.1px;
+  }
+
+  .file-upload__file-size {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--md-sys-color-on-surface-variant);
+    font: var(--md-sys-typescale-body-small);
+  }
+
+  .file-upload__file-size::before {
+    content: '';
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: var(--md-sys-color-primary);
+    animation: pulse-dot 2s ease-in-out infinite;
+  }
+
+  @keyframes pulse-dot {
+    0%, 100% {
+      opacity: 0.4;
+      transform: scale(1);
+    }
+    50% {
+      opacity: 1;
+      transform: scale(1.3);
+    }
+  }
+
+  .file-upload__file-remove {
+    flex-shrink: 0;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    border-radius: 50%;
+    background: transparent;
+    color: var(--md-sys-color-on-surface-variant);
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .file-upload__file-remove::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    background: var(--md-sys-color-error);
+    transform: scale(0);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .file-upload__file-remove .material-symbols-outlined {
+    position: relative;
+    z-index: 1;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .file-upload__file-remove:hover {
+    background: var(--md-sys-color-error-container);
+    color: var(--md-sys-color-on-error-container);
+    transform: scale(1.1) rotate(90deg);
+  }
+
+  .file-upload__file-remove:hover::before {
+    transform: scale(1);
+    opacity: 0.1;
+  }
+
+  .file-upload__file-remove:active {
+    transform: scale(0.95) rotate(90deg);
+  }
+
+  /* Error state */
+  .file-upload__error {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px;
+    border-radius: var(--md-sys-shape-corner-large, 16px);
+    background: var(--md-sys-color-error-container);
+    color: var(--md-sys-color-on-error-container);
+    font: var(--md-sys-typescale-body-medium);
+    animation: error-shake 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .file-upload__error[hidden] {
+    display: none;
+  }
+
+  @keyframes error-shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-8px); }
+    75% { transform: translateX(8px); }
+  }
+
+  /* Disabled state */
+  .file-upload--disabled .file-upload__dropzone {
+    opacity: 0.5;
+    cursor: not-allowed;
+    pointer-events: none;
+  }
+</style>
+
+<script>
+  function initFileUpload() {
+    const uploads = document.querySelectorAll('[data-file-upload]');
+
+    uploads.forEach(upload => {
+      const dropzone = upload.querySelector('[data-dropzone]') as HTMLElement;
+      const input = upload.querySelector('[data-input]') as HTMLInputElement;
+      const filesContainer = upload.querySelector('[data-files]') as HTMLElement;
+      const errorContainer = upload.querySelector('[data-error]') as HTMLElement;
+      const errorText = upload.querySelector('[data-error-text]') as HTMLElement;
+      const maxSize = parseFloat((upload as HTMLElement).dataset.maxSize || '0') * 1024 * 1024;
+
+      const files = new DataTransfer();
+
+      dropzone.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        dropzone.classList.add('file-upload__dropzone--drag-over');
+      });
+
+      dropzone.addEventListener('dragleave', () => {
+        dropzone.classList.remove('file-upload__dropzone--drag-over');
+      });
+
+      dropzone.addEventListener('drop', (e) => {
+        e.preventDefault();
+        dropzone.classList.remove('file-upload__dropzone--drag-over');
+        if (e.dataTransfer?.files) handleFiles(e.dataTransfer.files);
+      });
+
+      input.addEventListener('change', (e) => {
+        if ((e.target as HTMLInputElement).files) {
+          handleFiles((e.target as HTMLInputElement).files!);
+        }
+      });
+
+      function handleFiles(newFiles: FileList) {
+        errorContainer?.setAttribute('hidden', '');
+
+        Array.from(newFiles).forEach(file => {
+          if (maxSize > 0 && file.size > maxSize) {
+            const sizeMB = maxSize / 1024 / 1024;
+            if (errorText) errorText.textContent = `File "${file.name}" exceeds ${sizeMB}MB limit`;
+            errorContainer?.removeAttribute('hidden');
+            return;
+          }
+          files.items.add(file);
+        });
+
+        input.files = files.files;
+        renderFiles();
+      }
+
+      function renderFiles() {
+        if (!filesContainer) return;
+
+        if (files.files.length === 0) {
+          filesContainer.setAttribute('hidden', '');
+          return;
+        }
+
+        filesContainer.removeAttribute('hidden');
+        filesContainer.innerHTML = '';
+
+        Array.from(files.files).forEach((file, index) => {
+          const fileEl = document.createElement('div') as HTMLDivElement;
+          fileEl.className = 'file-upload__file';
+          fileEl.style.animationDelay = `${index * 0.05}s`;
+
+          const iconWrapper = document.createElement('div') as HTMLDivElement;
+          iconWrapper.className = 'file-upload__file-icon';
+          const icon = document.createElement('span');
+          icon.className = 'material-symbols-outlined';
+          
+          // Определяем иконку по типу файла
+          const fileType = file.type || '';
+          const fileName = file.name.toLowerCase();
+          
+          if (fileType.startsWith('image/')) {
+            icon.textContent = 'image';
+            iconWrapper.style.background = 'linear-gradient(135deg, #667eea, #764ba2)';
+          } else if (fileType.startsWith('video/')) {
+            icon.textContent = 'video_file';
+            iconWrapper.style.background = 'linear-gradient(135deg, #f093fb, #f5576c)';
+          } else if (fileType.startsWith('audio/')) {
+            icon.textContent = 'audio_file';
+            iconWrapper.style.background = 'linear-gradient(135deg, #4facfe, #00f2fe)';
+          } else if (fileType.includes('pdf') || fileName.endsWith('.pdf')) {
+            icon.textContent = 'picture_as_pdf';
+            iconWrapper.style.background = 'linear-gradient(135deg, #fa709a, #fee140)';
+          } else if (fileType.includes('zip') || fileType.includes('compressed') || fileName.match(/\.(zip|rar|7z)$/)) {
+            icon.textContent = 'folder_zip';
+            iconWrapper.style.background = 'linear-gradient(135deg, #30cfd0, #330867)';
+          } else if (fileType.includes('word') || fileName.match(/\.(doc|docx)$/)) {
+            icon.textContent = 'description';
+            iconWrapper.style.background = 'linear-gradient(135deg, #2196F3, #1976D2)';
+          } else if (fileType.includes('excel') || fileType.includes('spreadsheet') || fileName.match(/\.(xls|xlsx)$/)) {
+            icon.textContent = 'table_chart';
+            iconWrapper.style.background = 'linear-gradient(135deg, #4CAF50, #388E3C)';
+          } else if (fileType.includes('powerpoint') || fileType.includes('presentation') || fileName.match(/\.(ppt|pptx)$/)) {
+            icon.textContent = 'slideshow';
+            iconWrapper.style.background = 'linear-gradient(135deg, #FF9800, #F57C00)';
+          } else {
+            icon.textContent = 'draft';
+            iconWrapper.style.background = 'linear-gradient(135deg, #9E9E9E, #757575)';
+          }
+          
+          iconWrapper.appendChild(icon);
+
+          const info = document.createElement('div');
+          info.className = 'file-upload__file-info';
+
+          const name = document.createElement('div');
+          name.className = 'file-upload__file-name';
+          name.textContent = file.name;
+          name.title = file.name;
+
+          const size = document.createElement('div');
+          size.className = 'file-upload__file-size';
+          size.textContent = formatFileSize(file.size);
+
+          info.appendChild(name);
+          info.appendChild(size);
+
+          const removeBtn = document.createElement('button');
+          removeBtn.type = 'button';
+          removeBtn.className = 'file-upload__file-remove';
+          removeBtn.dataset.remove = index.toString();
+          removeBtn.title = 'Remove file';
+
+          const removeIcon = document.createElement('span');
+          removeIcon.className = 'material-symbols-outlined';
+          removeIcon.textContent = 'close';
+          removeBtn.appendChild(removeIcon);
+
+          fileEl.appendChild(iconWrapper);
+          fileEl.appendChild(info);
+          fileEl.appendChild(removeBtn);
+
+          filesContainer.appendChild(fileEl);
+        });
+
+        filesContainer.querySelectorAll('[data-remove]').forEach(btn => {
+          btn.addEventListener('click', () => {
+            const index = parseInt((btn as HTMLElement).dataset.remove!);
+            const fileEl = (btn as HTMLElement).closest('.file-upload__file') as HTMLDivElement;
+            
+            // Анимация удаления
+            if (fileEl) {
+              fileEl.style.animation = 'file-slide-out 0.3s cubic-bezier(0.4, 0, 0.2, 1)';
+              setTimeout(() => {
+                files.items.remove(index);
+                input.files = files.files;
+                renderFiles();
+              }, 300);
+            }
+          });
+        });
+      }
+
+      function formatFileSize(bytes: number): string {
+        if (bytes < 1024) return bytes + ' B';
+        if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+        return (bytes / 1024 / 1024).toFixed(1) + ' MB';
+      }
+    });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initFileUpload);
+  } else {
+    initFileUpload();
+  }
+
+  document.addEventListener('astro:page-load', initFileUpload);
+</script>

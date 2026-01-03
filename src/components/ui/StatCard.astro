@@ -1,0 +1,298 @@
+---
+/**
+ * StatCard Component - Enhanced Material Design 3
+ * Modern statistics card with smooth animations and gradients
+ */
+import Icon from './Icon.astro';
+
+interface Props {
+  title: string;
+  value: string | number;
+  icon?: string;
+  trend?: 'up' | 'down' | 'neutral';
+  trendValue?: string;
+  description?: string;
+  color?: 'primary' | 'secondary' | 'tertiary' | 'error' | 'success';
+  variant?: 'default' | 'outlined' | 'filled' | 'gradient';
+}
+
+const {
+  title,
+  value,
+  icon,
+  trend,
+  trendValue,
+  description,
+  color = 'primary',
+  variant = 'default'
+} = Astro.props;
+
+const trendIcons = {
+  up: 'trending_up',
+  down: 'trending_down',
+  neutral: 'trending_flat'
+};
+---
+
+<div 
+  class:list={[
+    'stat-card',
+    `stat-card--${variant}`,
+    `stat-card--${color}`
+  ]}
+>
+  <div class="stat-card__shine"></div>
+  
+  <div class="stat-card__header">
+    <h3 class="stat-card__title">{title}</h3>
+    {icon && (
+      <div class="stat-card__icon">
+        <Icon name={icon} />
+      </div>
+    )}
+  </div>
+
+  <div class="stat-card__body">
+    <div class="stat-card__value">{value}</div>
+
+    {(trend || trendValue) && (
+      <div 
+        class:list={[
+          'stat-card__trend',
+          trend ? `stat-card__trend--${trend}` : ''
+        ]}
+      >
+        {trend && <Icon name={trendIcons[trend]} class="stat-card__trend-icon" />}
+        {trendValue && <span class="stat-card__trend-value">{trendValue}</span>}
+      </div>
+    )}
+  </div>
+
+  {description && (
+    <p class="stat-card__description">{description}</p>
+  )}
+</div>
+
+<style>
+  .stat-card {
+    position: relative;
+    padding: 24px;
+    border-radius: var(--md-sys-shape-corner-extra-large, 28px);
+    background: var(--md-sys-color-surface-container-low);
+    overflow: hidden;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  }
+
+  .stat-card:hover {
+    background: var(--md-sys-color-surface-container);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    transform: translateY(-4px);
+  }
+
+  /* Shine effect */
+  .stat-card__shine {
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(
+      45deg,
+      transparent 30%,
+      rgba(255, 255, 255, 0.1) 50%,
+      transparent 70%
+    );
+    transform: translateX(-100%);
+    transition: transform 0.6s;
+  }
+
+  .stat-card:hover .stat-card__shine {
+    transform: translateX(100%);
+  }
+
+  /* Variants */
+  .stat-card--outlined {
+    border: 2px solid var(--md-sys-color-outline-variant);
+    background: var(--md-sys-color-surface);
+  }
+
+  .stat-card--outlined:hover {
+    border-color: var(--md-sys-color-primary);
+    box-shadow: 0 0 0 4px rgba(var(--md-sys-color-primary-rgb, 103, 80, 164), 0.1);
+  }
+
+  .stat-card--filled {
+    background: linear-gradient(135deg, 
+      var(--md-sys-color-primary-container),
+      var(--md-sys-color-primary-container) 50%,
+      color-mix(in srgb, var(--md-sys-color-primary-container) 80%, white) 100%
+    );
+    color: var(--md-sys-color-on-primary-container);
+  }
+
+  .stat-card--gradient {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+  }
+
+  .stat-card--gradient.stat-card--primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  }
+
+  .stat-card--gradient.stat-card--secondary {
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  }
+
+  .stat-card--gradient.stat-card--tertiary {
+    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+  }
+
+  .stat-card--gradient.stat-card--error {
+    background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+  }
+
+  .stat-card--gradient.stat-card--success {
+    background: linear-gradient(135deg, #30cfd0 0%, #330867 100%);
+  }
+
+  /* Header */
+  .stat-card__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 20px;
+  }
+
+  .stat-card__title {
+    margin: 0;
+    color: var(--md-sys-color-on-surface-variant);
+    font: var(--md-sys-typescale-title-small);
+    font-weight: 600;
+    letter-spacing: 0.1px;
+  }
+
+  .stat-card--filled .stat-card__title,
+  .stat-card--gradient .stat-card__title {
+    color: inherit;
+    opacity: 0.85;
+  }
+
+  .stat-card__icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    height: 48px;
+    border-radius: var(--md-sys-shape-corner-large, 16px);
+    background: var(--md-sys-color-primary-container);
+    color: var(--md-sys-color-on-primary-container);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  .stat-card:hover .stat-card__icon {
+    transform: scale(1.1) rotate(5deg);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  }
+
+  .stat-card--gradient .stat-card__icon {
+    background: rgba(255, 255, 255, 0.25);
+    color: white;
+    backdrop-filter: blur(10px);
+  }
+
+  /* Body */
+  .stat-card__body {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+
+  .stat-card__value {
+    color: var(--md-sys-color-on-surface);
+    font: var(--md-sys-typescale-headline-large);
+    font-weight: 700;
+    line-height: 1;
+    letter-spacing: -0.5px;
+    animation: value-fade-in 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .stat-card--filled .stat-card__value,
+  .stat-card--gradient .stat-card__value {
+    color: inherit;
+  }
+
+  @keyframes value-fade-in {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* Trend */
+  .stat-card__trend {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 6px 10px;
+    border-radius: var(--md-sys-shape-corner-full, 100px);
+    font: var(--md-sys-typescale-label-small);
+    font-weight: 600;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .stat-card__trend:hover {
+    transform: scale(1.05);
+  }
+
+  .stat-card__trend--up {
+    background: linear-gradient(135deg, #e8f5e9, #c8e6c9);
+    color: #2e7d32;
+    box-shadow: 0 2px 8px rgba(46, 125, 50, 0.2);
+  }
+
+  .stat-card__trend--down {
+    background: linear-gradient(135deg, #ffebee, #ffcdd2);
+    color: #c62828;
+    box-shadow: 0 2px 8px rgba(198, 40, 40, 0.2);
+  }
+
+  .stat-card__trend--neutral {
+    background: var(--md-sys-color-surface-container-highest);
+    color: var(--md-sys-color-on-surface-variant);
+  }
+
+  .stat-card__trend-icon {
+    font-size: 16px;
+    animation: trend-bounce 2s ease-in-out infinite;
+  }
+
+  @keyframes trend-bounce {
+    0%, 100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-2px);
+    }
+  }
+
+  /* Description */
+  .stat-card__description {
+    margin: 0;
+    color: var(--md-sys-color-on-surface-variant);
+    font: var(--md-sys-typescale-body-small);
+    line-height: 1.5;
+  }
+
+  .stat-card--filled .stat-card__description,
+  .stat-card--gradient .stat-card__description {
+    color: inherit;
+    opacity: 0.8;
+  }
+</style>
