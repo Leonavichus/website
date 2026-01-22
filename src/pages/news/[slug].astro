@@ -1,0 +1,234 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import Header from '../../components/layout/Header.astro';
+import Footer from '../../components/layout/Footer.astro';
+import Button from '../../components/ui/Button.astro';
+import { getCollection } from 'astro:content';
+import type { CollectionEntry } from 'astro:content';
+
+export async function getStaticPaths() {
+  const newsEntries = await getCollection('news');
+  return newsEntries.map((entry: CollectionEntry<'news'>) => ({
+    params: { slug: entry.id },
+    props: { entry },
+  }));
+}
+
+interface Props {
+  entry: CollectionEntry<'news'>;
+}
+
+const { entry } = Astro.props;
+const { Content } = await entry.render();
+
+function formatDate(date: Date): string {
+  return new Intl.DateTimeFormat('ru-RU', {
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric'
+  }).format(date);
+}
+---
+
+<Layout title={`${entry.data.title} - DARK NIGHT`}>
+  <Header />
+
+  <article class="article-container">
+    <header class="article-header">
+      <div class="article-emoji">{entry.data.emoji}</div>
+      <div class="article-meta">
+        <span class="category-badge">{entry.data.category}</span>
+        <div class="meta-info">
+          <span><span class="material-icons">calendar_today</span>{formatDate(entry.data.pubDate)}</span>
+          <span><span class="material-icons">person</span>{entry.data.author}</span>
+          {entry.data.readTime && (
+            <span><span class="material-icons">schedule</span>{entry.data.readTime}</span>
+          )}
+        </div>
+      </div>
+      <h1>{entry.data.title}</h1>
+      <p class="article-description">{entry.data.description}</p>
+    </header>
+
+    <div class="article-content">
+      <Content />
+    </div>
+
+    <div class="article-footer">
+      <Button href="/news" icon="arrow_back">Все новости</Button>
+    </div>
+  </article>
+
+  <Footer />
+</Layout>
+
+<style>
+  .article-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 140px 32px 80px;
+  }
+
+  .article-header {
+    text-align: center;
+    margin-bottom: 60px;
+  }
+
+  .article-emoji {
+    font-size: 80px;
+    margin-bottom: 24px;
+  }
+
+  .article-meta {
+    margin-bottom: 32px;
+  }
+
+  .category-badge {
+    display: inline-block;
+    background-color: var(--md-sys-color-primary-container);
+    color: var(--md-sys-color-on-primary-container);
+    padding: 8px 20px;
+    border-radius: 100px;
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 16px;
+  }
+
+  .meta-info {
+    display: flex;
+    gap: 24px;
+    justify-content: center;
+    flex-wrap: wrap;
+    font-size: 14px;
+    color: var(--md-sys-color-on-surface-variant);
+  }
+
+  .meta-info span {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .meta-info .material-icons {
+    font-size: 16px;
+  }
+
+  .article-header h1 {
+    font-size: 48px;
+    font-weight: 900;
+    margin-bottom: 20px;
+    color: var(--md-sys-color-on-background);
+    letter-spacing: -1px;
+    line-height: 1.2;
+  }
+
+  .article-description {
+    font-size: 20px;
+    color: var(--md-sys-color-on-surface-variant);
+    line-height: 1.6;
+  }
+
+  .article-content {
+    background-color: var(--md-sys-color-surface-container);
+    border-radius: 24px;
+    padding: 48px;
+    border: 1px solid var(--md-sys-color-outline-variant);
+    margin-bottom: 48px;
+    max-width: 1200px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .article-content :global(h2) {
+    font-size: 32px;
+    font-weight: 800;
+    margin-top: 48px;
+    margin-bottom: 20px;
+    color: var(--md-sys-color-on-surface);
+  }
+
+  .article-content :global(h3) {
+    font-size: 24px;
+    font-weight: 700;
+    margin-top: 32px;
+    margin-bottom: 16px;
+    color: var(--md-sys-color-on-surface);
+  }
+
+  .article-content :global(p) {
+    font-size: 17px;
+    line-height: 1.8;
+    margin-bottom: 20px;
+    color: var(--md-sys-color-on-surface-variant);
+  }
+
+  .article-content :global(ul),
+  .article-content :global(ol) {
+    margin-bottom: 20px;
+    padding-left: 28px;
+  }
+
+  .article-content :global(li) {
+    font-size: 17px;
+    line-height: 1.8;
+    margin-bottom: 12px;
+    color: var(--md-sys-color-on-surface-variant);
+  }
+
+  .article-content :global(strong) {
+    color: var(--md-sys-color-on-surface);
+    font-weight: 700;
+  }
+
+  .article-content :global(code) {
+    background-color: var(--md-sys-color-surface-container-high);
+    padding: 2px 8px;
+    border-radius: 6px;
+    font-family: 'Consolas', 'Monaco', monospace;
+    font-size: 0.9em;
+    color: var(--md-sys-color-primary);
+  }
+
+  .article-content :global(pre) {
+    background-color: var(--md-sys-color-surface-container-high);
+    padding: 24px;
+    border-radius: 12px;
+    overflow-x: auto;
+    margin-bottom: 20px;
+  }
+
+  .article-content :global(pre code) {
+    background: none;
+    padding: 0;
+    color: var(--md-sys-color-on-surface);
+  }
+
+  .article-content :global(a) {
+    color: var(--md-sys-color-primary);
+    text-decoration: none;
+    font-weight: 600;
+    transition: color 0.3s;
+  }
+
+  .article-content :global(a:hover) {
+    color: var(--md-sys-color-secondary);
+  }
+
+  .article-footer {
+    text-align: center;
+  }
+
+  @media (max-width: 768px) {
+    .article-container {
+      padding: 100px 20px 60px;
+    }
+
+    .article-header h1 {
+      font-size: 32px;
+    }
+
+    .article-content {
+      padding: 32px 24px;
+    }
+  }
+</style>

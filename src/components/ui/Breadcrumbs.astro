@@ -1,0 +1,262 @@
+---
+/**
+ * Breadcrumbs Component - Enhanced Material Design 3
+ * Modern breadcrumb navigation with smooth animations
+ */
+import Icon from './Icon.astro';
+
+interface Breadcrumb {
+  label: string;
+  href?: string;
+  icon?: string;
+  disabled?: boolean;
+}
+
+interface Props {
+  items: Breadcrumb[];
+  separator?: string;
+  maxItems?: number;
+  showHome?: boolean;
+  homeIcon?: string;
+}
+
+const {
+  items,
+  separator = 'chevron_right',
+  maxItems,
+  showHome = true,
+  homeIcon = 'home'
+} = Astro.props;
+
+let displayItems = items;
+if (maxItems && items.length > maxItems) {
+  const firstItems = items.slice(0, 1);
+  const lastItems = items.slice(-(maxItems - 2));
+  displayItems = [...firstItems, { label: '...', disabled: true }, ...lastItems];
+}
+---
+
+<nav class="breadcrumbs" aria-label="Breadcrumb">
+  <ol class="breadcrumbs__list">
+    {showHome && (
+      <li class="breadcrumbs__item" style="animation-delay: 0s">
+        <a href="/" class="breadcrumbs__link breadcrumbs__link--home">
+          <Icon name={homeIcon} />
+          <span class="breadcrumbs__ripple"></span>
+        </a>
+        <Icon name={separator} class="breadcrumbs__separator" aria-hidden="true" />
+      </li>
+    )}
+
+    {displayItems.map((item, index) => (
+      <li class="breadcrumbs__item" style={`animation-delay: ${(index + 1) * 0.05}s`}>
+        {item.href && !item.disabled ? (
+          <a 
+            href={item.href} 
+            class:list={[
+              'breadcrumbs__link',
+              { 'breadcrumbs__link--disabled': item.disabled }
+            ]}
+            aria-current={index === displayItems.length - 1 ? 'page' : undefined}
+          >
+            {item.icon && <Icon name={item.icon} />}
+            <span>{item.label}</span>
+            <span class="breadcrumbs__ripple"></span>
+          </a>
+        ) : (
+          <span 
+            class:list={[
+              'breadcrumbs__text',
+              { 'breadcrumbs__text--current': index === displayItems.length - 1 }
+            ]}
+          >
+            {item.icon && <Icon name={item.icon} />}
+            {item.label}
+          </span>
+        )}
+
+        {index < displayItems.length - 1 && (
+          <Icon name={separator} class="breadcrumbs__separator" aria-hidden="true" />
+        )}
+      </li>
+    ))}
+  </ol>
+</nav>
+
+<style>
+  .breadcrumbs {
+    padding: 12px 0;
+  }
+
+  .breadcrumbs__list {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .breadcrumbs__item {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    animation: breadcrumb-slide-in 0.4s cubic-bezier(0.4, 0, 0.2, 1) backwards;
+  }
+
+  @keyframes breadcrumb-slide-in {
+    from {
+      opacity: 0;
+      transform: translateX(-10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+
+  .breadcrumbs__link,
+  .breadcrumbs__text {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 12px;
+    border-radius: var(--md-sys-shape-corner-small, 8px);
+    color: var(--md-sys-color-on-surface);
+    font: var(--md-sys-typescale-body-medium);
+    text-decoration: none;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    overflow: hidden;
+  }
+
+  .breadcrumbs__link {
+    cursor: pointer;
+  }
+
+  .breadcrumbs__link::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--md-sys-color-primary);
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+
+  .breadcrumbs__link:hover {
+    background: linear-gradient(135deg,
+      var(--md-sys-color-surface-container-highest),
+      var(--md-sys-color-surface-container-high)
+    );
+    transform: translateY(-2px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  }
+
+  .breadcrumbs__link:hover::before {
+    opacity: 0.05;
+  }
+
+  .breadcrumbs__link:active {
+    transform: translateY(0);
+  }
+
+  .breadcrumbs__link--home {
+    padding: 8px;
+  }
+
+  .breadcrumbs__link--disabled {
+    opacity: 0.38;
+    pointer-events: none;
+  }
+
+  .breadcrumbs__text--current {
+    color: var(--md-sys-color-primary);
+    font-weight: 600;
+    background: var(--md-sys-color-primary-container);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+  }
+
+  /* Ripple effect */
+  .breadcrumbs__ripple {
+    position: absolute;
+    border-radius: 50%;
+    background: rgba(0, 0, 0, 0.1);
+    transform: scale(0);
+    pointer-events: none;
+  }
+
+  .breadcrumbs__separator {
+    color: var(--md-sys-color-on-surface-variant);
+    font-size: 20px;
+    opacity: 0.6;
+    transition: all 0.3s;
+    animation: separator-pulse 2s ease-in-out infinite;
+  }
+
+  @keyframes separator-pulse {
+    0%, 100% {
+      opacity: 0.6;
+    }
+    50% {
+      opacity: 0.3;
+    }
+  }
+
+  /* Responsive */
+  @media (max-width: 600px) {
+    .breadcrumbs__item:not(:nth-last-child(-n+3)) {
+      display: none;
+    }
+  }
+</style>
+
+<script>
+  function initBreadcrumbs() {
+    document.querySelectorAll('.breadcrumbs__link').forEach(link => {
+      link.addEventListener('click', function(e) {
+        const target = e.currentTarget as HTMLElement;
+        const ripple = target.querySelector('.breadcrumbs__ripple') as HTMLElement;
+        if (!ripple) return;
+
+        const mouseEvent = e as MouseEvent;
+        const rect = target.getBoundingClientRect();
+        const size = Math.max(rect.width, rect.height);
+        const x = mouseEvent.clientX - rect.left - size / 2;
+        const y = mouseEvent.clientY - rect.top - size / 2;
+
+        ripple.style.width = ripple.style.height = `${size}px`;
+        ripple.style.left = `${x}px`;
+        ripple.style.top = `${y}px`;
+
+        ripple.style.animation = 'none';
+        setTimeout(() => {
+          ripple.style.animation = 'breadcrumb-ripple 0.6s ease-out';
+        }, 10);
+      });
+    });
+
+    const style = document.createElement('style');
+    style.textContent = `
+      @keyframes breadcrumb-ripple {
+        from {
+          transform: scale(0);
+          opacity: 1;
+        }
+        to {
+          transform: scale(4);
+          opacity: 0;
+        }
+      }
+    `;
+    document.head.appendChild(style);
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initBreadcrumbs);
+  } else {
+    initBreadcrumbs();
+  }
+
+  document.addEventListener('astro:page-load', initBreadcrumbs);
+</script>

@@ -1,0 +1,392 @@
+---
+/**
+ * Accordion Component - Enhanced Material Design 3
+ * Modern accordion with smooth expand/collapse animations
+ */
+import Icon from './Icon.astro';
+
+interface AccordionItem {
+  id: string;
+  title: string;
+  content: string;
+  expanded?: boolean;
+  disabled?: boolean;
+  icon?: string;
+}
+
+interface Props {
+  items: AccordionItem[];
+  multiple?: boolean;
+  variant?: 'outlined' | 'filled';
+}
+
+const {
+  items,
+  multiple = false,
+  variant = 'outlined'
+} = Astro.props;
+---
+
+<div 
+  class:list={[
+    'accordion',
+    `accordion--${variant}`
+  ]}
+  data-accordion
+  data-multiple={multiple}
+>
+  {items.map((item, index) => (
+    <div 
+      class:list={[
+        'accordion__item',
+        { 'accordion__item--expanded': item.expanded },
+        { 'accordion__item--disabled': item.disabled }
+      ]}
+      data-item-id={item.id}
+      style={`animation-delay: ${index * 0.05}s`}
+    >
+      <button
+        type="button"
+        class="accordion__header"
+        aria-expanded={item.expanded}
+        aria-controls={`accordion-content-${item.id}`}
+        disabled={item.disabled}
+        data-header
+      >
+        {item.icon && (
+          <div class="accordion__icon-wrapper">
+            <Icon name={item.icon} class="accordion__icon" />
+          </div>
+        )}
+        <span class="accordion__title">{item.title}</span>
+        <div class="accordion__chevron-wrapper">
+          <Icon name="expand_more" class="accordion__chevron" />
+          <span class="accordion__chevron-glow"></span>
+        </div>
+      </button>
+
+      <div
+        id={`accordion-content-${item.id}`}
+        class="accordion__content"
+        hidden={!item.expanded}
+        data-content
+      >
+        <div class="accordion__body">
+          {item.content}
+        </div>
+      </div>
+    </div>
+  ))}
+</div>
+
+<style>
+  .accordion {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  /* Item */
+  .accordion__item {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    animation: accordion-slide-in 0.4s cubic-bezier(0.4, 0, 0.2, 1) backwards;
+  }
+
+  @keyframes accordion-slide-in {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* Variants */
+  .accordion--outlined .accordion__item {
+    border: 2px solid var(--md-sys-color-outline-variant);
+    border-radius: var(--md-sys-shape-corner-large, 16px);
+    overflow: hidden;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .accordion--outlined .accordion__item:hover:not(.accordion__item--disabled) {
+    border-color: var(--md-sys-color-primary);
+    box-shadow: 0 0 0 4px rgba(var(--md-sys-color-primary-rgb, 103, 80, 164), 0.1);
+  }
+
+  .accordion--filled .accordion__item {
+    background: linear-gradient(135deg,
+      var(--md-sys-color-surface-container),
+      var(--md-sys-color-surface-container-low)
+    );
+    border-radius: var(--md-sys-shape-corner-large, 16px);
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  }
+
+  .accordion--filled .accordion__item:hover:not(.accordion__item--disabled) {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+    transform: translateY(-2px);
+  }
+
+  .accordion__item--expanded {
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+  }
+
+  .accordion__item--disabled {
+    opacity: 0.38;
+    pointer-events: none;
+  }
+
+  /* Header */
+  .accordion__header {
+    position: relative;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 20px;
+    border: none;
+    background: transparent;
+    color: var(--md-sys-color-on-surface);
+    font: var(--md-sys-typescale-title-medium);
+    font-weight: 600;
+    text-align: left;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    overflow: hidden;
+  }
+
+  .accordion__header::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--md-sys-color-primary);
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+
+  .accordion__header:hover:not(:disabled)::before {
+    opacity: 0.05;
+  }
+
+  .accordion__header:focus-visible {
+    outline: 2px solid var(--md-sys-color-primary);
+    outline-offset: -2px;
+  }
+
+  /* Icon wrapper */
+  .accordion__icon-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: var(--md-sys-color-primary-container);
+    color: var(--md-sys-color-on-primary-container);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .accordion__item--expanded .accordion__icon-wrapper {
+    transform: scale(1.1);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  }
+
+  .accordion__icon {
+    color: var(--md-sys-color-on-primary-container);
+  }
+
+  .accordion__title {
+    flex: 1;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* Chevron with glow */
+  .accordion__chevron-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: var(--md-sys-color-surface-container-high);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .accordion__item--expanded .accordion__chevron-wrapper {
+    background: var(--md-sys-color-primary-container);
+  }
+
+  .accordion__chevron {
+    color: var(--md-sys-color-on-surface-variant);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    z-index: 1;
+  }
+
+  .accordion__item--expanded .accordion__chevron {
+    transform: rotate(180deg);
+    color: var(--md-sys-color-on-primary-container);
+  }
+
+  .accordion__chevron-glow {
+    position: absolute;
+    inset: -4px;
+    border-radius: 50%;
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+
+  .accordion__item--expanded .accordion__chevron-glow {
+    background: radial-gradient(circle, var(--md-sys-color-primary) 0%, transparent 70%);
+    opacity: 0.3;
+    animation: chevron-glow 2s ease-in-out infinite;
+  }
+
+  @keyframes chevron-glow {
+    0%, 100% {
+      transform: scale(1);
+      opacity: 0.3;
+    }
+    50% {
+      transform: scale(1.2);
+      opacity: 0.5;
+    }
+  }
+
+  /* Content */
+  .accordion__content {
+    overflow: hidden;
+    max-height: 0;
+    opacity: 0;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .accordion__content[hidden] {
+    display: block;
+  }
+
+  .accordion__item--expanded .accordion__content {
+    max-height: 1000px;
+    opacity: 1;
+  }
+
+  .accordion__body {
+    padding: 0 20px 20px;
+    color: var(--md-sys-color-on-surface-variant);
+    font: var(--md-sys-typescale-body-large);
+    line-height: 1.6;
+    animation: content-fade-in 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  @keyframes content-fade-in {
+    from {
+      opacity: 0;
+      transform: translateY(-10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+</style>
+
+<script>
+  function initAccordion() {
+    const accordions = document.querySelectorAll('[data-accordion]');
+
+    accordions.forEach(accordion => {
+      const multiple = (accordion as HTMLElement).dataset.multiple === 'true';
+
+      accordion.addEventListener('click', (e) => {
+        const header = (e.target as HTMLElement).closest('[data-header]');
+        if (!header) return;
+
+        const item = header.closest('[data-item-id]');
+        const content = item?.querySelector('[data-content]') as HTMLElement;
+
+        if (!item || !content) return;
+
+        const isExpanded = header.getAttribute('aria-expanded') === 'true';
+
+        if (!multiple && !isExpanded) {
+          accordion.querySelectorAll('[data-header]').forEach(otherHeader => {
+            if (otherHeader !== header) {
+              const otherItem = otherHeader.closest('[data-item-id]');
+              const otherContent = otherItem?.querySelector('[data-content]') as HTMLElement;
+
+              otherHeader.setAttribute('aria-expanded', 'false');
+              otherItem?.classList.remove('accordion__item--expanded');
+              otherContent?.setAttribute('hidden', '');
+            }
+          });
+        }
+
+        const newState = !isExpanded;
+        header.setAttribute('aria-expanded', newState.toString());
+
+        if (newState) {
+          item.classList.add('accordion__item--expanded');
+          content.removeAttribute('hidden');
+        } else {
+          item.classList.remove('accordion__item--expanded');
+          content.setAttribute('hidden', '');
+        }
+
+        accordion.dispatchEvent(new CustomEvent('accordion-change', {
+          detail: {
+            itemId: (item as HTMLElement).dataset.itemId,
+            expanded: newState
+          },
+          bubbles: true
+        }));
+      });
+
+      accordion.addEventListener('keydown', (e) => {
+        const header = (e.target as HTMLElement).closest('[data-header]');
+        if (!header) return;
+
+        const headers = Array.from(accordion.querySelectorAll('[data-header]:not([disabled])'));
+        const currentIndex = headers.indexOf(header);
+        let nextHeader: Element | null = null;
+
+        const keyEvent = e as KeyboardEvent;
+        switch (keyEvent.key) {
+          case 'ArrowDown':
+            e.preventDefault();
+            nextHeader = headers[currentIndex + 1] || headers[0];
+            break;
+          case 'ArrowUp':
+            e.preventDefault();
+            nextHeader = headers[currentIndex - 1] || headers[headers.length - 1];
+            break;
+          case 'Home':
+            e.preventDefault();
+            nextHeader = headers[0];
+            break;
+          case 'End':
+            e.preventDefault();
+            nextHeader = headers[headers.length - 1];
+            break;
+        }
+
+        if (nextHeader) {
+          (nextHeader as HTMLElement).focus();
+        }
+      });
+    });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initAccordion);
+  } else {
+    initAccordion();
+  }
+
+  document.addEventListener('astro:page-load', initAccordion);
+</script>

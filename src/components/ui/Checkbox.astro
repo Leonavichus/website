@@ -1,0 +1,335 @@
+---
+/**
+ * Checkbox Component - Material Design 3 Enhanced
+ * Улучшенный чекбокс с плавными анимациями
+ */
+import Icon from './Icon.astro';
+
+export interface Props {
+  name: string;
+  label?: string;
+  checked?: boolean;
+  disabled?: boolean;
+  indeterminate?: boolean;
+  value?: string;
+  required?: boolean;
+  class?: string;
+}
+
+const {
+  name,
+  label,
+  checked = false,
+  disabled = false,
+  indeterminate = false,
+  value,
+  required = false,
+  class: className = '',
+} = Astro.props;
+
+const checkboxId = `checkbox-${name}-${Math.random().toString(36).substr(2, 9)}`;
+---
+
+<label
+  class:list={[
+    'checkbox-wrapper',
+    { 'checkbox-wrapper--disabled': disabled },
+    { 'checkbox-wrapper--checked': checked },
+    { 'checkbox-wrapper--indeterminate': indeterminate },
+    className,
+  ]}
+>
+  <input
+    type="checkbox"
+    id={checkboxId}
+    name={name}
+    checked={checked}
+    disabled={disabled}
+    value={value}
+    required={required}
+    class="checkbox-input"
+    aria-checked={indeterminate ? 'mixed' : checked}
+  />
+
+  <span class="checkbox-container">
+    <span class="checkbox-box">
+      <svg class="checkbox-icon" viewBox="0 0 18 18">
+        <!-- Checkmark -->
+        <path 
+          class="checkbox-checkmark"
+          d="M3.5,9.5 L7,13 L14.5,5.5"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        />
+        <!-- Indeterminate line -->
+        <path
+          class="checkbox-indeterminate"
+          d="M4,9 L14,9"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+        />
+      </svg>
+    </span>
+    <span class="checkbox-state-layer"></span>
+    <span class="checkbox-ripple"></span>
+  </span>
+
+  {label && (
+    <span class="checkbox-label">
+      {label}
+      {required && <span class="checkbox-required">*</span>}
+    </span>
+  )}
+</label>
+
+<style>
+  .checkbox-wrapper {
+    display: inline-flex;
+    align-items: center;
+    gap: 16px;
+    cursor: pointer;
+    user-select: none;
+    position: relative;
+    padding: 8px 0;
+  }
+
+  .checkbox-wrapper--disabled {
+    cursor: not-allowed;
+    opacity: 0.38;
+  }
+
+  /* Hidden input */
+  .checkbox-input {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+    pointer-events: none;
+  }
+
+  /* Container */
+  .checkbox-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    flex-shrink: 0;
+  }
+
+  /* Box */
+  .checkbox-box {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 18px;
+    height: 18px;
+    border: 2px solid var(--md-sys-color-on-surface-variant);
+    border-radius: 2px;
+    background: transparent;
+    transition: all 200ms cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 1;
+  }
+
+  .checkbox-icon {
+    width: 18px;
+    height: 18px;
+    color: var(--md-sys-color-on-primary);
+  }
+
+  .checkbox-checkmark,
+  .checkbox-indeterminate {
+    stroke-dasharray: 20;
+    stroke-dashoffset: 20;
+    transition: stroke-dashoffset 250ms cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .checkbox-indeterminate {
+    opacity: 0;
+  }
+
+  /* State layer */
+  .checkbox-state-layer {
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    background: var(--md-sys-color-on-surface);
+    opacity: 0;
+    transition: opacity 200ms cubic-bezier(0.4, 0, 0.2, 1);
+    pointer-events: none;
+  }
+
+  .checkbox-wrapper:hover:not(.checkbox-wrapper--disabled) .checkbox-state-layer {
+    opacity: 0.08;
+  }
+
+  .checkbox-input:focus-visible ~ .checkbox-container .checkbox-state-layer {
+    opacity: 0.12;
+  }
+
+  /* Ripple effect */
+  .checkbox-ripple {
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    background: var(--md-sys-color-on-surface);
+    opacity: 0;
+    transform: scale(0);
+    transition: all 400ms cubic-bezier(0.4, 0, 0.2, 1);
+    pointer-events: none;
+  }
+
+  .checkbox-wrapper:active:not(.checkbox-wrapper--disabled) .checkbox-ripple {
+    opacity: 0.12;
+    transform: scale(1);
+  }
+
+  /* Checked state */
+  .checkbox-input:checked ~ .checkbox-container .checkbox-box {
+    background: var(--md-sys-color-primary);
+    border-color: var(--md-sys-color-primary);
+    animation: checkboxBounce 300ms cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .checkbox-input:checked ~ .checkbox-container .checkbox-checkmark {
+    stroke-dashoffset: 0;
+    animation: checkmarkDraw 250ms cubic-bezier(0.4, 0, 0.2, 1) 50ms;
+  }
+
+  .checkbox-input:checked ~ .checkbox-container .checkbox-state-layer {
+    background: var(--md-sys-color-primary);
+  }
+
+  .checkbox-input:checked ~ .checkbox-container .checkbox-ripple {
+    background: var(--md-sys-color-primary);
+  }
+
+  /* Indeterminate state */
+  .checkbox-wrapper--indeterminate .checkbox-box {
+    background: var(--md-sys-color-primary);
+    border-color: var(--md-sys-color-primary);
+  }
+
+  .checkbox-wrapper--indeterminate .checkbox-checkmark {
+    opacity: 0;
+  }
+
+  .checkbox-wrapper--indeterminate .checkbox-indeterminate {
+    opacity: 1;
+    stroke-dashoffset: 0;
+  }
+
+  /* Animations */
+  @keyframes checkboxBounce {
+    0% {
+      transform: scale(1);
+    }
+    50% {
+      transform: scale(0.85);
+    }
+    100% {
+      transform: scale(1);
+    }
+  }
+
+  @keyframes checkmarkDraw {
+    from {
+      stroke-dashoffset: 20;
+    }
+    to {
+      stroke-dashoffset: 0;
+    }
+  }
+
+  /* Label */
+  .checkbox-label {
+    font: var(--md-sys-typescale-body-large);
+    color: var(--md-sys-color-on-surface);
+    line-height: 1.5;
+  }
+
+  .checkbox-required {
+    color: var(--md-sys-color-error);
+    margin-left: 2px;
+  }
+
+  /* Error state */
+  .checkbox-wrapper--error .checkbox-box {
+    border-color: var(--md-sys-color-error);
+  }
+
+  .checkbox-wrapper--error.checkbox-wrapper--checked .checkbox-box {
+    background: var(--md-sys-color-error);
+    border-color: var(--md-sys-color-error);
+  }
+
+  /* Focus visible */
+  .checkbox-input:focus-visible ~ .checkbox-container .checkbox-box {
+    outline: 2px solid var(--md-sys-color-primary);
+    outline-offset: 2px;
+  }
+
+  /* Reduced motion */
+  @media (prefers-reduced-motion: reduce) {
+    .checkbox-box,
+    .checkbox-checkmark,
+    .checkbox-indeterminate,
+    .checkbox-state-layer,
+    .checkbox-ripple {
+      transition: none;
+      animation: none;
+    }
+  }
+</style>
+
+<script>
+  function initCheckboxes() {
+    const checkboxes = document.querySelectorAll('.checkbox-input');
+
+    checkboxes.forEach(checkbox => {
+      const input = checkbox as HTMLInputElement;
+      const wrapper = input.closest('.checkbox-wrapper');
+
+      // Handle indeterminate state
+      if (wrapper?.classList.contains('checkbox-wrapper--indeterminate')) {
+        input.indeterminate = true;
+      }
+
+      // Update on change
+      input.addEventListener('change', () => {
+        wrapper?.classList.toggle('checkbox-wrapper--checked', input.checked);
+        
+        if (input.indeterminate) {
+          wrapper?.classList.add('checkbox-wrapper--indeterminate');
+        } else {
+          wrapper?.classList.remove('checkbox-wrapper--indeterminate');
+        }
+
+        // Dispatch custom event
+        wrapper?.dispatchEvent(new CustomEvent('checkbox-change', {
+          detail: {
+            checked: input.checked,
+            indeterminate: input.indeterminate,
+            value: input.value
+          },
+          bubbles: true
+        }));
+      });
+    });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initCheckboxes);
+  } else {
+    initCheckboxes();
+  }
+
+  document.addEventListener('astro:page-load', initCheckboxes);
+</script>

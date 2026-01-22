@@ -1,0 +1,408 @@
+---
+/**
+ * Dialog Component - Enhanced Material Design 3
+ * Modern modal dialog with smooth animations
+ */
+import Icon from './Icon.astro';
+import Button from './Button.astro';
+
+export interface Props {
+  id: string;
+  title?: string;
+  icon?: string;
+  fullscreen?: boolean;
+  class?: string;
+}
+
+const {
+  id,
+  title,
+  icon,
+  fullscreen = false,
+  class: className = '',
+} = Astro.props;
+---
+
+<div
+  class:list={[
+    'dialog-container',
+    { 'dialog--fullscreen': fullscreen },
+    className,
+  ]}
+  data-dialog={id}
+  role="dialog"
+  aria-modal="true"
+  aria-labelledby={title ? `${id}-title` : undefined}
+>
+  <div class="dialog-scrim" data-dialog-close={id}></div>
+
+  <div class="dialog">
+    <div class="dialog__shine"></div>
+
+    {icon && (
+      <div class="dialog-icon">
+        <div class="dialog-icon__wrapper">
+          <Icon name={icon} size="large" />
+          <div class="dialog-icon__glow"></div>
+        </div>
+      </div>
+    )}
+
+    {title && (
+      <h2 id={`${id}-title`} class="dialog-title">
+        {title}
+      </h2>
+    )}
+
+    <div class="dialog-content">
+      <slot />
+    </div>
+
+    <div class="dialog-actions">
+      <slot name="actions">
+        <Button variant="text" data-dialog-close={id}>
+          Cancel
+        </Button>
+        <Button variant="filled">
+          OK
+        </Button>
+      </slot>
+    </div>
+
+    <button
+      class="dialog-close-button"
+      aria-label="Close dialog"
+      data-dialog-close={id}
+    >
+      <Icon name="close" size="medium" />
+      <span class="dialog-close-button__ripple"></span>
+    </button>
+  </div>
+</div>
+
+<style>
+  .dialog-container {
+    position: fixed;
+    inset: 0;
+    z-index: 300;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .dialog-container.open {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  /* Scrim with blur */
+  .dialog-scrim {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(8px);
+    opacity: 0;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .dialog-container.open .dialog-scrim {
+    opacity: 1;
+  }
+
+  /* Dialog */
+  .dialog {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    max-width: 560px;
+    max-height: 90vh;
+    background: linear-gradient(135deg,
+      var(--md-sys-color-surface-container-high),
+      var(--md-sys-color-surface-container)
+    );
+    color: var(--md-sys-color-on-surface);
+    border-radius: var(--md-sys-shape-corner-extra-large, 28px);
+    box-shadow: 
+      0 16px 48px rgba(0, 0, 0, 0.2),
+      0 4px 12px rgba(0, 0, 0, 0.15);
+    padding: 28px;
+    transform: scale(0.8) translateY(40px);
+    opacity: 0;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    overflow: hidden;
+  }
+
+  .dialog-container.open .dialog {
+    transform: scale(1) translateY(0);
+    opacity: 1;
+  }
+
+  /* Shine effect */
+  .dialog__shine {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 200px;
+    background: linear-gradient(
+      to bottom,
+      rgba(255, 255, 255, 0.1) 0%,
+      transparent 100%
+    );
+    pointer-events: none;
+  }
+
+  /* Icon with glow */
+  .dialog-icon {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 20px;
+    animation: icon-bounce-in 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  }
+
+  @keyframes icon-bounce-in {
+    0% {
+      transform: scale(0);
+      opacity: 0;
+    }
+    50% {
+      transform: scale(1.1);
+    }
+    100% {
+      transform: scale(1);
+      opacity: 1;
+    }
+  }
+
+  .dialog-icon__wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 72px;
+    height: 72px;
+    border-radius: 50%;
+    background: linear-gradient(135deg,
+      var(--md-sys-color-secondary-container),
+      color-mix(in srgb, var(--md-sys-color-secondary-container) 80%, var(--md-sys-color-secondary))
+    );
+    color: var(--md-sys-color-on-secondary-container);
+  }
+
+  .dialog-icon__glow {
+    position: absolute;
+    inset: -8px;
+    border-radius: 50%;
+    background: radial-gradient(circle, var(--md-sys-color-secondary) 0%, transparent 70%);
+    opacity: 0.3;
+    animation: glow-pulse 2s ease-in-out infinite;
+  }
+
+  @keyframes glow-pulse {
+    0%, 100% {
+      transform: scale(1);
+      opacity: 0.3;
+    }
+    50% {
+      transform: scale(1.2);
+      opacity: 0.5;
+    }
+  }
+
+  /* Title */
+  .dialog-title {
+    font-family: var(--md-sys-typescale-headline-small-font);
+    font-size: var(--md-sys-typescale-headline-small-size);
+    font-weight: 600;
+    line-height: var(--md-sys-typescale-headline-small-line-height);
+    margin: 0 0 16px 0;
+    color: var(--md-sys-color-on-surface);
+    text-align: center;
+  }
+
+  /* Content */
+  .dialog-content {
+    flex: 1;
+    overflow-y: auto;
+    font-family: var(--md-sys-typescale-body-large-font);
+    font-size: var(--md-sys-typescale-body-large-size);
+    line-height: 1.6;
+    color: var(--md-sys-color-on-surface-variant);
+    margin-bottom: 24px;
+    padding-right: 8px;
+  }
+
+  /* Scrollbar */
+  .dialog-content::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  .dialog-content::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .dialog-content::-webkit-scrollbar-thumb {
+    background: var(--md-sys-color-outline-variant);
+    border-radius: 4px;
+  }
+
+  .dialog-content::-webkit-scrollbar-thumb:hover {
+    background: var(--md-sys-color-outline);
+  }
+
+  /* Actions */
+  .dialog-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  /* Close button */
+  .dialog-close-button {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border: none;
+    background: transparent;
+    color: var(--md-sys-color-on-surface-variant);
+    border-radius: 50%;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    overflow: hidden;
+  }
+
+  .dialog-close-button:hover {
+    background: var(--md-sys-color-surface-container-highest);
+    color: var(--md-sys-color-on-surface);
+    transform: scale(1.1) rotate(90deg);
+  }
+
+  .dialog-close-button:active {
+    transform: scale(0.95) rotate(90deg);
+  }
+
+  .dialog-close-button__ripple {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle, rgba(0, 0, 0, 0.1) 0%, transparent 70%);
+    transform: scale(0);
+    pointer-events: none;
+  }
+
+  .dialog-close-button:active .dialog-close-button__ripple {
+    animation: button-ripple 0.6s ease-out;
+  }
+
+  @keyframes button-ripple {
+    to {
+      transform: scale(2.5);
+      opacity: 0;
+    }
+  }
+
+  /* Fullscreen variant */
+  .dialog--fullscreen .dialog {
+    max-width: 100%;
+    max-height: 100%;
+    width: 100%;
+    height: 100%;
+    border-radius: 0;
+  }
+
+  /* Responsive */
+  @media (max-width: 599px) {
+    .dialog-container {
+      padding: 16px;
+    }
+
+    .dialog {
+      max-width: 100%;
+      padding: 20px;
+    }
+
+    .dialog-actions {
+      flex-direction: column-reverse;
+    }
+
+    .dialog-actions :global(.btn) {
+      width: 100%;
+    }
+  }
+</style>
+
+<script>
+  function initDialogs() {
+    const dialogs = document.querySelectorAll('[data-dialog]');
+
+    dialogs.forEach((dialogContainer) => {
+      const dialogId = dialogContainer.getAttribute('data-dialog');
+      const openButtons = document.querySelectorAll(`[data-dialog-open="${dialogId}"]`);
+      const closeButtons = dialogContainer.querySelectorAll(`[data-dialog-close="${dialogId}"]`);
+
+      function openDialog() {
+        dialogContainer.classList.add('open');
+        document.body.style.overflow = 'hidden';
+
+        const focusableElements = dialogContainer.querySelectorAll(
+          'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+        );
+        const firstElement = focusableElements[0] as HTMLElement;
+        const lastElement = focusableElements[focusableElements.length - 1] as HTMLElement;
+
+        firstElement?.focus();
+
+        const handleTab = (e: Event) => {
+          if (e instanceof KeyboardEvent && e.key === 'Tab') {
+            if (e.shiftKey && document.activeElement === firstElement) {
+              e.preventDefault();
+              lastElement?.focus();
+            } else if (!e.shiftKey && document.activeElement === lastElement) {
+              e.preventDefault();
+              firstElement?.focus();
+            }
+          }
+        };
+
+        dialogContainer.addEventListener('keydown', handleTab);
+      }
+
+      function closeDialog() {
+        dialogContainer.classList.remove('open');
+        document.body.style.overflow = '';
+      }
+
+      openButtons.forEach(button => {
+        button.addEventListener('click', openDialog);
+      });
+
+      closeButtons.forEach(button => {
+        button.addEventListener('click', closeDialog);
+      });
+
+      document.addEventListener('keydown', (e: Event) => {
+        if (e instanceof KeyboardEvent && e.key === 'Escape' && dialogContainer.classList.contains('open')) {
+          closeDialog();
+        }
+      });
+    });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initDialogs);
+  } else {
+    initDialogs();
+  }
+
+  document.addEventListener('astro:page-load', initDialogs);
+</script>

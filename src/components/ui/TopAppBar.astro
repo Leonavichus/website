@@ -1,0 +1,99 @@
+---
+// src/components/ui/TopAppBar.astro
+/**
+ * Material Design 3 Top App Bar Component
+ */
+
+export interface Props {
+  title?: string;
+  variant?: 'small' | 'medium' | 'large';
+  class?: string;
+}
+
+const {
+  title,
+  variant = 'small',
+  class: className = '',
+} = Astro.props;
+
+import Icon from './Icon.astro';
+---
+
+<header class:list={['top-app-bar', `top-app-bar-${variant}`, className]}>
+  <div class="top-app-bar-content">
+    <div class="top-app-bar-leading">
+      <slot name="leading">
+        <button class="top-app-bar-icon" aria-label="Menu">
+          <Icon name="menu" />
+        </button>
+      </slot>
+    </div>
+
+    {title && <h1 class="top-app-bar-title">{title}</h1>}
+    <slot name="title" />
+
+    <div class="top-app-bar-trailing">
+      <slot name="trailing" />
+    </div>
+  </div>
+</header>
+
+<style>
+  .top-app-bar {
+    position: sticky;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    background-color: var(--md-sys-color-surface);
+    color: var(--md-sys-color-on-surface);
+  }
+
+  .top-app-bar-content {
+    display: flex;
+    align-items: center;
+    padding: 8px 16px;
+    min-height: 64px;
+  }
+
+  .top-app-bar-leading,
+  .top-app-bar-trailing {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .top-app-bar-title {
+    flex: 1;
+    font-family: var(--md-sys-typescale-title-large-font);
+    font-size: var(--md-sys-typescale-title-large-size);
+    font-weight: var(--md-sys-typescale-title-large-weight);
+    margin: 0 16px;
+  }
+
+  .top-app-bar-icon {
+    width: 48px;
+    height: 48px;
+    border: none;
+    border-radius: 24px;
+    background: transparent;
+    color: var(--md-sys-color-on-surface);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 200ms;
+  }
+
+  .top-app-bar-icon:hover {
+    background-color: var(--md-sys-color-surface-container-highest);
+  }
+
+  .top-app-bar-medium .top-app-bar-content {
+    min-height: 112px;
+  }
+
+  .top-app-bar-large .top-app-bar-content {
+    min-height: 152px;
+  }
+</style>

@@ -1,0 +1,152 @@
+<footer>
+  <div class="footer-content">
+    <div class="footer-section">
+      <h4>DARK NIGHT</h4>
+      <p>Команда разработчиков инди-игр и приложений. Создаём открытое ПО для лучшего мира.</p>
+    </div>
+
+    <div class="footer-section">
+      <h4>Проекты</h4>
+      <ul>
+        <li><a href="/#projects">Все проекты</a></li>
+        <li><a href="#">Игры</a></li>
+        <li><a href="#">Приложения</a></li>
+        <li><a href="#">Библиотеки</a></li>
+      </ul>
+    </div>
+
+    <div class="footer-section">
+      <h4>Сообщество</h4>
+      <ul>
+        <li><a href="https://github.com/darkmoonight">GitHub</a></li>
+        <li><a href="#">Discord</a></li>
+        <li><a href="/news">Новости</a></li>
+        <li><a href="#">Документация</a></li>
+      </ul>
+    </div>
+
+    <div class="footer-section">
+      <h4>О нас</h4>
+      <ul>
+        <li><a href="/#mission">Миссия</a></li>
+        <li><a href="/#join">Присоединиться</a></li>
+        <li><a href="/#contact">Контакты</a></li>
+        <li><a href="#">Блог</a></li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="footer-bottom">
+    <p>&copy; 2026 DARK NIGHT. Создано с 🖤 для open-source</p>
+    <div class="social-links">
+      <a href="https://github.com/darkmoonight" aria-label="GitHub">
+        <span class="material-icons">code</span>
+      </a>
+      <a href="#" aria-label="Discord">
+        <span class="material-icons">chat</span>
+      </a>
+      <a href="/news" aria-label="RSS">
+        <span class="material-icons">rss_feed</span>
+      </a>
+    </div>
+  </div>
+</footer>
+
+<style>
+  footer {
+    background-color: var(--md-sys-color-surface);
+    padding: 70px 32px 28px;
+    margin-top: 100px;
+    border-top: 1px solid var(--md-sys-color-outline-variant);
+  }
+
+  .footer-content {
+    max-width: 1400px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 2fr repeat(3, 1fr);
+    gap: 56px;
+    margin-bottom: 56px;
+  }
+
+  .footer-section h4 {
+    color: var(--md-sys-color-on-surface);
+    margin-bottom: 20px;
+    font-size: 16px;
+    font-weight: 700;
+  }
+
+  .footer-section p {
+    color: var(--md-sys-color-on-surface-variant);
+    line-height: 1.7;
+    font-size: 15px;
+  }
+
+  .footer-section ul {
+    list-style: none;
+  }
+
+  .footer-section a {
+    color: var(--md-sys-color-on-surface-variant);
+    text-decoration: none;
+    display: block;
+    margin-bottom: 12px;
+    font-size: 15px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .footer-section a:hover {
+    color: var(--md-sys-color-primary);
+    padding-left: 6px;
+  }
+
+  .footer-bottom {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding-top: 28px;
+    border-top: 1px solid var(--md-sys-color-outline-variant);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: var(--md-sys-color-on-surface-variant);
+    font-size: 14px;
+  }
+
+  .social-links {
+    display: flex;
+    gap: 12px;
+  }
+
+  .social-links a {
+    color: var(--md-sys-color-on-surface-variant);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    padding: 8px;
+    border-radius: 50%;
+  }
+
+  .social-links a:hover {
+    color: var(--md-sys-color-primary);
+    background-color: var(--md-sys-color-surface-container-high);
+    transform: translateY(-2px);
+  }
+
+  @media (max-width: 1024px) {
+    .footer-content {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (max-width: 768px) {
+    .footer-content {
+      grid-template-columns: 1fr;
+      gap: 36px;
+    }
+
+    .footer-bottom {
+      flex-direction: column;
+      gap: 16px;
+      text-align: center;
+    }
+  }
+</style>

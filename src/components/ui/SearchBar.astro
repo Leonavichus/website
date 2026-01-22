@@ -1,0 +1,373 @@
+---
+/**
+ * SearchBar Component
+ * Material Design 3 search bar with suggestions
+ */
+import Icon from './Icon.astro';
+
+interface Suggestion {
+  value: string;
+  label: string;
+  description?: string;
+  icon?: string;
+}
+
+interface Props {
+  id?: string;
+  name?: string;
+  placeholder?: string;
+  value?: string;
+  suggestions?: Suggestion[];
+  variant?: 'default' | 'filled';
+  fullWidth?: boolean;
+  loading?: boolean;
+  disabled?: boolean;
+}
+
+const {
+  id = 'search',
+  name = 'search',
+  placeholder = 'Search...',
+  value = '',
+  suggestions = [],
+  variant = 'default',
+  fullWidth = false,
+  loading = false,
+  disabled = false
+} = Astro.props;
+---
+
+<div 
+  class:list={[
+    'search-bar',
+    `search-bar--${variant}`,
+    { 'search-bar--full-width': fullWidth },
+    { 'search-bar--disabled': disabled }
+  ]}
+  data-search-bar={id}
+>
+  <div class="search-bar__input-wrapper">
+    <Icon name="search" class="search-bar__icon search-bar__icon--search" />
+
+    <input
+      type="search"
+      id={id}
+      name={name}
+      class="search-bar__input"
+      placeholder={placeholder}
+      value={value}
+      disabled={disabled}
+      autocomplete="off"
+      role="combobox"
+      aria-autocomplete="list"
+      aria-expanded="false"
+      aria-controls={`${id}-suggestions`}
+      data-search-input
+    />
+
+    {loading && (
+      <div class="search-bar__loading" data-loading>
+        <Icon name="progress_activity" class="search-bar__loading-icon" />
+      </div>
+    )}
+
+    <button
+      type="button"
+      class="search-bar__clear"
+      hidden
+      aria-label="Clear search"
+      data-clear
+    >
+      <Icon name="close" />
+    </button>
+  </div>
+
+  {suggestions.length > 0 && (
+    <div 
+      class="search-bar__suggestions"
+      id={`${id}-suggestions`}
+      role="listbox"
+      hidden
+      data-suggestions
+    >
+      {suggestions.map((suggestion, index) => (
+        <button
+          type="button"
+          class="search-bar__suggestion"
+          role="option"
+          data-value={suggestion.value}
+          data-index={index}
+        >
+          {suggestion.icon && (
+            <Icon name={suggestion.icon} class="search-bar__suggestion-icon" />
+          )}
+          <div class="search-bar__suggestion-content">
+            <div class="search-bar__suggestion-label">{suggestion.label}</div>
+            {suggestion.description && (
+              <div class="search-bar__suggestion-description">
+                {suggestion.description}
+              </div>
+            )}
+          </div>
+        </button>
+      ))}
+    </div>
+  )}
+</div>
+
+<style>
+  .search-bar {
+    position: relative;
+    display: inline-block;
+  }
+
+  .search-bar--full-width {
+    width: 100%;
+  }
+
+  .search-bar--disabled {
+    opacity: 0.38;
+    pointer-events: none;
+  }
+
+  /* Input wrapper */
+  .search-bar__input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 16px;
+    border-radius: var(--md-sys-shape-corner-full);
+    background: var(--md-sys-color-surface-container-high);
+    transition: background-color 0.2s;
+  }
+
+  .search-bar--filled .search-bar__input-wrapper {
+    background: var(--md-sys-color-surface-container-highest);
+  }
+
+  .search-bar__input-wrapper:focus-within {
+    background: var(--md-sys-color-surface-container-highest);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  .search-bar__icon {
+    flex-shrink: 0;
+    color: var(--md-sys-color-on-surface-variant);
+  }
+
+  .search-bar__input {
+    flex: 1;
+    min-width: 0;
+    padding: 0;
+    border: none;
+    background: transparent;
+    color: var(--md-sys-color-on-surface);
+    font: var(--md-sys-typescale-body-large);
+    outline: none;
+  }
+
+  .search-bar__input::placeholder {
+    color: var(--md-sys-color-on-surface-variant);
+  }
+
+  .search-bar__input::-webkit-search-cancel-button {
+    display: none;
+  }
+
+  .search-bar__loading {
+    display: flex;
+    align-items: center;
+  }
+
+  .search-bar__loading-icon {
+    animation: spin 1s linear infinite;
+  }
+
+  @keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+
+  .search-bar__clear {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    border: none;
+    border-radius: 50%;
+    background: transparent;
+    color: var(--md-sys-color-on-surface-variant);
+    cursor: pointer;
+    transition: background-color 0.2s;
+  }
+
+  .search-bar__clear:hover {
+    background: var(--md-sys-color-surface-container-highest);
+  }
+
+  /* Suggestions */
+  .search-bar__suggestions {
+    position: absolute;
+    top: calc(100% + 8px);
+    left: 0;
+    right: 0;
+    z-index: 10;
+    max-height: 400px;
+    overflow-y: auto;
+    border-radius: var(--md-sys-shape-corner-large);
+    background: var(--md-sys-color-surface-container);
+    box-shadow: var(--md-sys-elevation-2);
+  }
+
+  .search-bar__suggestions[hidden] {
+    display: none;
+  }
+
+  .search-bar__suggestion {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+    padding: 12px 16px;
+    border: none;
+    background: transparent;
+    color: var(--md-sys-color-on-surface);
+    text-align: left;
+    cursor: pointer;
+    transition: background-color 0.2s;
+  }
+
+  .search-bar__suggestion:hover,
+  .search-bar__suggestion--focused {
+    background: var(--md-sys-color-surface-container-highest);
+  }
+
+  .search-bar__suggestion-icon {
+    flex-shrink: 0;
+    color: var(--md-sys-color-on-surface-variant);
+  }
+
+  .search-bar__suggestion-content {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .search-bar__suggestion-label {
+    font: var(--md-sys-typescale-body-large);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .search-bar__suggestion-description {
+    margin-top: 2px;
+    color: var(--md-sys-color-on-surface-variant);
+    font: var(--md-sys-typescale-body-small);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  /* Reduced motion */
+  @media (prefers-reduced-motion: reduce) {
+    .search-bar__loading-icon {
+      animation: none;
+    }
+  }
+</style>
+
+<script>
+  function initSearchBars() {
+    const searchBars = document.querySelectorAll('[data-search-bar]');
+
+    searchBars.forEach(searchBar => {
+      const input = searchBar.querySelector('[data-search-input]') as HTMLInputElement;
+      const clearButton = searchBar.querySelector('[data-clear]') as HTMLButtonElement;
+      const suggestions = searchBar.querySelector('[data-suggestions]') as HTMLElement;
+      const suggestionButtons = searchBar.querySelectorAll('.search-bar__suggestion');
+
+      // Show/hide clear button
+      function updateClearButton() {
+        if (input.value) {
+          clearButton?.removeAttribute('hidden');
+        } else {
+          clearButton?.setAttribute('hidden', '');
+        }
+      }
+
+      // Show/hide suggestions
+      function updateSuggestions(show: boolean) {
+        if (suggestions) {
+          if (show && input.value) {
+            suggestions.removeAttribute('hidden');
+            input.setAttribute('aria-expanded', 'true');
+          } else {
+            suggestions.setAttribute('hidden', '');
+            input.setAttribute('aria-expanded', 'false');
+          }
+        }
+      }
+
+      input.addEventListener('input', () => {
+        updateClearButton();
+        updateSuggestions(true);
+
+        searchBar.dispatchEvent(new CustomEvent('search-input', {
+          detail: { query: input.value },
+          bubbles: true
+        }));
+      });
+
+      input.addEventListener('focus', () => {
+        updateSuggestions(true);
+      });
+
+      clearButton?.addEventListener('click', () => {
+        input.value = '';
+        updateClearButton();
+        updateSuggestions(false);
+        input.focus();
+
+        searchBar.dispatchEvent(new CustomEvent('search-clear', {
+          bubbles: true
+        }));
+      });
+
+      // Suggestion selection
+      suggestionButtons.forEach(button => {
+        button.addEventListener('click', () => {
+          const value = (button as HTMLElement).dataset.value!;
+          input.value = value;
+          updateClearButton();
+          updateSuggestions(false);
+
+          searchBar.dispatchEvent(new CustomEvent('search-select', {
+            detail: { value },
+            bubbles: true
+          }));
+        });
+      });
+
+      // Close on outside click
+      document.addEventListener('click', (e) => {
+        if (!searchBar.contains(e.target as Node)) {
+          updateSuggestions(false);
+        }
+      });
+
+      // Initial state
+      updateClearButton();
+    });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initSearchBars);
+  } else {
+    initSearchBars();
+  }
+
+  document.addEventListener('astro:page-load', initSearchBars);
+</script>

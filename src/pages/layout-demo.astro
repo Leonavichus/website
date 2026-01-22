@@ -1,0 +1,494 @@
+---
+// src/pages/layout-demo.astro
+// Демонстрация Layout системы Material Design 3
+
+import Container from '../components/layout/Container.astro';
+import Section from '../components/layout/Section.astro';
+import Grid from '../components/layout/Grid.astro';
+import Stack from '../components/layout/Stack.astro';
+import Spacer from '../components/layout/Spacer.astro';
+import Card from '../components/ui/Card.astro';
+import Button from '../components/ui/Button.astro';
+---
+
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Layout System Demo - Material Design 3</title>
+  <link rel="stylesheet" href="/styles/breakpoints.css">
+  <link rel="stylesheet" href="/styles/grid.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Roboto', sans-serif;
+      background-color: var(--md-sys-color-background, #fef7ff);
+      color: var(--md-sys-color-on-background, #1d1b20);
+    }
+
+    .demo-box {
+      padding: 24px;
+      background-color: var(--md-sys-color-surface-container, #f3edf7);
+      border-radius: 12px;
+      text-align: center;
+      min-height: 100px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .demo-header {
+      background: linear-gradient(135deg, var(--md-sys-color-primary, #6750a4), var(--md-sys-color-tertiary, #7d5260));
+      color: white;
+      padding: 80px 0;
+      text-align: center;
+    }
+
+    .demo-header h1 {
+      font-size: 3rem;
+      margin-bottom: 16px;
+    }
+
+    .demo-header p {
+      font-size: 1.25rem;
+      opacity: 0.9;
+    }
+
+    .section-title {
+      font-size: 2rem;
+      margin-bottom: 24px;
+      color: var(--md-sys-color-primary, #6750a4);
+    }
+
+    .code-block {
+      background-color: var(--md-sys-color-surface-variant, #e7e0ec);
+      padding: 16px;
+      border-radius: 8px;
+      font-family: 'Courier New', monospace;
+      font-size: 0.875rem;
+      overflow-x: auto;
+      margin: 16px 0;
+    }
+
+    .breakpoint-indicator {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      padding: 12px 20px;
+      background-color: var(--md-sys-color-primary, #6750a4);
+      color: white;
+      border-radius: 20px;
+      font-weight: 500;
+      z-index: 1000;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Hero Section -->
+  <div class="demo-header">
+    <Container maxWidth="large">
+      <h1>Layout System Demo</h1>
+      <p>Material Design 3 • Responsive • Adaptive</p>
+    </Container>
+  </div>
+
+  <!-- 1. Container Examples -->
+  <Section spacing="lg">
+    <Container maxWidth="large">
+      <h2 class="section-title">1. Container Component</h2>
+      <p style="margin-bottom: 32px;">Ограничивает ширину контента и центрирует его</p>
+
+      <Stack direction="column" gap="lg">
+        <div>
+          <h3 style="margin-bottom: 16px;">Compact Container (600px)</h3>
+          <Container maxWidth="compact" padding={false}>
+            <div class="demo-box">Compact Container</div>
+          </Container>
+        </div>
+
+        <div>
+          <h3 style="margin-bottom: 16px;">Medium Container (840px)</h3>
+          <Container maxWidth="medium" padding={false}>
+            <div class="demo-box">Medium Container</div>
+          </Container>
+        </div>
+
+        <div>
+          <h3 style="margin-bottom: 16px;">Expanded Container (1200px)</h3>
+          <Container maxWidth="expanded" padding={false}>
+            <div class="demo-box">Expanded Container</div>
+          </Container>
+        </div>
+
+        <div>
+          <h3 style="margin-bottom: 16px;">Large Container (1400px)</h3>
+          <Container maxWidth="large" padding={false}>
+            <div class="demo-box">Large Container</div>
+          </Container>
+        </div>
+      </Stack>
+
+      <div class="code-block">
+&lt;Container maxWidth="expanded" padding={true}&gt;
+  &lt;!-- Ваш контент --&gt;
+&lt;/Container&gt;
+      </div>
+    </Container>
+  </Section>
+
+  <!-- 2. Grid Examples -->
+  <Section spacing="lg" background="surface-variant">
+    <Container maxWidth="large">
+      <h2 class="section-title">2. Grid Component</h2>
+      <p style="margin-bottom: 32px;">Адаптивная сетка с Material Design spacing</p>
+
+      <Stack direction="column" gap="xl">
+        <!-- 12 Column Grid -->
+        <div>
+          <h3 style="margin-bottom: 16px;">12-колоночная сетка</h3>
+          <Grid columns={12} gap="sm">
+            <div class="demo-box" style="min-height: 60px;">1</div>
+            <div class="demo-box" style="min-height: 60px;">2</div>
+            <div class="demo-box" style="min-height: 60px;">3</div>
+            <div class="demo-box" style="min-height: 60px;">4</div>
+            <div class="demo-box" style="min-height: 60px;">5</div>
+            <div class="demo-box" style="min-height: 60px;">6</div>
+            <div class="demo-box" style="min-height: 60px;">7</div>
+            <div class="demo-box" style="min-height: 60px;">8</div>
+            <div class="demo-box" style="min-height: 60px;">9</div>
+            <div class="demo-box" style="min-height: 60px;">10</div>
+            <div class="demo-box" style="min-height: 60px;">11</div>
+            <div class="demo-box" style="min-height: 60px;">12</div>
+          </Grid>
+        </div>
+
+        <!-- Responsive Grid -->
+        <div>
+          <h3 style="margin-bottom: 16px;">Адаптивная сетка (1 → 2 → 3 → 4 колонки)</h3>
+          <Grid columns={1} columnsmd={2} columnslg={3} columnsxl={4} gap="md">
+            <div class="demo-box">Card 1</div>
+            <div class="demo-box">Card 2</div>
+            <div class="demo-box">Card 3</div>
+            <div class="demo-box">Card 4</div>
+            <div class="demo-box">Card 5</div>
+            <div class="demo-box">Card 6</div>
+            <div class="demo-box">Card 7</div>
+            <div class="demo-box">Card 8</div>
+          </Grid>
+        </div>
+
+        <!-- Auto-fit Grid -->
+        <div>
+          <h3 style="margin-bottom: 16px;">Auto-fit сетка (минимум 200px на колонку)</h3>
+          <Grid columns="auto-fit" minColumnWidth="200px" gap="lg">
+            <div class="demo-box">Auto 1</div>
+            <div class="demo-box">Auto 2</div>
+            <div class="demo-box">Auto 3</div>
+            <div class="demo-box">Auto 4</div>
+            <div class="demo-box">Auto 5</div>
+          </Grid>
+        </div>
+      </Stack>
+
+      <div class="code-block">
+&lt;Grid columns={1} columnsmd={2} columnslg={3} gap="md"&gt;
+  &lt;Card&gt;Item 1&lt;/Card&gt;
+  &lt;Card&gt;Item 2&lt;/Card&gt;
+  &lt;Card&gt;Item 3&lt;/Card&gt;
+&lt;/Grid&gt;
+      </div>
+    </Container>
+  </Section>
+
+  <!-- 3. Stack Examples -->
+  <Section spacing="lg">
+    <Container maxWidth="large">
+      <h2 class="section-title">3. Stack Component</h2>
+      <p style="margin-bottom: 32px;">Flex контейнер для выравнивания элементов</p>
+
+      <Stack direction="column" gap="xl">
+        <!-- Vertical Stack -->
+        <div>
+          <h3 style="margin-bottom: 16px;">Вертикальный Stack</h3>
+          <Stack direction="column" gap="md" align="stretch">
+            <div class="demo-box">Item 1</div>
+            <div class="demo-box">Item 2</div>
+            <div class="demo-box">Item 3</div>
+          </Stack>
+        </div>
+
+        <!-- Horizontal Stack -->
+        <div>
+          <h3 style="margin-bottom: 16px;">Горизонтальный Stack</h3>
+          <Stack direction="row" gap="md" justify="center">
+            <div class="demo-box" style="width: 150px;">Item 1</div>
+            <div class="demo-box" style="width: 150px;">Item 2</div>
+            <div class="demo-box" style="width: 150px;">Item 3</div>
+          </Stack>
+        </div>
+
+        <!-- Justified Stack -->
+        <div>
+          <h3 style="margin-bottom: 16px;">Stack с space-between</h3>
+          <Stack direction="row" gap="md" justify="between" align="center">
+            <div class="demo-box" style="width: 150px;">Left</div>
+            <div class="demo-box" style="width: 150px;">Center</div>
+            <div class="demo-box" style="width: 150px;">Right</div>
+          </Stack>
+        </div>
+
+        <!-- Wrapped Stack -->
+        <div>
+          <h3 style="margin-bottom: 16px;">Stack с wrap</h3>
+          <Stack direction="row" gap="md" wrap={true}>
+            <div class="demo-box" style="width: 120px;">Item 1</div>
+            <div class="demo-box" style="width: 120px;">Item 2</div>
+            <div class="demo-box" style="width: 120px;">Item 3</div>
+            <div class="demo-box" style="width: 120px;">Item 4</div>
+            <div class="demo-box" style="width: 120px;">Item 5</div>
+            <div class="demo-box" style="width: 120px;">Item 6</div>
+            <div class="demo-box" style="width: 120px;">Item 7</div>
+            <div class="demo-box" style="width: 120px;">Item 8</div>
+            <div class="demo-box" style="width: 120px;">Item 9</div>
+            <div class="demo-box" style="width: 120px;">Item 10</div>
+          </Stack>
+        </div>
+      </Stack>
+
+      <div class="code-block">
+&lt;Stack direction="row" gap="md" justify="between" align="center"&gt;
+  &lt;Button&gt;Cancel&lt;/Button&gt;
+  &lt;Button variant="filled"&gt;Submit&lt;/Button&gt;
+&lt;/Stack&gt;
+      </div>
+    </Container>
+  </Section>
+
+  <!-- 4. Section & Spacer Examples -->
+  <Section spacing="lg" background="surface-variant">
+    <Container maxWidth="large">
+      <h2 class="section-title">4. Section & Spacer Components</h2>
+      <p style="margin-bottom: 32px;">Управление вертикальными отступами</p>
+
+      <Stack direction="column" gap="lg">
+        <div>
+          <h3 style="margin-bottom: 16px;">Spacer Component</h3>
+          <div class="demo-box">Content Above</div>
+          <Spacer size="xl" />
+          <div class="demo-box">Content Below (XL spacer между ними)</div>
+        </div>
+
+        <div>
+          <h3 style="margin-bottom: 16px;">Section со spacing</h3>
+          <div style="border: 2px dashed var(--md-sys-color-outline); padding: 8px; border-radius: 8px;">
+            <Section spacing="sm" background="surface">
+              <div class="demo-box">Section with small spacing</div>
+            </Section>
+          </div>
+        </div>
+      </Stack>
+
+      <div class="code-block">
+&lt;Section spacing="lg" background="surface-variant"&gt;
+  &lt;Container&gt;
+    &lt;!-- Контент секции --&gt;
+  &lt;/Container&gt;
+&lt;/Section&gt;
+      </div>
+    </Container>
+  </Section>
+
+  <!-- 5. Real World Example -->
+  <Section spacing="xl">
+    <Container maxWidth="large">
+      <h2 class="section-title">5. Реальный пример: Product Grid</h2>
+      <p style="margin-bottom: 32px;">Комбинация всех компонентов</p>
+
+      <Grid columns={1} columnsmd={2} columnslg={3} columnsxl={4} gap="lg">
+        <Card variant="elevated">
+          <Stack direction="column" gap="md">
+            <div style="width: 100%; height: 200px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 8px;"></div>
+            <Stack direction="column" gap="sm">
+              <h3>Product 1</h3>
+              <p style="color: var(--md-sys-color-on-surface-variant);">Описание продукта номер 1</p>
+            </Stack>
+            <Spacer size="sm" />
+            <Stack direction="row" justify="between" align="center">
+              <span style="font-size: 1.5rem; font-weight: 700;">$99</span>
+              <Button variant="filled">Buy Now</Button>
+            </Stack>
+          </Stack>
+        </Card>
+
+        <Card variant="elevated">
+          <Stack direction="column" gap="md">
+            <div style="width: 100%; height: 200px; background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); border-radius: 8px;"></div>
+            <Stack direction="column" gap="sm">
+              <h3>Product 2</h3>
+              <p style="color: var(--md-sys-color-on-surface-variant);">Описание продукта номер 2</p>
+            </Stack>
+            <Spacer size="sm" />
+            <Stack direction="row" justify="between" align="center">
+              <span style="font-size: 1.5rem; font-weight: 700;">$99</span>
+              <Button variant="filled">Buy Now</Button>
+            </Stack>
+          </Stack>
+        </Card>
+
+        <Card variant="elevated">
+          <Stack direction="column" gap="md">
+            <div style="width: 100%; height: 200px; background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); border-radius: 8px;"></div>
+            <Stack direction="column" gap="sm">
+              <h3>Product 3</h3>
+              <p style="color: var(--md-sys-color-on-surface-variant);">Описание продукта номер 3</p>
+            </Stack>
+            <Spacer size="sm" />
+            <Stack direction="row" justify="between" align="center">
+              <span style="font-size: 1.5rem; font-weight: 700;">$99</span>
+              <Button variant="filled">Buy Now</Button>
+            </Stack>
+          </Stack>
+        </Card>
+
+        <Card variant="elevated">
+          <Stack direction="column" gap="md">
+            <div style="width: 100%; height: 200px; background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); border-radius: 8px;"></div>
+            <Stack direction="column" gap="sm">
+              <h3>Product 4</h3>
+              <p style="color: var(--md-sys-color-on-surface-variant);">Описание продукта номер 4</p>
+            </Stack>
+            <Spacer size="sm" />
+            <Stack direction="row" justify="between" align="center">
+              <span style="font-size: 1.5rem; font-weight: 700;">$99</span>
+              <Button variant="filled">Buy Now</Button>
+            </Stack>
+          </Stack>
+        </Card>
+
+        <Card variant="elevated">
+          <Stack direction="column" gap="md">
+            <div style="width: 100%; height: 200px; background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); border-radius: 8px;"></div>
+            <Stack direction="column" gap="sm">
+              <h3>Product 5</h3>
+              <p style="color: var(--md-sys-color-on-surface-variant);">Описание продукта номер 5</p>
+            </Stack>
+            <Spacer size="sm" />
+            <Stack direction="row" justify="between" align="center">
+              <span style="font-size: 1.5rem; font-weight: 700;">$99</span>
+              <Button variant="filled">Buy Now</Button>
+            </Stack>
+          </Stack>
+        </Card>
+
+        <Card variant="elevated">
+          <Stack direction="column" gap="md">
+            <div style="width: 100%; height: 200px; background: linear-gradient(135deg, #30cfd0 0%, #330867 100%); border-radius: 8px;"></div>
+            <Stack direction="column" gap="sm">
+              <h3>Product 6</h3>
+              <p style="color: var(--md-sys-color-on-surface-variant);">Описание продукта номер 6</p>
+            </Stack>
+            <Spacer size="sm" />
+            <Stack direction="row" justify="between" align="center">
+              <span style="font-size: 1.5rem; font-weight: 700;">$99</span>
+              <Button variant="filled">Buy Now</Button>
+            </Stack>
+          </Stack>
+        </Card>
+
+        <Card variant="elevated">
+          <Stack direction="column" gap="md">
+            <div style="width: 100%; height: 200px; background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%); border-radius: 8px;"></div>
+            <Stack direction="column" gap="sm">
+              <h3>Product 7</h3>
+              <p style="color: var(--md-sys-color-on-surface-variant);">Описание продукта номер 7</p>
+            </Stack>
+            <Spacer size="sm" />
+            <Stack direction="row" justify="between" align="center">
+              <span style="font-size: 1.5rem; font-weight: 700;">$99</span>
+              <Button variant="filled">Buy Now</Button>
+            </Stack>
+          </Stack>
+        </Card>
+
+        <Card variant="elevated">
+          <Stack direction="column" gap="md">
+            <div style="width: 100%; height: 200px; background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%); border-radius: 8px;"></div>
+            <Stack direction="column" gap="sm">
+              <h3>Product 8</h3>
+              <p style="color: var(--md-sys-color-on-surface-variant);">Описание продукта номер 8</p>
+            </Stack>
+            <Spacer size="sm" />
+            <Stack direction="row" justify="between" align="center">
+              <span style="font-size: 1.5rem; font-weight: 700;">$99</span>
+              <Button variant="filled">Buy Now</Button>
+            </Stack>
+          </Stack>
+        </Card>
+      </Grid>
+    </Container>
+  </Section>
+
+  <!-- 6. Responsive Utilities -->
+  <Section spacing="lg" background="primary">
+    <Container maxWidth="large">
+      <h2 class="section-title" style="color: white;">6. Responsive Utilities</h2>
+      <p style="margin-bottom: 32px; color: rgba(255,255,255,0.9);">Классы для управления отображением на разных устройствах</p>
+
+      <Stack direction="column" gap="lg">
+        <div class="demo-box" style="background-color: rgba(255,255,255,0.1); color: white;">
+          <span class="show-compact-only">📱 Виден только на Mobile (600px)</span>
+          <span class="show-medium-only">📱 Виден только на Tablet (600-839px)</span>
+          <span class="show-expanded-only">💻 Виден только на Desktop (840-1239px)</span>
+          <span class="show-large-only">🖥️ Виден только на Large Desktop (≥ 1240px)</span>
+        </div>
+
+        <div class="demo-box hide-compact" style="background-color: rgba(255,255,255,0.1); color: white;">
+          Скрыт на Mobile
+        </div>
+
+        <div class="demo-box hide-expanded" style="background-color: rgba(255,255,255,0.1); color: white;">
+          Скрыт на Desktop
+        </div>
+      </Stack>
+
+      <div class="code-block">
+&lt;div class="show-compact-only"&gt;Mobile только&lt;/div&gt;
+&lt;div class="hide-compact"&gt;Скрыт на Mobile&lt;/div&gt;
+      </div>
+    </Container>
+  </Section>
+
+  <!-- Footer -->
+  <Section spacing="md">
+    <Container maxWidth="large">
+      <Stack direction="column" gap="md" align="center">
+        <h3>Layout System Ready! 🎉</h3>
+        <p style="text-align: center; max-width: 600px;">
+          Все компоненты готовы к использованию. Измените размер окна браузера, чтобы увидеть адаптивность в действии!
+        </p>
+        <Stack direction="row" gap="md">
+          <Button variant="outlined">Documentation</Button>
+          <Button variant="filled">Get Started</Button>
+        </Stack>
+      </Stack>
+    </Container>
+  </Section>
+
+  <!-- Breakpoint Indicator -->
+  <div class="breakpoint-indicator">
+    <span class="show-compact-only">📱 Compact (600px)</span>
+    <span class="show-medium-only">📱 Medium (600-839px)</span>
+    <span class="show-expanded-only">💻 Expanded (840-1239px)</span>
+    <span class="show-large-only">🖥️ Large (≥ 1240px)</span>
+  </div>
+
+</body>
+</html>

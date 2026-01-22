@@ -1,0 +1,232 @@
+---
+/**
+ * Chip Component - Enhanced Material Design 3
+ * Modern chip with smooth transitions
+ */
+import Icon from './Icon.astro';
+
+export interface Props {
+  label: string;
+  variant?: 'assist' | 'filter' | 'input' | 'suggestion';
+  leadingIcon?: string;
+  trailingIcon?: string;
+  selected?: boolean;
+  disabled?: boolean;
+  class?: string;
+}
+
+const {
+  label,
+  variant = 'assist',
+  leadingIcon,
+  trailingIcon,
+  selected = false,
+  disabled = false,
+  class: className = '',
+} = Astro.props;
+---
+
+<button
+  class:list={[
+    'chip',
+    `chip--${variant}`,
+    { 'chip--selected': selected },
+    { 'chip--disabled': disabled },
+    className,
+  ]}
+  disabled={disabled}
+  type="button"
+  data-chip
+>
+  {leadingIcon && (
+    <span class="chip__icon chip__icon--leading">
+      <Icon name={leadingIcon} />
+    </span>
+  )}
+  
+  <span class="chip__label">{label}</span>
+  
+  {trailingIcon && (
+    <span class="chip__icon chip__icon--trailing">
+      <Icon name={trailingIcon} />
+    </span>
+  )}
+  
+  <span class="chip__ripple"></span>
+</button>
+
+<style>
+  .chip {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    border-radius: 8px;
+    border: 1px solid var(--md-sys-color-outline);
+    background-color: transparent;
+    color: var(--md-sys-color-on-surface);
+    font-family: var(--md-sys-typescale-label-large-font);
+    font-size: var(--md-sys-typescale-label-large-size);
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    height: 32px;
+    overflow: hidden;
+  }
+
+  .chip:hover:not(.chip--disabled) {
+    background: linear-gradient(
+      135deg,
+      var(--md-sys-color-surface-container-highest),
+      var(--md-sys-color-surface-container-high)
+    );
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+    transform: translateY(-1px);
+  }
+
+  .chip:active:not(.chip--disabled) {
+    transform: translateY(0);
+  }
+
+  /* Ripple effect */
+  .chip__ripple {
+    position: absolute;
+    border-radius: 50%;
+    background: rgba(0, 0, 0, 0.1);
+    transform: scale(0);
+    pointer-events: none;
+  }
+
+  /* Filter variant - Selected state */
+  .chip--filter.chip--selected {
+    background: linear-gradient(
+      135deg,
+      var(--md-sys-color-secondary-container),
+      color-mix(in srgb, var(--md-sys-color-secondary-container) 85%, var(--md-sys-color-secondary))
+    );
+    color: var(--md-sys-color-on-secondary-container);
+    border-color: transparent;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  }
+
+  .chip--filter.chip--selected:hover:not(.chip--disabled) {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    transform: translateY(-2px);
+  }
+
+  /* Input variant */
+  .chip--input {
+    background: linear-gradient(
+      135deg,
+      var(--md-sys-color-surface-container-low),
+      var(--md-sys-color-surface-container)
+    );
+    border-color: transparent;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  }
+
+  .chip--input:hover:not(.chip--disabled) {
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+  }
+
+  /* Suggestion variant */
+  .chip--suggestion {
+    border-style: dashed;
+    border-width: 2px;
+  }
+
+  .chip--suggestion:hover:not(.chip--disabled) {
+    border-style: solid;
+    background: var(--md-sys-color-surface-container);
+  }
+
+  /* Icons */
+  .chip__icon {
+    display: flex;
+    align-items: center;
+    font-size: 18px;
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .chip:hover:not(.chip--disabled) .chip__icon--leading {
+    transform: scale(1.1) rotate(-5deg);
+  }
+
+  .chip__icon--trailing {
+    margin-right: -4px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .chip:hover:not(.chip--disabled) .chip__icon--trailing {
+    transform: scale(1.15);
+  }
+
+  /* Label */
+  .chip__label {
+    line-height: 1;
+    letter-spacing: 0.1px;
+  }
+
+  /* Disabled state */
+  .chip--disabled {
+    opacity: 0.38;
+    cursor: not-allowed;
+  }
+
+  /* Focus visible */
+  .chip:focus-visible {
+    outline: 2px solid var(--md-sys-color-primary);
+    outline-offset: 2px;
+  }
+</style>
+
+<script>
+  function initChips() {
+    document.querySelectorAll('[data-chip]').forEach(chip => {
+      chip.addEventListener('click', (e) => {
+        const target = e.currentTarget as HTMLElement;
+        const ripple = target.querySelector('.chip__ripple') as HTMLElement;
+        if (!ripple) return;
+
+        const mouseEvent = e as MouseEvent;
+        const rect = target.getBoundingClientRect();
+        const size = Math.max(rect.width, rect.height);
+        const x = mouseEvent.clientX - rect.left - size / 2;
+        const y = mouseEvent.clientY - rect.top - size / 2;
+
+        ripple.style.width = ripple.style.height = `${size}px`;
+        ripple.style.left = `${x}px`;
+        ripple.style.top = `${y}px`;
+
+        ripple.style.animation = 'none';
+        setTimeout(() => {
+          ripple.style.animation = 'chip-ripple 0.6s ease-out';
+        }, 10);
+      });
+    });
+
+    const style = document.createElement('style');
+    style.textContent = `
+      @keyframes chip-ripple {
+        from {
+          transform: scale(0);
+          opacity: 1;
+        }
+        to {
+          transform: scale(4);
+          opacity: 0;
+        }
+      }
+    `;
+    document.head.appendChild(style);
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initChips);
+  } else {
+    initChips();
+  }
+
+  document.addEventListener('astro:page-load', initChips);
+</script>

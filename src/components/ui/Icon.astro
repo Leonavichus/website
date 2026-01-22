@@ -1,0 +1,75 @@
+---
+// src/components/ui/Icon.astro
+/**
+ * Material Symbols Icon Component
+ * Использует Material Symbols шрифт от Google
+ */
+
+export interface Props {
+  name: string;
+  size?: 'small' | 'medium' | 'large';
+  filled?: boolean;
+  weight?: 100 | 200 | 300 | 400 | 500 | 600 | 700;
+  grade?: -25 | 0 | 200;
+  opticalSize?: 20 | 24 | 40 | 48;
+  class?: string;
+  style?: string;
+}
+
+const {
+  name,
+  size = 'medium',
+  filled = false,
+  weight = 400,
+  grade = 0,
+  opticalSize = 24,
+  class: className = '',
+  style = '',
+} = Astro.props;
+
+// Size mapping
+const sizeMap = {
+  small: '20px',
+  medium: '24px',
+  large: '40px',
+};
+
+const iconSize = sizeMap[size];
+
+// Font variation settings
+const fontVariation = `'FILL' ${filled ? 1 : 0}, 'wght' ${weight}, 'GRAD' ${grade}, 'opsz' ${opticalSize}`;
+---
+
+<span
+  class:list={['material-symbols-outlined', 'icon', `icon-${size}`, className]}
+  style={`font-size: ${iconSize}; font-variation-settings: ${fontVariation}; ${style}`}
+  aria-hidden="true"
+>
+  {name}
+</span>
+
+<style>
+  .icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    user-select: none;
+    vertical-align: middle;
+    color: currentColor;
+  }
+
+  .icon-small {
+    width: 20px;
+    height: 20px;
+  }
+
+  .icon-medium {
+    width: 24px;
+    height: 24px;
+  }
+
+  .icon-large {
+    width: 40px;
+    height: 40px;
+  }
+</style>

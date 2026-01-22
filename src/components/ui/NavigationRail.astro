@@ -1,0 +1,316 @@
+---
+/**
+ * NavigationRail Component - Enhanced Material Design 3
+ * Modern side navigation with fluid animations
+ */
+import Icon from './Icon.astro';
+
+interface NavigationItem {
+  label: string;
+  icon: string;
+  href?: string;
+  active?: boolean;
+  badge?: number | string;
+}
+
+interface Props {
+  items: NavigationItem[];
+  showFab?: boolean;
+  fabIcon?: string;
+  fabLabel?: string;
+}
+
+const {
+  items,
+  showFab = false,
+  fabIcon = 'add',
+  fabLabel = 'Create'
+} = Astro.props;
+---
+
+<nav class="navigation-rail">
+  <div class="navigation-rail__gradient"></div>
+  
+  {showFab && (
+    <div class="navigation-rail__fab-container">
+      <button 
+        type="button" 
+        class="navigation-rail__fab"
+        aria-label={fabLabel}
+      >
+        <Icon name={fabIcon} />
+        <span class="navigation-rail__fab-ripple"></span>
+      </button>
+    </div>
+  )}
+
+  <div class="navigation-rail__items">
+    {items.map((item) => (
+      <a
+        href={item.href || '#'}
+        class:list={[
+          'navigation-rail__item',
+          { 'navigation-rail__item--active': item.active }
+        ]}
+        aria-label={item.label}
+      >
+        <div class="navigation-rail__indicator">
+          <Icon name={item.icon} class="navigation-rail__icon" />
+          {item.badge !== undefined && (
+            <span class="navigation-rail__badge">
+              {typeof item.badge === 'number' && item.badge > 99 ? '99+' : item.badge}
+            </span>
+          )}
+        </div>
+        <span class="navigation-rail__label">{item.label}</span>
+      </a>
+    ))}
+  </div>
+</nav>
+
+<style>
+  .navigation-rail {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 80px;
+    min-height: 100vh;
+    padding: 16px 0;
+    background: var(--md-sys-color-surface-container);
+    border-right: 1px solid var(--md-sys-color-outline-variant);
+    overflow: hidden;
+  }
+
+  /* Gradient overlay */
+  .navigation-rail__gradient {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 200px;
+    background: linear-gradient(
+      to bottom,
+      rgba(103, 80, 164, 0.05) 0%,
+      transparent 100%
+    );
+    pointer-events: none;
+  }
+
+  /* FAB */
+  .navigation-rail__fab-container {
+    position: relative;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    margin-bottom: 24px;
+    padding: 0 12px;
+    z-index: 1;
+  }
+
+  .navigation-rail__fab {
+    position: relative;
+    width: 56px;
+    height: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    border-radius: 16px;
+    background: linear-gradient(135deg, 
+      var(--md-sys-color-primary-container),
+      color-mix(in srgb, var(--md-sys-color-primary-container) 80%, var(--md-sys-color-primary))
+    );
+    color: var(--md-sys-color-on-primary-container);
+    box-shadow: 
+      0 3px 5px rgba(0, 0, 0, 0.08),
+      0 1px 18px rgba(0, 0, 0, 0.06);
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    overflow: hidden;
+  }
+
+  .navigation-rail__fab::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, transparent, rgba(255, 255, 255, 0.2));
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+
+  .navigation-rail__fab:hover {
+    box-shadow: 
+      0 6px 10px rgba(0, 0, 0, 0.12),
+      0 2px 22px rgba(0, 0, 0, 0.1);
+    background: var(--md-sys-color-primary);
+    color: var(--md-sys-color-on-primary);
+    transform: translateY(-2px) scale(1.05);
+  }
+
+  .navigation-rail__fab:hover::before {
+    opacity: 1;
+  }
+
+  .navigation-rail__fab:active {
+    transform: translateY(0) scale(1);
+  }
+
+  .navigation-rail__fab-ripple {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    border-radius: 16px;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.3) 0%, transparent 70%);
+    transform: scale(0);
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .navigation-rail__fab:active .navigation-rail__fab-ripple {
+    animation: fab-ripple 0.6s ease-out;
+  }
+
+  @keyframes fab-ripple {
+    to {
+      transform: scale(2.5);
+      opacity: 0;
+    }
+  }
+
+  /* Navigation items */
+  .navigation-rail__items {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    width: 100%;
+    align-items: center;
+    z-index: 1;
+  }
+
+  .navigation-rail__item {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    width: 100%;
+    padding: 4px 0;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .navigation-rail__indicator {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 56px;
+    height: 32px;
+    border-radius: 16px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .navigation-rail__indicator::before {
+    content: '';
+    position: absolute;
+    inset: -4px;
+    border-radius: 20px;
+    background: var(--md-sys-color-primary);
+    opacity: 0;
+    transform: scale(0.8);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .navigation-rail__item:hover .navigation-rail__indicator {
+    background: var(--md-sys-color-surface-container-highest);
+  }
+
+  .navigation-rail__item:hover .navigation-rail__indicator::before {
+    opacity: 0.05;
+    transform: scale(1);
+  }
+
+  .navigation-rail__item--active .navigation-rail__indicator {
+    background: var(--md-sys-color-secondary-container);
+  }
+
+  .navigation-rail__item--active .navigation-rail__indicator::before {
+    opacity: 0.1;
+    transform: scale(1);
+  }
+
+  .navigation-rail__icon {
+    position: relative;
+    font-size: 24px;
+    color: var(--md-sys-color-on-surface-variant);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 1;
+  }
+
+  .navigation-rail__item:hover .navigation-rail__icon {
+    transform: scale(1.1);
+  }
+
+  .navigation-rail__item--active .navigation-rail__icon {
+    color: var(--md-sys-color-on-secondary-container);
+    filter: drop-shadow(0 0 8px rgba(103, 80, 164, 0.3));
+  }
+
+  /* Badge */
+  .navigation-rail__badge {
+    position: absolute;
+    top: -6px;
+    right: 6px;
+    min-width: 18px;
+    height: 18px;
+    padding: 0 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, var(--md-sys-color-error), #F44336);
+    color: var(--md-sys-color-on-error);
+    border: 2px solid var(--md-sys-color-surface-container);
+    border-radius: 10px;
+    font-size: 10px;
+    font-weight: 700;
+    line-height: 1;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+    animation: badge-bounce 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  }
+
+  @keyframes badge-bounce {
+    0% {
+      transform: scale(0);
+    }
+    50% {
+      transform: scale(1.2);
+    }
+    100% {
+      transform: scale(1);
+    }
+  }
+
+  /* Label */
+  .navigation-rail__label {
+    color: var(--md-sys-color-on-surface-variant);
+    font: var(--md-sys-typescale-label-medium);
+    font-size: 12px;
+    font-weight: 500;
+    text-align: center;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    opacity: 0.9;
+  }
+
+  .navigation-rail__item:hover .navigation-rail__label {
+    opacity: 1;
+  }
+
+  .navigation-rail__item--active .navigation-rail__label {
+    color: var(--md-sys-color-on-surface);
+    font-weight: 700;
+    opacity: 1;
+  }
+</style>

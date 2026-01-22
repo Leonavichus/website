@@ -1,0 +1,260 @@
+---
+/**
+ * CircularProgress Component - Material Design 3 Enhanced
+ * Улучшенный круговой индикатор прогресса
+ */
+
+export interface Props {
+  value?: number;
+  size?: number;
+  indeterminate?: boolean;
+  showValue?: boolean;
+  thickness?: number;
+  color?: 'primary' | 'secondary' | 'tertiary';
+  class?: string;
+}
+
+const {
+  value,
+  size = 48,
+  indeterminate = false,
+  showValue = false,
+  thickness = 4,
+  color = 'primary',
+  class: className = '',
+} = Astro.props;
+
+const progressValue = value !== undefined ? Math.min(100, Math.max(0, value)) : 0;
+const radius = (size - thickness * 2) / 2;
+const circumference = 2 * Math.PI * radius;
+const offset = circumference - (progressValue / 100) * circumference;
+const center = size / 2;
+
+const colorMap = {
+  primary: 'var(--md-sys-color-primary)',
+  secondary: 'var(--md-sys-color-secondary)',
+  tertiary: 'var(--md-sys-color-tertiary)'
+};
+---
+
+<div
+  class:list={[
+    'circular-progress',
+    `circular-progress--${color}`,
+    { 'circular-progress--indeterminate': indeterminate },
+    { 'circular-progress--with-value': showValue },
+    className,
+  ]}
+  role="progressbar"
+  aria-valuemin="0"
+  aria-valuemax="100"
+  aria-valuenow={indeterminate ? undefined : progressValue}
+  style={`width: ${size}px; height: ${size}px;`}
+  data-progress
+>
+  <svg class="circular-progress__svg" viewBox={`0 0 ${size} ${size}`}>
+    <!-- Background track -->
+    <circle
+      class="circular-progress__track"
+      cx={center}
+      cy={center}
+      r={radius}
+      stroke-width={thickness}
+    />
+    
+    <!-- Progress circle -->
+    <circle
+      class="circular-progress__circle"
+      cx={center}
+      cy={center}
+      r={radius}
+      stroke-width={thickness}
+      stroke-dasharray={circumference}
+      stroke-dashoffset={indeterminate ? circumference * 0.75 : offset}
+      data-circle
+    />
+  </svg>
+
+  {showValue && !indeterminate && (
+    <div class="circular-progress__value" data-value>
+      {Math.round(progressValue)}
+      <span class="circular-progress__percent">%</span>
+    </div>
+  )}
+</div>
+
+<style>
+  .circular-progress {
+    position: relative;
+    display: inline-block;
+  }
+
+  .circular-progress__svg {
+    transform: rotate(-90deg);
+    width: 100%;
+    height: 100%;
+  }
+
+  /* Track */
+  .circular-progress__track {
+    fill: none;
+    stroke: var(--md-sys-color-surface-container-highest);
+    opacity: 0.3;
+  }
+
+  /* Progress circle */
+  .circular-progress__circle {
+    fill: none;
+    stroke: var(--md-sys-color-primary);
+    stroke-linecap: round;
+    transition: stroke-dashoffset 400ms cubic-bezier(0.4, 0, 0.2, 1);
+    filter: drop-shadow(0 0 2px currentColor);
+  }
+
+  /* Color variants */
+  .circular-progress--primary .circular-progress__circle {
+    stroke: var(--md-sys-color-primary);
+  }
+
+  .circular-progress--secondary .circular-progress__circle {
+    stroke: var(--md-sys-color-secondary);
+  }
+
+  .circular-progress--tertiary .circular-progress__circle {
+    stroke: var(--md-sys-color-tertiary);
+  }
+
+  /* Value display */
+  .circular-progress__value {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font: var(--md-sys-typescale-title-medium);
+    font-weight: 500;
+    color: var(--md-sys-color-on-surface);
+    line-height: 1;
+  }
+
+  .circular-progress__percent {
+    font-size: 0.65em;
+    opacity: 0.7;
+  }
+
+  /* Indeterminate animation */
+  .circular-progress--indeterminate .circular-progress__svg {
+    animation: rotate 2s linear infinite;
+  }
+
+  .circular-progress--indeterminate .circular-progress__circle {
+    animation: indeterminate 1.5s ease-in-out infinite;
+  }
+
+  @keyframes rotate {
+    100% {
+      transform: rotate(270deg);
+    }
+  }
+
+  @keyframes indeterminate {
+    0% {
+      stroke-dasharray: 1, 200;
+      stroke-dashoffset: 0;
+    }
+    50% {
+      stroke-dasharray: 100, 200;
+      stroke-dashoffset: -50;
+    }
+    100% {
+      stroke-dasharray: 100, 200;
+      stroke-dashoffset: -150;
+    }
+  }
+
+  /* Sizes */
+  .circular-progress--small {
+    width: 24px;
+    height: 24px;
+  }
+
+  .circular-progress--large {
+    width: 64px;
+    height: 64px;
+  }
+
+  /* Reduced motion */
+  @media (prefers-reduced-motion: reduce) {
+    .circular-progress--indeterminate .circular-progress__svg,
+    .circular-progress--indeterminate .circular-progress__circle {
+      animation: none;
+    }
+
+    .circular-progress__circle {
+      transition: none;
+    }
+  }
+</style>
+
+<script>
+  function initCircularProgress() {
+    const progressElements = document.querySelectorAll('[data-progress]');
+
+    progressElements.forEach(progress => {
+      const circle = progress.querySelector('[data-circle]') as SVGCircleElement;
+      const valueDisplay = progress.querySelector('[data-value]') as HTMLElement;
+      
+      if (!circle) return;
+
+      // Get the circumference
+      const radius = parseFloat(circle.getAttribute('r') || '0');
+      const circumference = 2 * Math.PI * radius;
+
+      // Function to update progress
+      const updateProgress = (value: number) => {
+        const clampedValue = Math.min(100, Math.max(0, value));
+        const offset = circumference - (clampedValue / 100) * circumference;
+        
+        circle.style.strokeDashoffset = offset.toString();
+        
+        if (valueDisplay) {
+          valueDisplay.firstChild!.textContent = Math.round(clampedValue).toString();
+        }
+
+        progress.setAttribute('aria-valuenow', clampedValue.toString());
+      };
+
+      // Expose update function
+      (progress as any).updateProgress = updateProgress;
+
+      // Animate initial value
+      const initialValue = parseFloat(progress.getAttribute('aria-valuenow') || '0');
+      if (initialValue > 0 && !progress.classList.contains('circular-progress--indeterminate')) {
+        let currentValue = 0;
+        const duration = 800;
+        const steps = 60;
+        const increment = initialValue / steps;
+        const stepDuration = duration / steps;
+
+        const animate = () => {
+          currentValue += increment;
+          if (currentValue >= initialValue) {
+            updateProgress(initialValue);
+            return;
+          }
+          updateProgress(currentValue);
+          setTimeout(animate, stepDuration);
+        };
+
+        animate();
+      }
+    });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initCircularProgress);
+  } else {
+    initCircularProgress();
+  }
+
+  document.addEventListener('astro:page-load', initCircularProgress);
+</script>

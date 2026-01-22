@@ -1,0 +1,154 @@
+---
+import { languages } from '../../i18n/config';
+
+const currentPath = Astro.url.pathname;
+const currentLang = currentPath.split('/')[1] || 'ru';
+
+// Удаляем язык из пути для переключения
+const pathWithoutLang = currentPath.replace(/^\/[a-z]{2}/, '') || '/';
+---
+
+<div class="lang-switcher">
+  <button class="lang-trigger" id="lang-trigger" aria-label="Выбрать язык">
+    <span class="material-icons">language</span>
+    <span class="current-lang">{currentLang.toUpperCase()}</span>
+  </button>
+
+  <div class="lang-dropdown" id="lang-dropdown">
+    {Object.entries(languages).map(([code, name]) => (
+      <a 
+        href={code === 'ru' ? pathWithoutLang : `/${code}${pathWithoutLang}`}
+        class={`lang-option ${code === currentLang ? 'active' : ''}`}
+        data-lang={code}
+      >
+        <span class="lang-code">{code.toUpperCase()}</span>
+        <span class="lang-name">{name}</span>
+        {code === currentLang && <span class="material-icons check">check</span>}
+      </a>
+    ))}
+  </div>
+</div>
+
+<script>
+  const langTrigger = document.getElementById('lang-trigger');
+  const langDropdown = document.getElementById('lang-dropdown');
+
+  langTrigger?.addEventListener('click', (e) => {
+    e.stopPropagation();
+    langDropdown?.classList.toggle('open');
+  });
+
+  // Закрыть при клике вне
+  document.addEventListener('click', () => {
+    langDropdown?.classList.remove('open');
+  });
+
+  langDropdown?.addEventListener('click', (e) => {
+    e.stopPropagation();
+  });
+</script>
+
+<style>
+  .lang-switcher {
+    position: relative;
+  }
+
+  .lang-trigger {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    height: 48px;
+    padding: 0 16px;
+    border-radius: 100px;
+    border: none;
+    background-color: var(--md-sys-color-surface-container-high);
+    color: var(--md-sys-color-on-surface);
+    cursor: pointer;
+    transition: all 0.3s;
+    font-weight: 600;
+    font-size: 13px;
+  }
+
+  .lang-trigger:hover {
+    background-color: var(--md-sys-color-surface-container-highest);
+    transform: translateY(-2px);
+  }
+
+  .lang-trigger .material-icons {
+    font-size: 20px;
+  }
+
+  .lang-dropdown {
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 0;
+    background-color: var(--md-sys-color-surface-container);
+    border: 1px solid var(--md-sys-color-outline-variant);
+    border-radius: 12px;
+    padding: 8px;
+    min-width: 180px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(-10px);
+    transition: all 0.3s;
+    z-index: 100;
+  }
+
+  .lang-dropdown.open {
+    opacity: 1;
+    pointer-events: all;
+    transform: translateY(0);
+  }
+
+  .lang-option {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 14px;
+    border-radius: 8px;
+    text-decoration: none;
+    color: var(--md-sys-color-on-surface);
+    transition: all 0.2s;
+  }
+
+  .lang-option:hover {
+    background-color: var(--md-sys-color-surface-container-high);
+  }
+
+  .lang-option.active {
+    background-color: var(--md-sys-color-primary-container);
+    color: var(--md-sys-color-on-primary-container);
+  }
+
+  .lang-code {
+    font-weight: 700;
+    font-size: 12px;
+    width: 24px;
+  }
+
+  .lang-name {
+    flex: 1;
+    font-size: 14px;
+  }
+
+  .check {
+    font-size: 18px;
+    color: var(--md-sys-color-primary);
+  }
+
+  @media (max-width: 768px) {
+    .current-lang {
+      display: none;
+    }
+
+    .lang-trigger {
+      width: 48px;
+      height: 48px;
+      padding: 0;
+      justify-content: center;
+      border-radius: 50%;
+      min-width: 48px;
+    }
+  }
+</style>

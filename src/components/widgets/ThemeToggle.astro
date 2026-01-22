@@ -1,0 +1,98 @@
+---
+---
+
+<button id="theme-toggle" class="theme-toggle" aria-label="Переключить тему">
+  <span class="material-icons sun-icon">light_mode</span>
+  <span class="material-icons moon-icon">dark_mode</span>
+</button>
+
+<script>
+  const themeToggle = document.getElementById('theme-toggle');
+  const html = document.documentElement;
+
+  // Получаем сохраненную тему или системную
+  const getTheme = () => {
+    const stored = localStorage.getItem('theme');
+    if (stored) return stored;
+    return window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+  };
+
+  // Применяем тему
+  const applyTheme = (theme: string) => {
+    html.setAttribute('data-theme', theme);
+    localStorage.setItem('theme', theme);
+  };
+
+  // Инициализация
+  const currentTheme = getTheme();
+  applyTheme(currentTheme);
+
+  // Переключение темы
+  themeToggle?.addEventListener('click', () => {
+    const current = html.getAttribute('data-theme');
+    const next = current === 'dark' ? 'light' : 'dark';
+    applyTheme(next);
+  });
+
+  // Слушаем изменения системной темы
+  window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+    if (!localStorage.getItem('theme')) {
+      applyTheme(e.matches ? 'dark' : 'light');
+    }
+  });
+</script>
+
+<style>
+  .theme-toggle {
+    position: relative;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    border: none;
+    background-color: var(--md-sys-color-surface-container-high);
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+
+  .theme-toggle:hover {
+    background-color: var(--md-sys-color-surface-container-highest);
+    transform: scale(1.05);
+  }
+
+  .theme-toggle:active {
+    transform: scale(0.95);
+  }
+
+  .theme-toggle .material-icons {
+    position: absolute;
+    font-size: 24px;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .sun-icon {
+    color: var(--md-sys-color-primary);
+    opacity: 0;
+    transform: rotate(-90deg) scale(0);
+  }
+
+  .moon-icon {
+    color: var(--md-sys-color-primary);
+    opacity: 1;
+    transform: rotate(0deg) scale(1);
+  }
+
+  /* Светлая тема */
+  :global(html[data-theme="light"]) .sun-icon {
+    opacity: 1;
+    transform: rotate(0deg) scale(1);
+  }
+
+  :global(html[data-theme="light"]) .moon-icon {
+    opacity: 0;
+    transform: rotate(90deg) scale(0);
+  }
+</style>

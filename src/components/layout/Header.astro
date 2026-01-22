@@ -1,0 +1,238 @@
+---
+import ThemeToggle from '../widgets/ThemeToggle.astro';
+import Search from '../features/Search.astro';
+import LangSwitcher from '../widgets/LangSwitcher.astro';
+---
+
+<header class="header">
+  <nav class="nav-container">
+    <a href="/" class="logo">
+      <span class="logo-icon">🐦‍⬛</span>
+      <span class="logo-text">DARK NIGHT</span>
+    </a>
+
+    <div class="nav-links" id="nav-links">
+      <a href="/" class="nav-link">Главная</a>
+      <a href="/about" class="nav-link">О команде</a>
+      <a href="/news" class="nav-link">Новости</a>
+      <a href="/roadmap" class="nav-link">Roadmap</a>
+      <a href="/faq" class="nav-link">FAQ</a>
+    </div>
+
+    <div class="nav-actions">
+      <Search />
+      <LangSwitcher />
+      <ThemeToggle />
+      <a href="https://github.com/darkmoonight" class="github-link" target="_blank" rel="noopener">
+        <span class="material-icons">code</span>
+        <span class="github-text">GitHub</span>
+      </a>
+    </div>
+
+    <button class="mobile-menu-toggle" id="mobile-toggle" aria-label="Меню">
+      <span class="material-icons">menu</span>
+    </button>
+  </nav>
+
+  <!-- Mobile Menu -->
+  <div class="mobile-menu" id="mobile-menu">
+    <a href="/" class="mobile-link">Главная</a>
+    <a href="/about" class="mobile-link">О команде</a>
+    <a href="/news" class="mobile-link">Новости</a>
+    <a href="/roadmap" class="mobile-link">Roadmap</a>
+    <a href="/faq" class="mobile-link">FAQ</a>
+    <a href="https://github.com/darkmoonight" class="mobile-link" target="_blank">
+      <span class="material-icons">code</span>
+      GitHub
+    </a>
+  </div>
+</header>
+
+<script>
+  const mobileToggle = document.getElementById('mobile-toggle');
+  const mobileMenu = document.getElementById('mobile-menu');
+
+  mobileToggle?.addEventListener('click', () => {
+    mobileMenu?.classList.toggle('open');
+    const icon = mobileToggle.querySelector('.material-icons');
+    if (icon) {
+      icon.textContent = mobileMenu?.classList.contains('open') ? 'close' : 'menu';
+    }
+  });
+
+  // Закрыть меню при клике на ссылку
+  document.querySelectorAll('.mobile-link').forEach(link => {
+    link.addEventListener('click', () => {
+      mobileMenu?.classList.remove('open');
+      const icon = mobileToggle?.querySelector('.material-icons');
+      if (icon) icon.textContent = 'menu';
+    });
+  });
+</script>
+
+<style>
+  .header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    background-color: rgba(27, 27, 31, 0.8);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--md-sys-color-outline-variant);
+    transition: all 0.3s;
+  }
+
+  .nav-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 14px 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 32px;
+  }
+
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--md-sys-color-on-surface);
+    text-decoration: none;
+    transition: all 0.3s;
+  }
+
+  .logo:hover {
+    color: var(--md-sys-color-primary);
+  }
+
+  .logo-icon {
+    font-size: 28px;
+    transition: transform 0.3s;
+  }
+
+  .logo:hover .logo-icon {
+    transform: scale(1.1) rotate(-5deg);
+  }
+
+  .nav-links {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    flex: 1;
+  }
+
+  .nav-link {
+    padding: 10px 16px;
+    color: var(--md-sys-color-on-surface-variant);
+    font-weight: 500;
+    font-size: 14px;
+    border-radius: 100px;
+    transition: all 0.3s;
+    position: relative;
+    white-space: nowrap;
+  }
+
+  .nav-link:hover {
+    color: var(--md-sys-color-primary);
+    background-color: var(--md-sys-color-surface-container-highest);
+  }
+
+  .nav-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .github-link {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    height: 48px;
+    padding: 0 20px;
+    background-color: var(--md-sys-color-primary);
+    color: var(--md-sys-color-on-primary);
+    border-radius: 100px;
+    font-weight: 600;
+    font-size: 14px;
+    transition: all 0.3s;
+    text-decoration: none;
+  }
+
+  .github-link .material-icons {
+    font-size: 20px;
+  }
+
+  .github-link:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(166, 196, 255, 0.4);
+  }
+
+  .mobile-menu-toggle {
+    display: none;
+    background: none;
+    border: none;
+    color: var(--md-sys-color-on-surface);
+    cursor: pointer;
+    padding: 8px;
+  }
+
+  .mobile-menu-toggle .material-icons {
+    font-size: 28px;
+  }
+
+  .mobile-menu {
+    display: none;
+    flex-direction: column;
+    gap: 4px;
+    padding: 16px 32px;
+    background-color: var(--md-sys-color-surface-container);
+    border-top: 1px solid var(--md-sys-color-outline-variant);
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease-out;
+  }
+
+  .mobile-menu.open {
+    max-height: 500px;
+  }
+
+  .mobile-link {
+    padding: 14px 20px;
+    color: var(--md-sys-color-on-surface);
+    font-weight: 500;
+    font-size: 16px;
+    border-radius: 12px;
+    transition: all 0.3s;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .mobile-link:hover {
+    background-color: var(--md-sys-color-surface-container-high);
+    color: var(--md-sys-color-primary);
+  }
+
+  @media (max-width: 1024px) {
+    .nav-links {
+      display: none;
+    }
+
+    .github-text {
+      display: none;
+    }
+
+    .mobile-menu-toggle {
+      display: block;
+    }
+
+    .mobile-menu {
+      display: flex;
+    }
+  }
+</style>

@@ -1,0 +1,205 @@
+---
+// src/components/ui/Menu.astro
+/**
+ * Material Design 3 Menu Component
+ */
+import Icon from './Icon.astro';
+
+export interface Props {
+  id: string;
+  position?: 'bottom-start' | 'bottom-end' | 'top-start' | 'top-end';
+  class?: string;
+}
+
+const {
+  id,
+  position = 'bottom-start',
+  class: className,
+} = Astro.props;
+---
+
+<div
+  class:list={['menu', `menu-${position}`, className]}
+  data-menu={id}
+  role="menu"
+>
+  <div class="menu-container">
+    <slot />
+  </div>
+</div>
+
+<style>
+  .menu {
+    position: absolute;
+    z-index: 400;
+    min-width: 112px;
+    max-width: 280px;
+    opacity: 0;
+    visibility: hidden;
+    transform: scale(0.8);
+    transform-origin: top left;
+    transition: all var(--md-sys-motion-duration-short4) var(--md-sys-motion-easing-emphasized-decelerate);
+  }
+
+  .menu.open {
+    opacity: 1;
+    visibility: visible;
+    transform: scale(1);
+  }
+
+  .menu-container {
+    background-color: var(--md-sys-color-surface-container);
+    color: var(--md-sys-color-on-surface);
+    border-radius: var(--md-sys-shape-corner-extra-small);
+    box-shadow: var(--md-sys-elevation-level2);
+    padding: 8px 0;
+    overflow-y: auto;
+    max-height: 70vh;
+  }
+
+  /* Position variants */
+  .menu-bottom-start {
+    top: 100%;
+    left: 0;
+    margin-top: 4px;
+    transform-origin: top left;
+  }
+
+  .menu-bottom-end {
+    top: 100%;
+    right: 0;
+    margin-top: 4px;
+    transform-origin: top right;
+  }
+
+  .menu-top-start {
+    bottom: 100%;
+    left: 0;
+    margin-bottom: 4px;
+    transform-origin: bottom left;
+  }
+
+  .menu-top-end {
+    bottom: 100%;
+    right: 0;
+    margin-bottom: 4px;
+    transform-origin: bottom right;
+  }
+
+  /* Scrollbar styling */
+  .menu-container::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  .menu-container::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .menu-container::-webkit-scrollbar-thumb {
+    background-color: var(--md-sys-color-outline-variant);
+    border-radius: 4px;
+  }
+</style>
+
+<script>
+  // Menu functionality
+  function initMenus() {
+    const menus = document.querySelectorAll('[data-menu]');
+
+    menus.forEach((menu) => {
+      const menuEl = menu as HTMLElement;
+      const menuId = menuEl.getAttribute('data-menu');
+      const trigger = document.querySelector(`[data-menu-trigger="${menuId}"]`) as HTMLElement | null;
+
+      if (!trigger) return;
+
+      function openMenu() {
+        // Close other menus
+        document.querySelectorAll('[data-menu].open').forEach((m) => {
+          if (m !== menu) {
+            m.classList.remove('open');
+          }
+        });
+
+        menuEl.classList.add('open');
+
+        // Focus first item
+        const firstItem = menuEl.querySelector('[data-menu-item]') as HTMLElement;
+        firstItem?.focus();
+      }
+
+      function closeMenu() {
+        menuEl.classList.remove('open');
+        trigger?.focus();
+      }
+
+      // Toggle on trigger click
+      trigger.addEventListener('click', (e) => {
+        e.stopPropagation();
+
+        if (menuEl.classList.contains('open')) {
+          closeMenu();
+        } else {
+          openMenu();
+        }
+      });
+
+      // Close on outside click
+      document.addEventListener('click', (e) => {
+        if (
+          !menuEl.contains(e.target as Node) &&
+          !trigger.contains(e.target as Node)
+        ) {
+          closeMenu();
+        }
+      });
+
+      // Close on escape
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && menuEl.classList.contains('open')) {
+          closeMenu();
+        }
+      });
+
+      // Keyboard navigation
+      menuEl.addEventListener('keydown', (e) => {
+        const items = Array.from(
+          menuEl.querySelectorAll('[data-menu-item]')
+        ) as HTMLElement[];
+        const currentIndex = items.indexOf(document.activeElement as HTMLElement);
+
+        switch (e.key) {
+          case 'ArrowDown':
+            e.preventDefault();
+            const nextIndex = (currentIndex + 1) % items.length;
+            items[nextIndex]?.focus();
+            break;
+
+          case 'ArrowUp':
+            e.preventDefault();
+            const prevIndex = currentIndex <= 0 ? items.length - 1 : currentIndex - 1;
+            items[prevIndex]?.focus();
+            break;
+
+          case 'Home':
+            e.preventDefault();
+            items[0]?.focus();
+            break;
+
+          case 'End':
+            e.preventDefault();
+            items[items.length - 1]?.focus();
+            break;
+        }
+      });
+    });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initMenus);
+  } else {
+    initMenus();
+  }
+
+  document.addEventListener('astro:page-load', initMenus);
+</script>

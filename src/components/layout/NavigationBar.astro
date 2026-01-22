@@ -1,0 +1,283 @@
+---
+// src/components/layout/NavigationBar.astro
+/**
+ * Material Design 3 Navigation Bar (Top App Bar)
+ * Адаптивная навигация для мобильных и планшетов
+ */
+
+import Icon from '../ui/Icon.astro';
+import { NAVIGATION_ITEMS } from '../../utils/constants';
+
+export interface Props {
+  variant?: 'top' | 'center-aligned' | 'small' | 'medium' | 'large';
+  currentPath?: string;
+  class?: string;
+}
+
+const {
+  variant = 'center-aligned',
+  currentPath = '/',
+  class: className = '',
+} = Astro.props;
+---
+
+<header
+  class:list={[
+    'navbar',
+    `navbar-${variant}`,
+    className,
+  ]}
+>
+  <div class="navbar-container">
+    <!-- Leading section -->
+    <div class="navbar-leading">
+      <button
+        class="navbar-icon-button"
+        aria-label="Menu"
+        data-drawer-toggle
+      >
+        <Icon name="menu" size="medium" />
+      </button>
+    </div>
+
+    <!-- Title section -->
+    <div class="navbar-title">
+      <a href="/" class="navbar-logo">
+        <Icon name="nights_stay" size="large" />
+        <span class="navbar-logo-text">DARK NIGHT</span>
+      </a>
+    </div>
+
+    <!-- Trailing section -->
+    <div class="navbar-trailing">
+      <button
+        class="navbar-icon-button"
+        aria-label="Search"
+        data-search-toggle
+      >
+        <Icon name="search" size="medium" />
+      </button>
+
+      <button
+        class="navbar-icon-button"
+        aria-label="Theme"
+        data-theme-toggle
+      >
+        <Icon name="dark_mode" size="medium" />
+      </button>
+    </div>
+  </div>
+
+  <!-- Bottom navigation для мобильных -->
+  <nav class="navbar-bottom" aria-label="Main navigation">
+    <div class="navbar-bottom-container">
+      {NAVIGATION_ITEMS.slice(0, 5).map((item) => {
+        const isActive = currentPath === item.href;
+        return (
+          <a
+            href={item.href}
+            class:list={['navbar-bottom-item', { active: isActive }]}
+            aria-current={isActive ? 'page' : undefined}
+          >
+            <div class="navbar-bottom-icon-container">
+              <Icon name={item.icon} size="medium" filled={isActive} />
+              <div class="navbar-bottom-indicator"></div>
+            </div>
+            <span class="navbar-bottom-label">{item.label}</span>
+          </a>
+        );
+      })}
+    </div>
+  </nav>
+</header>
+
+<style>
+  /* Top App Bar */
+  .navbar {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background-color: var(--md-sys-color-surface);
+    color: var(--md-sys-color-on-surface);
+    box-shadow: var(--md-sys-elevation-level2);
+  }
+
+  .navbar-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 64px;
+    padding: 0 4px;
+    max-width: 1440px;
+    margin: 0 auto;
+  }
+
+  /* Sections */
+  .navbar-leading,
+  .navbar-trailing {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .navbar-title {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+
+  /* Logo */
+  .navbar-logo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    text-decoration: none;
+    color: inherit;
+    padding: 8px 16px;
+    border-radius: var(--md-sys-shape-corner-full);
+    transition: background-color var(--md-sys-motion-duration-short4) var(--md-sys-motion-easing-standard);
+  }
+
+  .navbar-logo:hover {
+    background-color: var(--md-sys-color-surface-container-highest);
+  }
+
+  .navbar-logo-text {
+    font-family: var(--md-sys-typescale-title-large-font);
+    font-size: var(--md-sys-typescale-title-large-size);
+    font-weight: var(--md-sys-typescale-title-large-weight);
+    line-height: var(--md-sys-typescale-title-large-line-height);
+  }
+
+  /* Icon buttons */
+  .navbar-icon-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    height: 48px;
+    border: none;
+    background: transparent;
+    color: var(--md-sys-color-on-surface-variant);
+    border-radius: 50%;
+    cursor: pointer;
+    transition: background-color var(--md-sys-motion-duration-short4) var(--md-sys-motion-easing-standard);
+  }
+
+  .navbar-icon-button:hover {
+    background-color: var(--md-sys-color-on-surface);
+    opacity: 0.08;
+  }
+
+  .navbar-icon-button:focus-visible {
+    outline: 2px solid var(--md-sys-color-primary);
+    outline-offset: 2px;
+  }
+
+  /* Bottom Navigation (Mobile) */
+  .navbar-bottom {
+    display: none;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    background-color: var(--md-sys-color-surface-container);
+    box-shadow: var(--md-sys-elevation-level2);
+  }
+
+  .navbar-bottom-container {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    height: 80px;
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  .navbar-bottom-item {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    flex: 1;
+    min-width: 0;
+    padding: 12px 0;
+    text-decoration: none;
+    color: var(--md-sys-color-on-surface-variant);
+    transition: color var(--md-sys-motion-duration-short4) var(--md-sys-motion-easing-standard);
+  }
+
+  .navbar-bottom-item.active {
+    color: var(--md-sys-color-on-surface);
+  }
+
+  .navbar-bottom-icon-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 64px;
+    height: 32px;
+    border-radius: var(--md-sys-shape-corner-full);
+    transition: background-color var(--md-sys-motion-duration-short4) var(--md-sys-motion-easing-standard);
+  }
+
+  .navbar-bottom-item.active .navbar-bottom-icon-container {
+    background-color: var(--md-sys-color-secondary-container);
+  }
+
+  .navbar-bottom-indicator {
+    position: absolute;
+    bottom: -8px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 3px;
+    background-color: var(--md-sys-color-primary);
+    border-radius: 3px 3px 0 0;
+    transition: width var(--md-sys-motion-duration-medium2) var(--md-sys-motion-easing-emphasized);
+  }
+
+  .navbar-bottom-item.active .navbar-bottom-indicator {
+    width: 32px;
+  }
+
+  .navbar-bottom-label {
+    font-family: var(--md-sys-typescale-label-medium-font);
+    font-size: var(--md-sys-typescale-label-medium-size);
+    font-weight: var(--md-sys-typescale-label-medium-weight);
+    line-height: var(--md-sys-typescale-label-medium-line-height);
+    text-align: center;
+  }
+
+  /* Responsive */
+  @media (max-width: 599px) {
+    .navbar-bottom {
+      display: block;
+    }
+
+    .navbar-logo-text {
+      display: none;
+    }
+
+    /* Добавляем padding снизу для контента */
+    :global(body) {
+      padding-bottom: 80px;
+    }
+  }
+
+  @media (min-width: 840px) {
+    .navbar-container {
+      padding: 0 24px;
+    }
+
+    .navbar-leading button[data-drawer-toggle] {
+      display: none;
+    }
+  }
+</style>

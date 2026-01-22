@@ -1,0 +1,27 @@
+---
+// src/components/ui/List.astro
+/**
+ * Material Design 3 List Component
+ */
+
+export interface Props {
+  class?: string;
+}
+
+const { class: className = '' } = Astro.props;
+---
+
+<ul class:list={['list', className]} role="list">
+  <slot />
+</ul>
+
+<style>
+  .list {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    list-style: none;
+    padding: 8px 0;
+    margin: 0;
+  }
+</style>

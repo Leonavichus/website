@@ -1,0 +1,79 @@
+---
+export interface Props {
+  repo: string;
+  owner?: string;
+  type?: 'stars' | 'forks' | 'issues' | 'watchers';
+}
+
+const { repo, owner = 'darkmoonight', type = 'stars' } = Astro.props;
+
+// Импортируем утилиту
+import { getRepo } from '../../utils/github';
+
+// Получаем данные
+const repoData = await getRepo(owner, repo);
+
+const icons = {
+  stars: 'star',
+  forks: 'call_split',
+  issues: 'error_outline',
+  watchers: 'visibility',
+};
+
+const labels = {
+  stars: 'Stars',
+  forks: 'Forks',
+  issues: 'Issues',
+  watchers: 'Watchers',
+};
+
+const getValue = () => {
+  if (!repoData) return '—';
+  switch (type) {
+    case 'stars': return repoData.stars;
+    case 'forks': return repoData.forks;
+    case 'issues': return repoData.openIssues;
+    case 'watchers': return repoData.watchers;
+    default: return 0;
+  }
+};
+---
+
+<a href={repoData?.url || '#'} class="github-badge" target="_blank" rel="noopener">
+  <span class="material-icons">{icons[type]}</span>
+  <span class="badge-label">{labels[type]}</span>
+  <span class="badge-value">{getValue()}</span>
+</a>
+
+<style>
+  .github-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    background-color: var(--md-sys-color-surface-container-high);
+    border: 1px solid var(--md-sys-color-outline-variant);
+    border-radius: 100px;
+    color: var(--md-sys-color-on-surface);
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 500;
+    transition: all 0.3s;
+  }
+
+  .github-badge:hover {
+    border-color: var(--md-sys-color-primary);
+    background-color: var(--md-sys-color-surface-container-highest);
+    transform: translateY(-2px);
+  }
+
+  .github-badge .material-icons {
+    font-size: 18px;
+    color: var(--md-sys-color-primary);
+  }
+
+  .badge-value {
+    font-weight: 700;
+    color: var(--md-sys-color-primary);
+  }
+</style>

@@ -1,0 +1,276 @@
+---
+/**
+ * Stepper Component
+ * Material Design 3 stepper for multi-step forms
+ */
+import Icon from './Icon.astro';
+
+interface Step {
+  label: string;
+  description?: string;
+  optional?: boolean;
+}
+
+interface Props {
+  steps: Step[];
+  currentStep?: number; // 0-indexed
+  orientation?: 'horizontal' | 'vertical';
+  variant?: 'default' | 'numbered';
+}
+
+const {
+  steps,
+  currentStep = 0,
+  orientation = 'horizontal',
+  variant = 'default'
+} = Astro.props;
+---
+
+<div 
+  class:list={[
+    'stepper',
+    `stepper--${orientation}`,
+    `stepper--${variant}`
+  ]}
+  data-stepper
+  data-current-step={currentStep}
+>
+  {steps.map((step, index) => (
+    <div 
+      class:list={[
+        'stepper__step',
+        {
+          'stepper__step--active': index === currentStep,
+          'stepper__step--completed': index < currentStep
+        }
+      ]}
+      data-step={index}
+    >
+      <div class="stepper__step-header">
+        <div class="stepper__step-indicator">
+          {index < currentStep ? (
+            <Icon name="check" class="stepper__step-icon" />
+          ) : (
+            <span class="stepper__step-number">{index + 1}</span>
+          )}
+        </div>
+
+        {orientation === 'horizontal' && index < steps.length - 1 && (
+          <div class="stepper__connector"></div>
+        )}
+      </div>
+
+      <div class="stepper__step-content">
+        <div class="stepper__step-label">
+          {step.label}
+          {step.optional && (
+            <span class="stepper__step-optional">(Optional)</span>
+          )}
+        </div>
+        {step.description && (
+          <div class="stepper__step-description">{step.description}</div>
+        )}
+      </div>
+    </div>
+  ))}
+</div>
+
+<style>
+  /* Horizontal Stepper */
+  .stepper--horizontal {
+    display: flex;
+    align-items: flex-start;
+    gap: 0;
+  }
+
+  .stepper--horizontal .stepper__step {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .stepper--horizontal .stepper__step-header {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    margin-bottom: 8px;
+  }
+
+  .stepper--horizontal .stepper__connector {
+    flex: 1;
+    height: 2px;
+    background: var(--md-sys-color-outline-variant);
+    margin: 0 8px;
+  }
+
+  .stepper--horizontal .stepper__step--completed .stepper__connector {
+    background: var(--md-sys-color-primary);
+  }
+
+  /* Vertical Stepper */
+  .stepper--vertical {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  .stepper--vertical .stepper__step {
+    display: flex;
+    gap: 16px;
+  }
+
+  .stepper--vertical .stepper__step-header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .stepper--vertical .stepper__connector {
+    width: 2px;
+    flex: 1;
+    min-height: 24px;
+    background: var(--md-sys-color-outline-variant);
+    margin: 8px 0;
+  }
+
+  .stepper--vertical .stepper__step--completed .stepper__connector {
+    background: var(--md-sys-color-primary);
+  }
+
+  .stepper--vertical .stepper__step-content {
+    flex: 1;
+    text-align: left;
+  }
+
+  .stepper--vertical .stepper__step:last-child .stepper__connector {
+    display: none;
+  }
+
+  /* Step Indicator */
+  .stepper__step-indicator {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: var(--md-sys-color-surface-container-highest);
+    color: var(--md-sys-color-on-surface-variant);
+    font: var(--md-sys-typescale-label-large);
+    font-weight: 500;
+    border: 2px solid var(--md-sys-color-outline-variant);
+    transition: all 0.3s;
+  }
+
+  .stepper__step--active .stepper__step-indicator {
+    background: var(--md-sys-color-primary);
+    color: var(--md-sys-color-on-primary);
+    border-color: var(--md-sys-color-primary);
+  }
+
+  .stepper__step--completed .stepper__step-indicator {
+    background: var(--md-sys-color-primary);
+    color: var(--md-sys-color-on-primary);
+    border-color: var(--md-sys-color-primary);
+  }
+
+  .stepper__step-number {
+    line-height: 1;
+  }
+
+  .stepper__step-icon {
+    font-size: 20px;
+  }
+
+  /* Step Content */
+  .stepper__step-content {
+    margin-top: 8px;
+  }
+
+  .stepper__step-label {
+    color: var(--md-sys-color-on-surface-variant);
+    font: var(--md-sys-typescale-body-medium);
+    font-weight: 500;
+    transition: color 0.3s;
+  }
+
+  .stepper__step--active .stepper__step-label {
+    color: var(--md-sys-color-on-surface);
+  }
+
+  .stepper__step-optional {
+    margin-left: 4px;
+    font-size: 12px;
+    opacity: 0.7;
+  }
+
+  .stepper__step-description {
+    margin-top: 4px;
+    color: var(--md-sys-color-on-surface-variant);
+    font: var(--md-sys-typescale-body-small);
+  }
+
+  /* Responsive */
+  @media (max-width: 600px) {
+    .stepper--horizontal {
+      flex-direction: column;
+    }
+
+    .stepper--horizontal .stepper__step {
+      flex-direction: row;
+      text-align: left;
+      width: 100%;
+    }
+
+    .stepper--horizontal .stepper__step-header {
+      flex-direction: column;
+      width: auto;
+    }
+
+    .stepper--horizontal .stepper__connector {
+      width: 2px;
+      height: 24px;
+      margin: 8px 0;
+    }
+
+    .stepper--horizontal .stepper__step-content {
+      flex: 1;
+    }
+  }
+</style>
+
+<script>
+  function initSteppers() {
+    const steppers = document.querySelectorAll('[data-stepper]');
+
+    steppers.forEach(stepper => {
+      // Could add navigation functionality here
+      stepper.addEventListener('step-change', ((e: CustomEvent) => {
+        const newStep = e.detail.step;
+        stepper.setAttribute('data-current-step', newStep.toString());
+
+        // Update step classes
+        const steps = stepper.querySelectorAll('[data-step]');
+        steps.forEach((step, index) => {
+          step.classList.remove('stepper__step--active', 'stepper__step--completed');
+
+          if (index === newStep) {
+            step.classList.add('stepper__step--active');
+          } else if (index < newStep) {
+            step.classList.add('stepper__step--completed');
+          }
+        });
+      }) as EventListener);
+    });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initSteppers);
+  } else {
+    initSteppers();
+  }
+
+  document.addEventListener('astro:page-load', initSteppers);
+</script>

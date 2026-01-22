@@ -1,0 +1,20 @@
+---
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Organization',
+  name: 'DARK NIGHT',
+  url: 'https://darkmoonight.dev',
+  logo: 'https://darkmoonight.dev/logo.png',
+  description: 'Команда разработчиков, создающая инди-игры и приложения с открытым исходным кодом',
+  sameAs: [
+    'https://github.com/darkmoonight',
+  ],
+  contactPoint: {
+    '@type': 'ContactPoint',
+    email: 'contact@darkmoonight.dev',
+    contactType: 'Customer Service',
+  },
+};
+---
+
+<script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />

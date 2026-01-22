@@ -1,0 +1,168 @@
+---
+// Ripple Effect Component
+// Material Design 3 ripple effect for interactive elements
+
+interface Props {
+  unbounded?: boolean;
+  centered?: boolean;
+  disabled?: boolean;
+  color?: 'primary' | 'secondary' | 'surface';
+}
+
+const {
+  unbounded = false,
+  centered = false,
+  disabled = false,
+  color = 'primary'
+} = Astro.props;
+---
+
+<div
+  class:list={[
+    'ripple-container',
+    { 'ripple--unbounded': unbounded },
+    { 'ripple--centered': centered },
+    { 'ripple--disabled': disabled },
+    `ripple--${color}`
+  ]}
+  data-ripple
+>
+  <slot />
+</div>
+
+<style>
+  .ripple-container {
+    position: relative;
+    overflow: hidden;
+    isolation: isolate;
+  }
+
+  .ripple-container.ripple--unbounded {
+    overflow: visible;
+  }
+
+  .ripple-container::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: currentColor;
+    opacity: 0;
+    transition: opacity 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    pointer-events: none;
+  }
+
+  .ripple-container:hover::before {
+    opacity: var(--md-sys-state-hover-opacity, 0.08);
+  }
+
+  .ripple-container:focus-visible::before {
+    opacity: var(--md-sys-state-focus-opacity, 0.12);
+  }
+
+  .ripple-container:active::before {
+    opacity: var(--md-sys-state-pressed-opacity, 0.12);
+  }
+
+  .ripple-container.ripple--disabled {
+    pointer-events: none;
+  }
+
+  .ripple-container.ripple--disabled::before {
+    opacity: 0;
+  }
+
+  /* Ripple wave animation */
+  .ripple-container .ripple-wave {
+    position: absolute;
+    border-radius: 50%;
+    background: currentColor;
+    opacity: 0.3;
+    pointer-events: none;
+    transform: scale(0);
+    animation: ripple-animation 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  @keyframes ripple-animation {
+    to {
+      transform: scale(4);
+      opacity: 0;
+    }
+  }
+
+  /* Color variants */
+  .ripple-container.ripple--primary {
+    color: var(--md-sys-color-primary);
+  }
+
+  .ripple-container.ripple--secondary {
+    color: var(--md-sys-color-secondary);
+  }
+
+  .ripple-container.ripple--surface {
+    color: var(--md-sys-color-on-surface);
+  }
+
+  /* Reduced motion */
+  @media (prefers-reduced-motion: reduce) {
+    .ripple-container .ripple-wave {
+      animation: none;
+    }
+  }
+</style>
+
+<script>
+  function initRipple() {
+    const containers = document.querySelectorAll('[data-ripple]');
+
+    containers.forEach((container) => {
+      const containerEl = container as HTMLElement;
+      
+      if (containerEl.classList.contains('ripple--disabled')) return;
+
+      const handleRipple = (event: MouseEvent | TouchEvent) => {
+        const rect = containerEl.getBoundingClientRect();
+        const centered = containerEl.classList.contains('ripple--centered');
+
+        let x: number, y: number;
+
+        if (centered) {
+          x = rect.width / 2;
+          y = rect.height / 2;
+        } else {
+          const clientX = 'touches' in event ? event.touches[0].clientX : event.clientX;
+          const clientY = 'touches' in event ? event.touches[0].clientY : event.clientY;
+
+          x = clientX - rect.left;
+          y = clientY - rect.top;
+        }
+
+        const ripple = document.createElement('span');
+        ripple.classList.add('ripple-wave');
+
+        const size = Math.max(rect.width, rect.height);
+        ripple.style.width = ripple.style.height = `${size}px`;
+        ripple.style.left = `${x - size / 2}px`;
+        ripple.style.top = `${y - size / 2}px`;
+
+        containerEl.appendChild(ripple);
+
+        ripple.addEventListener('animationend', () => {
+          ripple.remove();
+        });
+      };
+
+      containerEl.addEventListener('mousedown', handleRipple as EventListener);
+      containerEl.addEventListener('touchstart', handleRipple as EventListener);
+    });
+  }
+
+  // Init on load
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initRipple);
+  } else {
+    initRipple();
+  }
+
+  // Reinit on Astro navigation
+  document.addEventListener('astro:page-load', initRipple);
+</script>

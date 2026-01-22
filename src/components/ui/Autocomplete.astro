@@ -1,0 +1,722 @@
+---
+/**
+ * Autocomplete Component - Material Design 3 Enhanced
+ * Полнофункциональное автодополнение с анимациями
+ */
+import Icon from './Icon.astro';
+
+interface Option {
+  value: string;
+  label: string;
+  description?: string;
+  icon?: string;
+  disabled?: boolean;
+}
+
+interface Props {
+  id: string;
+  name?: string;
+  label?: string;
+  options?: Option[];
+  value?: string;
+  placeholder?: string;
+  disabled?: boolean;
+  required?: boolean;
+  helperText?: string;
+  errorText?: string;
+  error?: boolean;
+  fullWidth?: boolean;
+  multiple?: boolean;
+  freeSolo?: boolean;
+  loading?: boolean;
+}
+
+const {
+  id,
+  name = id,
+  label,
+  options = [],
+  value = '',
+  placeholder = 'Начните вводить...',
+  disabled = false,
+  required = false,
+  helperText,
+  errorText,
+  error = false,
+  fullWidth = false,
+  multiple = false,
+  freeSolo = false,
+  loading = false
+} = Astro.props;
+
+const autocompleteId = `autocomplete-${id}`;
+---
+
+<div 
+  class:list={[
+    'autocomplete',
+    { 'autocomplete--full-width': fullWidth },
+    { 'autocomplete--disabled': disabled },
+    { 'autocomplete--error': error },
+    { 'autocomplete--multiple': multiple }
+  ]}
+  data-autocomplete={autocompleteId}
+  data-multiple={multiple}
+  data-free-solo={freeSolo}
+>
+  {label && (
+    <label class="autocomplete__label" for={id}>
+      {label}
+      {required && <span class="autocomplete__required">*</span>}
+    </label>
+  )}
+
+  <div class="autocomplete__input-wrapper">
+    <input
+      type="hidden"
+      name={name}
+      value={value}
+      data-hidden-input
+    />
+
+    {multiple && (
+      <div class="autocomplete__chips" data-chips></div>
+    )}
+
+    <input
+      type="text"
+      id={id}
+      class="autocomplete__input"
+      placeholder={placeholder}
+      disabled={disabled}
+      required={required}
+      autocomplete="off"
+      role="combobox"
+      aria-autocomplete="list"
+      aria-expanded="false"
+      aria-controls={`${id}-listbox`}
+      data-search-input
+    />
+
+    <div class="autocomplete__icons">
+      {loading && (
+        <div class="autocomplete__loading" data-loading>
+          <Icon name="progress_activity" class="autocomplete__loading-icon" />
+        </div>
+      )}
+      <button
+        type="button"
+        class="autocomplete__clear-button"
+        data-clear-button
+        hidden
+        aria-label="Очистить"
+      >
+        <Icon name="close" />
+      </button>
+      <button
+        type="button"
+        class="autocomplete__dropdown-button"
+        disabled={disabled}
+        aria-label="Открыть список"
+        data-dropdown-button
+      >
+        <Icon name="arrow_drop_down" />
+      </button>
+    </div>
+  </div>
+
+  {(helperText || errorText) && (
+    <div class="autocomplete__helper-text">
+      {error && errorText ? errorText : helperText}
+    </div>
+  )}
+
+  <div 
+    class="autocomplete__listbox"
+    id={`${id}-listbox`}
+    role="listbox"
+    hidden
+    data-listbox
+  >
+    <div class="autocomplete__options" data-options>
+      {options.map((option, index) => (
+        <div
+          class:list={[
+            'autocomplete__option',
+            { 'autocomplete__option--disabled': option.disabled }
+          ]}
+          role="option"
+          data-value={option.value}
+          data-label={option.label}
+          data-index={index}
+          aria-disabled={option.disabled}
+        >
+          {option.icon && <Icon name={option.icon} class="autocomplete__option-icon" />}
+          <div class="autocomplete__option-content">
+            <div class="autocomplete__option-label">{option.label}</div>
+            {option.description && (
+              <div class="autocomplete__option-description">{option.description}</div>
+            )}
+          </div>
+          <div class="autocomplete__option-ripple"></div>
+        </div>
+      ))}
+    </div>
+
+    <div class="autocomplete__no-results" data-no-results hidden>
+      <Icon name="search_off" />
+      <span>Ничего не найдено</span>
+    </div>
+  </div>
+</div>
+
+<style>
+  .autocomplete {
+    position: relative;
+    display: inline-block;
+  }
+
+  .autocomplete--full-width {
+    width: 100%;
+    display: block;
+  }
+
+  /* Label */
+  .autocomplete__label {
+    display: block;
+    margin-bottom: 8px;
+    color: var(--md-sys-color-on-surface);
+    font: var(--md-sys-typescale-body-medium);
+    font-weight: 500;
+  }
+
+  .autocomplete__required {
+    color: var(--md-sys-color-error);
+    margin-left: 2px;
+  }
+
+  /* Input wrapper */
+  .autocomplete__input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 12px 16px;
+    border: 1px solid var(--md-sys-color-outline);
+    border-radius: 12px;
+    background: var(--md-sys-color-surface);
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    min-height: 56px;
+  }
+
+  .autocomplete__input-wrapper:hover:not(.autocomplete--disabled .autocomplete__input-wrapper) {
+    border-color: var(--md-sys-color-on-surface);
+    background: var(--md-sys-color-surface-container-highest);
+  }
+
+  .autocomplete__input-wrapper:focus-within {
+    border-color: var(--md-sys-color-primary);
+    border-width: 2px;
+    padding: 11px 15px;
+    box-shadow: 0 0 0 3px rgba(103, 80, 164, 0.12);
+  }
+
+  .autocomplete--error .autocomplete__input-wrapper {
+    border-color: var(--md-sys-color-error);
+  }
+
+  .autocomplete--error .autocomplete__input-wrapper:focus-within {
+    box-shadow: 0 0 0 3px rgba(179, 38, 30, 0.12);
+  }
+
+  .autocomplete--disabled .autocomplete__input-wrapper {
+    opacity: 0.38;
+    cursor: not-allowed;
+    background: var(--md-sys-color-surface-variant);
+  }
+
+  /* Chips */
+  .autocomplete__chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .autocomplete__chip {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    border-radius: 8px;
+    background: var(--md-sys-color-secondary-container);
+    color: var(--md-sys-color-on-secondary-container);
+    font: var(--md-sys-typescale-label-medium);
+    animation: chipIn 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  @keyframes chipIn {
+    from {
+      opacity: 0;
+      transform: scale(0.8);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  .autocomplete__chip-remove {
+    display: flex;
+    padding: 2px;
+    border: none;
+    border-radius: 50%;
+    background: transparent;
+    color: inherit;
+    cursor: pointer;
+    opacity: 0.7;
+    transition: all 0.2s;
+  }
+
+  .autocomplete__chip-remove:hover {
+    opacity: 1;
+    background: rgba(0, 0, 0, 0.1);
+  }
+
+  .autocomplete__chip-remove :global(.icon) {
+    font-size: 18px;
+  }
+
+  /* Input */
+  .autocomplete__input {
+    flex: 1;
+    min-width: 120px;
+    padding: 0;
+    border: none;
+    background: transparent;
+    color: var(--md-sys-color-on-surface);
+    font: var(--md-sys-typescale-body-large);
+    outline: none;
+  }
+
+  .autocomplete__input::placeholder {
+    color: var(--md-sys-color-on-surface-variant);
+  }
+
+  .autocomplete__input:disabled {
+    cursor: not-allowed;
+  }
+
+  /* Icons */
+  .autocomplete__icons {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    margin-left: auto;
+  }
+
+  .autocomplete__loading-icon {
+    animation: spin 1s linear infinite;
+  }
+
+  @keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+
+  .autocomplete__clear-button,
+  .autocomplete__dropdown-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    padding: 0;
+    border: none;
+    border-radius: 50%;
+    background: transparent;
+    color: var(--md-sys-color-on-surface-variant);
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .autocomplete__clear-button:hover,
+  .autocomplete__dropdown-button:hover:not(:disabled) {
+    background: var(--md-sys-color-surface-container-highest);
+    color: var(--md-sys-color-on-surface);
+  }
+
+  /* Helper text */
+  .autocomplete__helper-text {
+    margin-top: 6px;
+    padding-left: 16px;
+    color: var(--md-sys-color-on-surface-variant);
+    font: var(--md-sys-typescale-body-small);
+  }
+
+  .autocomplete--error .autocomplete__helper-text {
+    color: var(--md-sys-color-error);
+  }
+
+  /* Listbox */
+  .autocomplete__listbox {
+    position: absolute;
+    top: calc(100% + 8px);
+    left: 0;
+    right: 0;
+    z-index: 100;
+    max-height: 320px;
+    overflow-y: auto;
+    border-radius: 12px;
+    background: var(--md-sys-color-surface-container);
+    box-shadow: 
+      0 4px 6px rgba(0, 0, 0, 0.1),
+      0 8px 16px rgba(0, 0, 0, 0.15);
+    animation: slideDown 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  @keyframes slideDown {
+    from {
+      opacity: 0;
+      transform: translateY(-8px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .autocomplete__options {
+    padding: 8px;
+  }
+
+  /* Option */
+  .autocomplete__option {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    overflow: hidden;
+  }
+
+  .autocomplete__option:hover:not(.autocomplete__option--disabled) {
+    background: var(--md-sys-color-surface-container-highest);
+  }
+
+  .autocomplete__option--selected {
+    background: var(--md-sys-color-secondary-container);
+    color: var(--md-sys-color-on-secondary-container);
+  }
+
+  .autocomplete__option--focused {
+    background: var(--md-sys-color-surface-container-high);
+  }
+
+  .autocomplete__option--disabled {
+    opacity: 0.38;
+    cursor: not-allowed;
+  }
+
+  .autocomplete__option-ripple {
+    position: absolute;
+    inset: 0;
+    background: var(--md-sys-color-on-surface);
+    border-radius: 8px;
+    opacity: 0;
+    transform: scale(0);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .autocomplete__option:active:not(.autocomplete__option--disabled) .autocomplete__option-ripple {
+    opacity: 0.12;
+    transform: scale(1);
+  }
+
+  .autocomplete__option-icon {
+    flex-shrink: 0;
+    color: var(--md-sys-color-on-surface-variant);
+  }
+
+  .autocomplete__option-content {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .autocomplete__option-label {
+    color: var(--md-sys-color-on-surface);
+    font: var(--md-sys-typescale-body-large);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .autocomplete__option-description {
+    margin-top: 2px;
+    color: var(--md-sys-color-on-surface-variant);
+    font: var(--md-sys-typescale-body-small);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  /* No results */
+  .autocomplete__no-results {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    padding: 32px 24px;
+    text-align: center;
+    color: var(--md-sys-color-on-surface-variant);
+    font: var(--md-sys-typescale-body-medium);
+  }
+
+  .autocomplete__no-results :global(.icon) {
+    font-size: 48px;
+    opacity: 0.5;
+  }
+
+  /* Reduced motion */
+  @media (prefers-reduced-motion: reduce) {
+    .autocomplete__loading-icon,
+    .autocomplete__listbox,
+    .autocomplete__chip {
+      animation: none;
+    }
+  }
+</style>
+
+<script>
+  interface Option {
+    value: string;
+    label: string;
+    description?: string;
+    icon?: string;
+    disabled?: boolean;
+  }
+
+  function initAutocomplete() {
+    const autocompletes = document.querySelectorAll('[data-autocomplete]');
+
+    autocompletes.forEach(container => {
+      const searchInput = container.querySelector('[data-search-input]') as HTMLInputElement;
+      const hiddenInput = container.querySelector('[data-hidden-input]') as HTMLInputElement;
+      const listbox = container.querySelector('[data-listbox]') as HTMLElement;
+      const optionsContainer = container.querySelector('[data-options]') as HTMLElement;
+      const noResults = container.querySelector('[data-no-results]') as HTMLElement;
+      const clearButton = container.querySelector('[data-clear-button]') as HTMLButtonElement;
+      const dropdownButton = container.querySelector('[data-dropdown-button]') as HTMLButtonElement;
+      const chipsContainer = container.querySelector('[data-chips]') as HTMLElement;
+
+      const isMultiple = container.getAttribute('data-multiple') === 'true';
+      const isFreeSolo = container.getAttribute('data-free-solo') === 'true';
+
+      let options: Option[] = [];
+      let selectedValues: string[] = [];
+      let focusedIndex = -1;
+
+      // Parse options
+      optionsContainer.querySelectorAll('[data-value]').forEach(opt => {
+        const el = opt as HTMLElement;
+        options.push({
+          value: el.dataset.value!,
+          label: el.dataset.label || el.textContent!.trim(),
+          disabled: el.getAttribute('aria-disabled') === 'true'
+        });
+      });
+
+      // Open/close listbox
+      function openListbox() {
+        listbox.hidden = false;
+        searchInput.setAttribute('aria-expanded', 'true');
+        filterOptions(searchInput.value);
+      }
+
+      function closeListbox() {
+        listbox.hidden = true;
+        searchInput.setAttribute('aria-expanded', 'false');
+        focusedIndex = -1;
+        updateFocusedOption();
+      }
+
+      // Filter options
+      function filterOptions(query: string) {
+        const lowerQuery = query.toLowerCase();
+        let visibleCount = 0;
+
+        optionsContainer.querySelectorAll('[data-value]').forEach(opt => {
+          const el = opt as HTMLElement;
+          const label = el.dataset.label || el.textContent!.trim();
+          const matches = label.toLowerCase().includes(lowerQuery);
+          
+          el.style.display = matches ? '' : 'none';
+          if (matches) visibleCount++;
+        });
+
+        noResults.hidden = visibleCount > 0;
+      }
+
+      // Select option
+      function selectOption(value: string, label: string) {
+        if (isMultiple) {
+          if (!selectedValues.includes(value)) {
+            selectedValues.push(value);
+            addChip(value, label);
+            updateHiddenInput();
+          }
+          searchInput.value = '';
+          searchInput.focus();
+        } else {
+          selectedValues = [value];
+          searchInput.value = label;
+          hiddenInput.value = value;
+          closeListbox();
+        }
+
+        updateClearButton();
+        container.dispatchEvent(new CustomEvent('change', { 
+          detail: { value: isMultiple ? selectedValues : value },
+          bubbles: true 
+        }));
+      }
+
+      // Add chip
+      function addChip(value: string, label: string) {
+        const chip = document.createElement('div');
+        chip.className = 'autocomplete__chip';
+        chip.dataset.value = value;
+        chip.innerHTML = `
+          <span>${label}</span>
+          <button type="button" class="autocomplete__chip-remove" aria-label="Remove ${label}">
+            <span class="material-symbols-outlined icon">close</span>
+          </button>
+        `;
+
+        const removeBtn = chip.querySelector('button')!;
+        removeBtn.addEventListener('click', () => {
+          selectedValues = selectedValues.filter(v => v !== value);
+          chip.remove();
+          updateHiddenInput();
+          updateClearButton();
+        });
+
+        chipsContainer?.appendChild(chip);
+      }
+
+      // Update hidden input
+      function updateHiddenInput() {
+        if (hiddenInput) {
+          hiddenInput.value = selectedValues.join(',');
+        }
+      }
+
+      // Update clear button
+      function updateClearButton() {
+        if (clearButton) {
+          clearButton.hidden = selectedValues.length === 0 && !searchInput.value;
+        }
+      }
+
+      // Focus management
+      function updateFocusedOption() {
+        const visibleOptions = Array.from(optionsContainer.querySelectorAll('[data-value]'))
+          .filter(opt => (opt as HTMLElement).style.display !== 'none');
+
+        visibleOptions.forEach((opt, i) => {
+          opt.classList.toggle('autocomplete__option--focused', i === focusedIndex);
+        });
+      }
+
+      // Event listeners
+      searchInput.addEventListener('input', () => {
+        openListbox();
+        updateClearButton();
+      });
+
+      searchInput.addEventListener('focus', () => {
+        openListbox();
+      });
+
+      searchInput.addEventListener('keydown', (e) => {
+        const visibleOptions = Array.from(optionsContainer.querySelectorAll('[data-value]'))
+          .filter(opt => (opt as HTMLElement).style.display !== 'none');
+
+        switch(e.key) {
+          case 'ArrowDown':
+            e.preventDefault();
+            focusedIndex = Math.min(focusedIndex + 1, visibleOptions.length - 1);
+            updateFocusedOption();
+            break;
+          case 'ArrowUp':
+            e.preventDefault();
+            focusedIndex = Math.max(focusedIndex - 1, 0);
+            updateFocusedOption();
+            break;
+          case 'Enter':
+            e.preventDefault();
+            if (focusedIndex >= 0 && focusedIndex < visibleOptions.length) {
+              const opt = visibleOptions[focusedIndex] as HTMLElement;
+              const value = opt.dataset.value!;
+              const label = opt.dataset.label || opt.textContent!.trim();
+              selectOption(value, label);
+            } else if (isFreeSolo && searchInput.value) {
+              selectOption(searchInput.value, searchInput.value);
+            }
+            break;
+          case 'Escape':
+            e.preventDefault();
+            closeListbox();
+            break;
+        }
+      });
+
+      dropdownButton?.addEventListener('click', () => {
+        if (listbox.hidden) {
+          openListbox();
+          searchInput.focus();
+        } else {
+          closeListbox();
+        }
+      });
+
+      clearButton?.addEventListener('click', () => {
+        selectedValues = [];
+        searchInput.value = '';
+        hiddenInput.value = '';
+        if (chipsContainer) chipsContainer.innerHTML = '';
+        updateClearButton();
+        searchInput.focus();
+      });
+
+      optionsContainer.addEventListener('click', (e) => {
+        const option = (e.target as HTMLElement).closest('[data-value]') as HTMLElement;
+        if (option && option.getAttribute('aria-disabled') !== 'true') {
+          const value = option.dataset.value!;
+          const label = option.dataset.label || option.textContent!.trim();
+          selectOption(value, label);
+        }
+      });
+
+      // Close on outside click
+      document.addEventListener('click', (e) => {
+        if (!container.contains(e.target as Node)) {
+          closeListbox();
+        }
+      });
+
+      updateClearButton();
+    });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initAutocomplete);
+  } else {
+    initAutocomplete();
+  }
+
+  document.addEventListener('astro:page-load', initAutocomplete);
+</script>

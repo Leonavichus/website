@@ -1,0 +1,177 @@
+---
+/**
+ * TimePicker Component - Enhanced Material Design 3
+ * Modern time picker with smooth animations
+ */
+import Icon from './Icon.astro';
+
+interface Props {
+  id: string;
+  label?: string;
+  value?: string;
+  min?: string;
+  max?: string;
+  disabled?: boolean;
+  required?: boolean;
+}
+
+const {
+  id,
+  label,
+  value,
+  min,
+  max,
+  disabled = false,
+  required = false
+} = Astro.props;
+---
+
+<div class="time-picker">
+  {label && (
+    <label for={id} class="time-picker__label">{label}</label>
+  )}
+
+  <div class="time-picker__wrapper">
+    <div class="time-picker__icon">
+      <Icon name="schedule" />
+      <div class="time-picker__icon-pulse"></div>
+    </div>
+    
+    <input
+      type="time"
+      id={id}
+      class="time-picker__input"
+      value={value}
+      min={min}
+      max={max}
+      disabled={disabled}
+      required={required}
+    />
+
+  </div>
+</div>
+
+<style>
+  .time-picker {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .time-picker__label {
+    color: var(--md-sys-color-on-surface);
+    font: var(--md-sys-typescale-body-small);
+    font-weight: 600;
+    letter-spacing: 0.4px;
+    transition: color 0.2s;
+  }
+
+  .time-picker__wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
+
+  .time-picker__icon {
+    position: absolute;
+    left: 16px;
+    display: flex;
+    align-items: center;
+    color: var(--md-sys-color-primary);
+    font-size: 20px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    pointer-events: none;
+    z-index: 10;
+    mix-blend-mode: normal;
+  }
+
+  .time-picker__wrapper:hover .time-picker__icon {
+    color: var(--md-sys-color-primary);
+    transform: scale(1.15);
+  }
+
+  .time-picker__input:focus ~ .time-picker__icon {
+    color: var(--md-sys-color-primary);
+  }
+
+  .time-picker__input {
+    width: 100%;
+    padding: 16px 16px 16px 48px;
+    border: 1px solid var(--md-sys-color-outline);
+    border-radius: var(--md-sys-shape-corner-small, 8px);
+    background: var(--md-sys-color-surface);
+    color: var(--md-sys-color-on-surface);
+    font: var(--md-sys-typescale-body-large);
+    outline: none;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    cursor: pointer;
+  }
+
+  .time-picker__input:hover:not(:disabled) {
+    border-color: var(--md-sys-color-on-surface);
+    background: var(--md-sys-color-surface-container-low);
+  }
+
+  .time-picker__input:focus {
+    border-color: var(--md-sys-color-primary);
+    border-width: 2px;
+    padding: 15px 15px 15px 47px;
+    box-shadow: 0 0 0 4px rgba(103, 80, 164, 0.1);
+  }
+
+  .time-picker__input:focus {
+    transform: scaleX(1);
+  }
+
+  .time-picker__input:disabled {
+    opacity: 0.38;
+    cursor: not-allowed;
+    border-color: var(--md-sys-color-on-surface);
+    background: var(--md-sys-color-surface-variant);
+  }
+
+  /* Clock picker indicator */
+  .time-picker__input::-webkit-calendar-picker-indicator {
+    position: absolute;
+    right: 12px;
+    cursor: pointer;
+    opacity: 0.6;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    padding: 8px;
+    border-radius: 50%;
+  }
+
+  .time-picker__input::-webkit-calendar-picker-indicator:hover {
+    opacity: 1;
+    background: var(--md-sys-color-surface-container-highest);
+    transform: rotate(45deg);
+  }
+
+  /* Time input value styling */
+  .time-picker__input::-webkit-datetime-edit {
+    padding: 0;
+  }
+
+  .time-picker__input::-webkit-datetime-edit-fields-wrapper {
+    display: flex;
+    gap: 4px;
+  }
+
+  .time-picker__input::-webkit-datetime-edit-text {
+    color: var(--md-sys-color-on-surface-variant);
+    font-weight: 500;
+  }
+
+  .time-picker__input::-webkit-datetime-edit-hour-field,
+  .time-picker__input::-webkit-datetime-edit-minute-field {
+    padding: 2px 4px;
+    border-radius: 4px;
+    transition: background 0.2s;
+  }
+
+  .time-picker__input::-webkit-datetime-edit-hour-field:focus,
+  .time-picker__input::-webkit-datetime-edit-minute-field:focus {
+    background: var(--md-sys-color-primary-container);
+    color: var(--md-sys-color-on-primary-container);
+  }
+</style>

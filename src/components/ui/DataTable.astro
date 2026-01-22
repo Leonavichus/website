@@ -1,0 +1,760 @@
+---
+/**
+ * DataTable Component - Material Design 3 Enhanced
+ * Улучшенная таблица с анимациями и полной функциональностью
+ */
+import Icon from './Icon.astro';
+
+interface Column {
+  key: string;
+  label: string;
+  sortable?: boolean;
+  width?: string;
+  align?: 'left' | 'center' | 'right';
+}
+
+interface Row {
+  id: number | string;
+  [key: string]: any;
+}
+
+interface Props {
+  columns: Column[];
+  data: Row[];
+  selectable?: boolean;
+  stickyHeader?: boolean;
+  striped?: boolean;
+  hoverable?: boolean;
+}
+
+const {
+  columns,
+  data,
+  selectable = false,
+  stickyHeader = false,
+  striped = false,
+  hoverable = true
+} = Astro.props;
+
+const tableId = `table-${Math.random().toString(36).substr(2, 9)}`;
+---
+
+<div class="data-table-wrapper" data-table-id={tableId}>
+  <!-- Toolbar -->
+  <div class="data-table__toolbar">
+    <div class="data-table__toolbar-start">
+      <div class="data-table__search">
+        <Icon name="search" />
+        <input 
+          type="text" 
+          placeholder="Поиск..."
+          class="data-table__search-input"
+          data-search
+        />
+      </div>
+    </div>
+    <div class="data-table__toolbar-end">
+      <button type="button" class="data-table__icon-button" title="Фильтр">
+        <Icon name="filter_alt" />
+      </button>
+      <button type="button" class="data-table__icon-button" title="Скачать">
+        <Icon name="download" />
+      </button>
+    </div>
+  </div>
+
+  <!-- Selection info -->
+  <div class="data-table__selection-info" data-selection-info hidden>
+    <div class="data-table__selection-text">
+      <span data-selected-count>0</span> выбрано
+    </div>
+    <div class="data-table__selection-actions">
+      <button type="button" class="data-table__text-button">
+        <Icon name="delete" />
+        Удалить
+      </button>
+      <button type="button" class="data-table__text-button">
+        <Icon name="more_vert" />
+      </button>
+    </div>
+  </div>
+
+  <!-- Table container -->
+  <div class:list={[
+    'data-table-container',
+    { 'data-table-container--sticky': stickyHeader }
+  ]}>
+    <table class:list={[
+      'data-table',
+      { 'data-table--striped': striped },
+      { 'data-table--hoverable': hoverable }
+    ]} data-table>
+      <thead class="data-table__head">
+        <tr class="data-table__row data-table__row--header">
+          {selectable && (
+            <th class="data-table__cell data-table__cell--checkbox">
+              <div class="data-table__checkbox">
+                <input type="checkbox" data-select-all />
+                <span class="data-table__checkbox-ripple"></span>
+              </div>
+            </th>
+          )}
+          {columns.map((column) => (
+            <th 
+              class:list={[
+                'data-table__cell',
+                'data-table__cell--header',
+                { 'data-table__cell--sortable': column.sortable },
+                `data-table__cell--align-${column.align || 'left'}`
+              ]}
+              style={column.width ? `width: ${column.width}` : undefined}
+              data-key={column.key}
+              data-sortable={column.sortable}
+            >
+              <button 
+                type="button"
+                class="data-table__sort-button"
+                disabled={!column.sortable}
+              >
+                <span class="data-table__cell-content">{column.label}</span>
+                {column.sortable && (
+                  <span class="data-table__sort-icons">
+                    <Icon name="arrow_upward" class="data-table__sort-arrow data-table__sort-arrow--up" />
+                  </span>
+                )}
+              </button>
+            </th>
+          ))}
+        </tr>
+      </thead>
+
+      <tbody class="data-table__body" data-body>
+        {data.map((row) => (
+          <tr class="data-table__row" data-row-id={row.id}>
+            {selectable && (
+              <td class="data-table__cell data-table__cell--checkbox">
+                <div class="data-table__checkbox">
+                  <input type="checkbox" value={row.id} data-select />
+                  <span class="data-table__checkbox-ripple"></span>
+                </div>
+              </td>
+            )}
+            {columns.map((column) => (
+              <td class:list={[
+                'data-table__cell',
+                `data-table__cell--align-${column.align || 'left'}`
+              ]}>
+                <span class="data-table__cell-content">{row[column.key]}</span>
+              </td>
+            ))}
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Footer -->
+  <div class="data-table__footer">
+    <div class="data-table__info">
+      <span class="data-table__label">Строк на странице:</span>
+      <select class="data-table__page-size" data-page-size>
+        <option value="5">5</option>
+        <option value="10" selected>10</option>
+        <option value="25">25</option>
+        <option value="50">50</option>
+      </select>
+      <span class="data-table__range" data-range>1-{Math.min(10, data.length)} из {data.length}</span>
+    </div>
+
+    <div class="data-table__pagination">
+      <button type="button" class="data-table__page-button" data-prev disabled>
+        <Icon name="chevron_left" />
+      </button>
+      <span class="data-table__page-number" data-page-number>1</span>
+      <button type="button" class="data-table__page-button" data-next disabled={data.length <= 10}>
+        <Icon name="chevron_right" />
+      </button>
+    </div>
+  </div>
+</div>
+
+<style>
+  .data-table-wrapper {
+    display: flex;
+    flex-direction: column;
+    border-radius: 12px;
+    background: var(--md-sys-color-surface);
+    box-shadow: 
+      0 1px 2px rgba(0, 0, 0, 0.05),
+      0 1px 3px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    transition: box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .data-table-wrapper:hover {
+    box-shadow: 
+      0 2px 4px rgba(0, 0, 0, 0.08),
+      0 4px 8px rgba(0, 0, 0, 0.12);
+  }
+
+  /* Toolbar */
+  .data-table__toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 24px;
+    border-bottom: 1px solid var(--md-sys-color-outline-variant);
+    gap: 16px;
+  }
+
+  .data-table__toolbar-start,
+  .data-table__toolbar-end {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .data-table__search {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 16px;
+    border-radius: 28px;
+    background: var(--md-sys-color-surface-container-highest);
+    min-width: 280px;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .data-table__search:focus-within {
+    background: var(--md-sys-color-surface-container);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+  }
+
+  .data-table__search-input {
+    flex: 1;
+    border: none;
+    background: transparent;
+    color: var(--md-sys-color-on-surface);
+    font: var(--md-sys-typescale-body-large);
+    outline: none;
+  }
+
+  .data-table__search-input::placeholder {
+    color: var(--md-sys-color-on-surface-variant);
+  }
+
+  .data-table__icon-button {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    border-radius: 20px;
+    background: transparent;
+    color: var(--md-sys-color-on-surface-variant);
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .data-table__icon-button:hover {
+    background: var(--md-sys-color-surface-container-highest);
+    color: var(--md-sys-color-on-surface);
+  }
+
+  /* Selection info */
+  .data-table__selection-info {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 24px;
+    background: var(--md-sys-color-secondary-container);
+    color: var(--md-sys-color-on-secondary-container);
+    animation: slideDown 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .data-table__selection-text {
+    font: var(--md-sys-typescale-title-medium);
+    font-weight: 500;
+  }
+
+  .data-table__selection-actions {
+    display: flex;
+    gap: 8px;
+  }
+
+  .data-table__text-button {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 20px;
+    background: transparent;
+    color: var(--md-sys-color-on-secondary-container);
+    font: var(--md-sys-typescale-label-large);
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+
+  .data-table__text-button:hover {
+    background: rgba(0, 0, 0, 0.08);
+  }
+
+  @keyframes slideDown {
+    from {
+      opacity: 0;
+      transform: translateY(-10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* Table container */
+  .data-table-container {
+    overflow-x: auto;
+    overflow-y: auto;
+    max-height: 600px;
+  }
+
+  .data-table-container--sticky .data-table__head {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background: var(--md-sys-color-surface);
+  }
+
+  .data-table-container--sticky .data-table__head::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: var(--md-sys-color-outline-variant);
+  }
+
+  /* Table */
+  .data-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  .data-table__row {
+    transition: background-color 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .data-table--hoverable .data-table__row:not(.data-table__row--header):hover {
+    background: var(--md-sys-color-surface-container-highest);
+  }
+
+  .data-table--striped .data-table__row:not(.data-table__row--header):nth-child(even) {
+    background: var(--md-sys-color-surface-container-low);
+  }
+
+  /* Cells */
+  .data-table__cell {
+    padding: 16px 24px;
+    text-align: left;
+    color: var(--md-sys-color-on-surface);
+    font: var(--md-sys-typescale-body-medium);
+    border-bottom: 1px solid var(--md-sys-color-outline-variant);
+  }
+
+  .data-table__cell--align-center {
+    text-align: center;
+  }
+
+  .data-table__cell--align-right {
+    text-align: right;
+  }
+
+  .data-table__cell--header {
+    background: var(--md-sys-color-surface-container-low);
+    font-weight: 500;
+    color: var(--md-sys-color-on-surface-variant);
+    font: var(--md-sys-typescale-title-small);
+  }
+
+  .data-table__cell-content {
+    display: inline-block;
+  }
+
+  /* Checkbox */
+  .data-table__cell--checkbox {
+    width: 64px;
+    padding: 8px 24px;
+  }
+
+  .data-table__checkbox {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .data-table__checkbox input {
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+    z-index: 1;
+    position: relative;
+  }
+
+  .data-table__checkbox-ripple {
+    position: absolute;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: var(--md-sys-color-on-surface);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s;
+  }
+
+  .data-table__checkbox:hover .data-table__checkbox-ripple {
+    opacity: 0.08;
+  }
+
+  /* Sort button */
+  .data-table__sort-button {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 0;
+    border: none;
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    font-weight: 500;
+    cursor: pointer;
+    width: 100%;
+    transition: color 0.2s;
+  }
+
+  .data-table__sort-button:disabled {
+    cursor: default;
+  }
+
+  .data-table__cell--sortable:hover .data-table__sort-button:not(:disabled) {
+    color: var(--md-sys-color-on-surface);
+  }
+
+  .data-table__sort-icons {
+    display: flex;
+    align-items: center;
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .data-table__sort-arrow {
+    color: var(--md-sys-color-on-surface-variant);
+    opacity: 0;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .data-table__cell--sortable:hover .data-table__sort-arrow {
+    opacity: 0.5;
+  }
+
+  .data-table__cell--header[data-sort="asc"] .data-table__sort-arrow {
+    opacity: 1;
+    color: var(--md-sys-color-primary);
+    transform: rotate(0deg);
+  }
+
+  .data-table__cell--header[data-sort="desc"] .data-table__sort-arrow {
+    opacity: 1;
+    color: var(--md-sys-color-primary);
+    transform: rotate(180deg);
+  }
+
+  /* Footer */
+  .data-table__footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 24px;
+    border-top: 1px solid var(--md-sys-color-outline-variant);
+    background: var(--md-sys-color-surface);
+  }
+
+  .data-table__info {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    color: var(--md-sys-color-on-surface-variant);
+    font: var(--md-sys-typescale-body-small);
+  }
+
+  .data-table__label {
+    font-weight: 500;
+  }
+
+  .data-table__page-size {
+    padding: 6px 12px;
+    border: 1px solid var(--md-sys-color-outline);
+    border-radius: 8px;
+    background: var(--md-sys-color-surface-container-highest);
+    color: var(--md-sys-color-on-surface);
+    font: var(--md-sys-typescale-body-medium);
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .data-table__page-size:hover {
+    background: var(--md-sys-color-surface-container);
+    border-color: var(--md-sys-color-on-surface-variant);
+  }
+
+  .data-table__range {
+    font-weight: 500;
+    color: var(--md-sys-color-on-surface);
+  }
+
+  /* Pagination */
+  .data-table__pagination {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .data-table__page-number {
+    min-width: 32px;
+    text-align: center;
+    font: var(--md-sys-typescale-body-medium);
+    font-weight: 500;
+    color: var(--md-sys-color-on-surface);
+  }
+
+  .data-table__page-button {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    border-radius: 20px;
+    background: transparent;
+    color: var(--md-sys-color-on-surface-variant);
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .data-table__page-button:hover:not(:disabled) {
+    background: var(--md-sys-color-surface-container-highest);
+    color: var(--md-sys-color-on-surface);
+  }
+
+  .data-table__page-button:disabled {
+    opacity: 0.38;
+    cursor: not-allowed;
+  }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .data-table__toolbar {
+      flex-direction: column;
+      align-items: stretch;
+    }
+
+    .data-table__search {
+      min-width: 100%;
+    }
+
+    .data-table__footer {
+      flex-direction: column;
+      gap: 16px;
+      align-items: stretch;
+    }
+
+    .data-table__info {
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .data-table__pagination {
+      justify-content: center;
+    }
+  }
+</style>
+
+<script>
+  function initDataTable() {
+    const wrappers = document.querySelectorAll('.data-table-wrapper');
+
+    wrappers.forEach(wrapper => {
+      const table = wrapper.querySelector('[data-table]') as HTMLTableElement;
+      const searchInput = wrapper.querySelector('[data-search]') as HTMLInputElement;
+      const body = table.querySelector('[data-body]')!;
+      const selectAllCheckbox = wrapper.querySelector('[data-select-all]') as HTMLInputElement;
+      const selectionInfo = wrapper.querySelector('[data-selection-info]') as HTMLElement;
+      const selectedCountSpan = wrapper.querySelector('[data-selected-count]') as HTMLElement;
+      const pageSizeSelect = wrapper.querySelector('[data-page-size]') as HTMLSelectElement;
+      const prevButton = wrapper.querySelector('[data-prev]') as HTMLButtonElement;
+      const nextButton = wrapper.querySelector('[data-next]') as HTMLButtonElement;
+      const pageNumberSpan = wrapper.querySelector('[data-page-number]') as HTMLElement;
+      const rangeSpan = wrapper.querySelector('[data-range]') as HTMLElement;
+
+      let allRows = Array.from(body.querySelectorAll('tr'));
+      let filteredRows = [...allRows];
+      let currentPage = 1;
+      let pageSize = 10;
+
+      // Search
+      searchInput?.addEventListener('input', (e) => {
+        const query = (e.target as HTMLInputElement).value.toLowerCase();
+        
+        filteredRows = allRows.filter(row => {
+          const text = row.textContent?.toLowerCase() || '';
+          return text.includes(query);
+        });
+
+        currentPage = 1;
+        updateTable();
+      });
+
+      // Selection
+      function updateSelection() {
+        const checkboxes = wrapper.querySelectorAll('[data-select]') as NodeListOf<HTMLInputElement>;
+        const checkedCount = Array.from(checkboxes).filter(cb => cb.checked).length;
+        
+        if (selectionInfo && selectedCountSpan) {
+          if (checkedCount > 0) {
+            selectionInfo.hidden = false;
+            selectedCountSpan.textContent = checkedCount.toString();
+          } else {
+            selectionInfo.hidden = true;
+          }
+        }
+
+        if (selectAllCheckbox) {
+          selectAllCheckbox.checked = checkedCount === checkboxes.length;
+          selectAllCheckbox.indeterminate = checkedCount > 0 && checkedCount < checkboxes.length;
+        }
+      }
+
+      selectAllCheckbox?.addEventListener('change', (e) => {
+        const checked = (e.target as HTMLInputElement).checked;
+        const checkboxes = wrapper.querySelectorAll('[data-select]') as NodeListOf<HTMLInputElement>;
+        checkboxes.forEach(cb => cb.checked = checked);
+        updateSelection();
+      });
+
+      body.addEventListener('change', (e) => {
+        if ((e.target as HTMLElement).matches('[data-select]')) {
+          updateSelection();
+        }
+      });
+
+      // Sorting
+      wrapper.querySelectorAll('[data-sortable="true"]').forEach(header => {
+        const button = header.querySelector('button');
+        button?.addEventListener('click', () => {
+          const key = (header as HTMLElement).dataset.key!;
+          const currentSort = (header as HTMLElement).dataset.sort;
+          const newSort = currentSort === 'asc' ? 'desc' : 'asc';
+
+          // Clear other sorts
+          wrapper.querySelectorAll('[data-sort]').forEach(h => {
+            h.removeAttribute('data-sort');
+          });
+
+          (header as HTMLElement).dataset.sort = newSort;
+
+          const keyIndex = Array.from(table.querySelectorAll('th')).indexOf(header as HTMLTableCellElement);
+
+          filteredRows.sort((a, b) => {
+            const aValue = a.cells[keyIndex]?.textContent?.trim() || '';
+            const bValue = b.cells[keyIndex]?.textContent?.trim() || '';
+
+            const aNum = parseFloat(aValue);
+            const bNum = parseFloat(bValue);
+
+            if (!isNaN(aNum) && !isNaN(bNum)) {
+              return newSort === 'asc' ? aNum - bNum : bNum - aNum;
+            }
+
+            return newSort === 'asc' 
+              ? aValue.localeCompare(bValue)
+              : bValue.localeCompare(aValue);
+          });
+
+          currentPage = 1;
+          updateTable();
+        });
+      });
+
+      // Pagination
+      pageSizeSelect?.addEventListener('change', (e) => {
+        pageSize = parseInt((e.target as HTMLSelectElement).value);
+        currentPage = 1;
+        updateTable();
+      });
+
+      prevButton?.addEventListener('click', () => {
+        if (currentPage > 1) {
+          currentPage--;
+          updateTable();
+        }
+      });
+
+      nextButton?.addEventListener('click', () => {
+        const totalPages = Math.ceil(filteredRows.length / pageSize);
+        if (currentPage < totalPages) {
+          currentPage++;
+          updateTable();
+        }
+      });
+
+      // Update table display
+      function updateTable() {
+        const start = (currentPage - 1) * pageSize;
+        const end = start + pageSize;
+        const totalPages = Math.ceil(filteredRows.length / pageSize);
+
+        // Hide all rows
+        allRows.forEach(row => {
+          (row as HTMLElement).style.display = 'none';
+        });
+
+        // Show current page rows
+        filteredRows.slice(start, end).forEach(row => {
+          body.appendChild(row);
+          (row as HTMLElement).style.display = '';
+        });
+
+        // Update pagination
+        if (pageNumberSpan) {
+          pageNumberSpan.textContent = `${currentPage} / ${totalPages || 1}`;
+        }
+
+        if (rangeSpan) {
+          const actualEnd = Math.min(end, filteredRows.length);
+          rangeSpan.textContent = `${filteredRows.length > 0 ? start + 1 : 0}-${actualEnd} из ${filteredRows.length}`;
+        }
+
+        if (prevButton) {
+          prevButton.disabled = currentPage === 1;
+        }
+
+        if (nextButton) {
+          nextButton.disabled = currentPage >= totalPages;
+        }
+      }
+
+      updateTable();
+    });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initDataTable);
+  } else {
+    initDataTable();
+  }
+
+  document.addEventListener('astro:page-load', initDataTable);
+</script>

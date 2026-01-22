@@ -1,0 +1,584 @@
+---
+---
+
+<div class="search-container">
+  <button class="search-trigger" id="search-trigger" aria-label="Поиск">
+    <span class="material-icons">search</span>
+    <span class="search-hint">Ctrl+K</span>
+  </button>
+
+  <!-- Search Modal -->
+  <div class="search-modal" id="search-modal">
+    <div class="search-modal-content">
+      <div class="search-header">
+        <div class="search-input-wrapper">
+          <span class="material-icons">search</span>
+          <input 
+            type="text" 
+            id="search-input" 
+            placeholder="Поиск по сайту..." 
+            autocomplete="off"
+            aria-label="Поиск"
+          />
+          <button class="search-close" id="search-close" aria-label="Закрыть">
+            <span class="material-icons">close</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="search-results" id="search-results">
+        <div class="search-empty">
+          <span class="material-icons">search</span>
+          <p>Начните вводить для поиска</p>
+        </div>
+      </div>
+
+      <div class="search-footer">
+        <div class="search-shortcuts">
+          <span><kbd>↑</kbd> <kbd>↓</kbd> навигация</span>
+          <span><kbd>Enter</kbd> выбор</span>
+          <span><kbd>Esc</kbd> закрыть</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  interface SearchItem {
+    title: string;
+    description: string;
+    url: string;
+    type: 'page' | 'project' | 'news';
+  }
+
+  let searchData: SearchItem[] = [];
+  let selectedIndex = -1;
+
+  const searchTrigger = document.getElementById('search-trigger');
+  const searchModal = document.getElementById('search-modal');
+  const searchClose = document.getElementById('search-close');
+  const searchInput = document.getElementById('search-input') as HTMLInputElement;
+  const searchResults = document.getElementById('search-results');
+
+  // Загрузка индекса поиска
+  async function loadSearchIndex() {
+    try {
+      const response = await fetch('/search-index.json');
+      searchData = await response.json();
+    } catch (error) {
+      console.error('Failed to load search index:', error);
+      // Fallback к базовым данным
+      searchData = [
+        { title: 'Главная', description: 'Главная страница', url: '/', type: 'page' },
+        { title: 'О команде', description: 'О нас', url: '/about', type: 'page' },
+        { title: 'Новости', description: 'Последние новости', url: '/news', type: 'page' },
+      ];
+    }
+  }
+
+  // Открыть поиск
+  function openSearch() {
+    searchModal?.classList.add('active');
+    document.body.style.overflow = 'hidden';
+    setTimeout(() => searchInput?.focus(), 100);
+
+    // Загружаем индекс если еще не загружен
+    if (searchData.length === 0) {
+      loadSearchIndex();
+    }
+  }
+
+  // Закрыть поиск
+  function closeSearch() {
+    searchModal?.classList.remove('active');
+    document.body.style.overflow = '';
+    if (searchInput) searchInput.value = '';
+    selectedIndex = -1;
+    renderResults([]);
+  }
+
+  // Поиск с весами
+  function performSearch(query: string): SearchItem[] {
+    if (!query || query.length < 2) return [];
+
+    const lowerQuery = query.toLowerCase();
+    const results = searchData
+      .map(item => {
+        const titleMatch = item.title.toLowerCase().includes(lowerQuery);
+        const descMatch = item.description.toLowerCase().includes(lowerQuery);
+
+        // Вес: совпадение в заголовке важнее
+        let score = 0;
+        if (titleMatch) score += 10;
+        if (descMatch) score += 5;
+        if (item.title.toLowerCase().startsWith(lowerQuery)) score += 20;
+
+        return { item, score };
+      })
+      .filter(result => result.score > 0)
+      .sort((a, b) => b.score - a.score)
+      .slice(0, 8)
+      .map(result => result.item);
+
+    return results;
+  }
+
+  // Отрисовка результатов
+  function renderResults(results: SearchItem[]) {
+    if (!searchResults) return;
+
+    if (results.length === 0) {
+      const query = searchInput?.value || '';
+      searchResults.innerHTML = query.length >= 2 
+        ? `<div class="search-empty">
+             <span class="material-icons">search_off</span>
+             <p>Ничего не найдено по запросу "${query}"</p>
+             <small>Попробуйте изменить запрос</small>
+           </div>`
+        : `<div class="search-empty">
+             <span class="material-icons">search</span>
+             <p>Начните вводить для поиска</p>
+             <small>Поддерживается поиск по названиям и описаниям</small>
+           </div>`;
+      return;
+    }
+
+    const typeIcons: Record<string, string> = {
+      page: 'description',
+      project: 'folder',
+      news: 'article',
+    };
+
+    const typeLabels: Record<string, string> = {
+      page: 'Страница',
+      project: 'Проект',
+      news: 'Новость',
+    };
+
+    searchResults.innerHTML = results.map((item, index) => `
+      <a 
+        href="${item.url}" 
+        class="search-result-item ${index === selectedIndex ? 'selected' : ''}"
+        data-index="${index}"
+      >
+        <div class="result-icon-wrapper">
+          <span class="material-icons result-icon">${typeIcons[item.type]}</span>
+        </div>
+        <div class="result-content">
+          <div class="result-title">${highlightText(item.title, searchInput?.value || '')}</div>
+          <div class="result-description">${highlightText(item.description, searchInput?.value || '')}</div>
+        </div>
+        <span class="result-type">${typeLabels[item.type]}</span>
+      </a>
+    `).join('');
+
+    // Добавляем обработчик на hover
+    searchResults.querySelectorAll('.search-result-item').forEach((item, index) => {
+      item.addEventListener('mouseenter', () => {
+        selectedIndex = index;
+        updateSelection(searchResults.querySelectorAll('.search-result-item'));
+      });
+    });
+  }
+
+  // Подсветка совпадений
+  function highlightText(text: string, query: string): string {
+    if (!query || query.length < 2) return text;
+    const regex = new RegExp(`(${escapeRegex(query)})`, 'gi');
+    return text.replace(regex, '<mark>$1</mark>');
+  }
+
+  function escapeRegex(string: string): string {
+    return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  }
+
+  // События
+  searchTrigger?.addEventListener('click', openSearch);
+  searchClose?.addEventListener('click', closeSearch);
+
+  searchModal?.addEventListener('click', (e) => {
+    if (e.target === searchModal) closeSearch();
+  });
+
+  // Debounce для оптимизации поиска
+  let debounceTimer: ReturnType<typeof setTimeout>;
+  searchInput?.addEventListener('input', (e) => {
+    clearTimeout(debounceTimer);
+    debounceTimer = setTimeout(() => {
+      const query = (e.target as HTMLInputElement).value;
+      const results = performSearch(query);
+      selectedIndex = -1;
+      renderResults(results);
+    }, 150);
+  });
+
+  // Навигация клавиатурой
+  searchInput?.addEventListener('keydown', (e) => {
+    const items = searchResults?.querySelectorAll('.search-result-item');
+    if (!items || items.length === 0) return;
+
+    if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      selectedIndex = Math.min(selectedIndex + 1, items.length - 1);
+      updateSelection(items);
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      selectedIndex = Math.max(selectedIndex - 1, 0);
+      updateSelection(items);
+    } else if (e.key === 'Enter' && selectedIndex >= 0) {
+      e.preventDefault();
+      (items[selectedIndex] as HTMLAnchorElement).click();
+    } else if (e.key === 'Escape') {
+      e.preventDefault();
+      closeSearch();
+    }
+  });
+
+  function updateSelection(items: NodeListOf<Element>) {
+    items.forEach((item, index) => {
+      if (index === selectedIndex) {
+        item.classList.add('selected');
+        item.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+      } else {
+        item.classList.remove('selected');
+      }
+    });
+  }
+
+  // Горячие клавиши
+  document.addEventListener('keydown', (e) => {
+    if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+      e.preventDefault();
+      openSearch();
+    }
+
+    // Закрыть по Escape если поиск открыт
+    if (e.key === 'Escape' && searchModal?.classList.contains('active')) {
+      closeSearch();
+    }
+  });
+
+  // Предзагрузка индекса при загрузке страницы
+  if (document.readyState === 'complete') {
+    loadSearchIndex();
+  } else {
+    window.addEventListener('load', loadSearchIndex);
+  }
+</script>
+
+<style>
+  .search-container {
+    position: relative;
+  }
+
+  .search-trigger {
+    position: relative;
+    height: 48px;
+    min-width: 48px;
+    padding: 0 20px;
+    border-radius: 100px;
+    border: none;
+    background-color: var(--md-sys-color-surface-container-high);
+    color: var(--md-sys-color-on-surface);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    transition: all 0.3s;
+    font-size: 14px;
+    font-weight: 500;
+  }
+
+  .search-trigger:hover {
+    background-color: var(--md-sys-color-surface-container-highest);
+    transform: translateY(-2px);
+  }
+
+  .search-trigger .material-icons {
+    font-size: 20px;
+  }
+
+  .search-hint {
+    padding: 4px 8px;
+    border-radius: 6px;
+    background-color: var(--md-sys-color-surface-container-highest);
+    font-size: 11px;
+    font-weight: 600;
+    opacity: 0.7;
+  }
+
+  .search-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    z-index: 9999;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 100px 20px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+  }
+
+  .search-modal.active {
+    opacity: 1;
+    pointer-events: all;
+  }
+
+  .search-modal-content {
+    width: 100%;
+    max-width: 680px;
+    background-color: var(--md-sys-color-surface-container);
+    border-radius: 20px;
+    border: 1px solid var(--md-sys-color-outline-variant);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
+    overflow: hidden;
+    transform: scale(0.95) translateY(-20px);
+    transition: transform 0.3s ease;
+  }
+
+  .search-modal.active .search-modal-content {
+    transform: scale(1) translateY(0);
+  }
+
+  .search-header {
+    padding: 20px 24px;
+    border-bottom: 1px solid var(--md-sys-color-outline-variant);
+  }
+
+  .search-input-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .search-input-wrapper > .material-icons {
+    color: var(--md-sys-color-primary);
+    font-size: 24px;
+  }
+
+  #search-input {
+    flex: 1;
+    background: none;
+    border: none;
+    outline: none;
+    font-size: 17px;
+    color: var(--md-sys-color-on-surface);
+    font-family: inherit;
+  }
+
+  #search-input::placeholder {
+    color: var(--md-sys-color-on-surface-variant);
+  }
+
+  .search-close {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 8px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--md-sys-color-on-surface-variant);
+    transition: all 0.3s;
+  }
+
+  .search-close:hover {
+    background-color: var(--md-sys-color-surface-container-high);
+    color: var(--md-sys-color-error);
+  }
+
+  .search-results {
+    max-height: 420px;
+    overflow-y: auto;
+    padding: 8px;
+  }
+
+  .search-results::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  .search-results::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .search-results::-webkit-scrollbar-thumb {
+    background: var(--md-sys-color-outline-variant);
+    border-radius: 4px;
+  }
+
+  .search-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 60px 20px;
+    color: var(--md-sys-color-on-surface-variant);
+    text-align: center;
+  }
+
+  .search-empty .material-icons {
+    font-size: 56px;
+    margin-bottom: 12px;
+    opacity: 0.4;
+  }
+
+  .search-empty p {
+    font-size: 16px;
+    font-weight: 500;
+    margin-bottom: 4px;
+  }
+
+  .search-empty small {
+    font-size: 13px;
+    opacity: 0.7;
+  }
+
+  .search-result-item {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 16px;
+    border-radius: 10px;
+    text-decoration: none;
+    color: var(--md-sys-color-on-surface);
+    transition: all 0.2s ease;
+    cursor: pointer;
+    border: 1px solid transparent;
+  }
+
+  .search-result-item:hover,
+  .search-result-item.selected {
+    background-color: var(--md-sys-color-surface-container-high);
+    border-color: var(--md-sys-color-primary);
+  }
+
+  .result-icon-wrapper {
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+    background-color: var(--md-sys-color-primary-container);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .result-icon {
+    color: var(--md-sys-color-on-primary-container);
+    font-size: 22px;
+  }
+
+  .result-content {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .result-title {
+    font-size: 15px;
+    font-weight: 600;
+    margin-bottom: 3px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .result-description {
+    font-size: 13px;
+    color: var(--md-sys-color-on-surface-variant);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+  }
+
+  .result-title mark,
+  .result-description mark {
+    background-color: var(--md-sys-color-primary);
+    color: var(--md-sys-color-on-primary);
+    padding: 2px 5px;
+    border-radius: 4px;
+    font-weight: 600;
+  }
+
+  .result-type {
+    font-size: 10px;
+    padding: 5px 10px;
+    border-radius: 100px;
+    background-color: var(--md-sys-color-surface-container-highest);
+    color: var(--md-sys-color-on-surface-variant);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    flex-shrink: 0;
+  }
+
+  .search-footer {
+    padding: 14px 24px;
+    border-top: 1px solid var(--md-sys-color-outline-variant);
+    background-color: var(--md-sys-color-surface-container-low);
+  }
+
+  .search-shortcuts {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+    font-size: 12px;
+    color: var(--md-sys-color-on-surface-variant);
+  }
+
+  .search-shortcuts span {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .search-shortcuts kbd {
+    min-width: 24px;
+    height: 24px;
+    padding: 0 6px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    background-color: var(--md-sys-color-surface-container-highest);
+    border: 1px solid var(--md-sys-color-outline-variant);
+    font-family: inherit;
+    font-size: 11px;
+    font-weight: 600;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  }
+
+  @media (max-width: 768px) {
+    .search-hint {
+      display: none;
+    }
+
+    .search-trigger {
+      width: 48px;
+      height: 48px;
+      padding: 0;
+      justify-content: center;
+      border-radius: 50%;
+    }
+
+    .search-modal {
+      padding: 20px 12px;
+      align-items: flex-start;
+    }
+
+    .search-shortcuts {
+      display: none;
+    }
+  }
+</style>

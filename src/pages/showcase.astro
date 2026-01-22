@@ -1,0 +1,971 @@
+---
+// src/pages/showcase.astro - ФИНАЛЬНАЯ ИСПРАВЛЕННАЯ ВЕРСИЯ
+import Layout from '../layouts/Layout.astro';
+
+// Import all UI components  
+import Accordion from '../components/ui/Accordion.astro';
+import Alert from '../components/ui/Alert.astro';
+import Autocomplete from '../components/ui/Autocomplete.astro';
+import Avatar from '../components/ui/Avatar.astro';
+import AvatarGroup from '../components/ui/AvatarGroup.astro';
+import Backdrop from '../components/ui/Backdrop.astro';
+import Badge from '../components/ui/Badge.astro';
+import BottomSheet from '../components/ui/BottomSheet.astro';
+import Breadcrumbs from '../components/ui/Breadcrumbs.astro';
+import Button from '../components/ui/Button.astro';
+import Card from '../components/ui/Card.astro';
+import Carousel from '../components/ui/Carousel.astro';
+import Checkbox from '../components/ui/Checkbox.astro';
+import Chip from '../components/ui/Chip.astro';
+import CircularProgress from '../components/ui/CircularProgress.astro';
+import ColorPicker from '../components/ui/ColorPicker.astro';
+import DataTable from '../components/ui/DataTable.astro';
+import DatePicker from '../components/ui/DatePicker.astro';
+import DateRangePicker from '../components/ui/DateRangePicker.astro';
+import Dialog from '../components/ui/Dialog.astro';
+import Divider from '../components/ui/Divider.astro';
+import EmptyState from '../components/ui/EmptyState.astro';
+import FileUpload from '../components/ui/FileUpload.astro';
+import Form from '../components/ui/Form.astro';
+import FormField from '../components/ui/FormField.astro';
+import Icon from '../components/ui/Icon.astro';
+import ImageGallery from '../components/ui/ImageGallery.astro';
+import LinearProgress from '../components/ui/LinearProgress.astro';
+import List from '../components/ui/List.astro';
+import ListDivider from '../components/ui/ListDivider.astro';
+import ListItem from '../components/ui/ListItem.astro';
+import Menu from '../components/ui/Menu.astro';
+import MenuItem from '../components/ui/MenuItem.astro';
+import NavigationBar from '../components/ui/NavigationBar.astro';
+import NavigationItem from '../components/ui/NavigationItem.astro';
+import NavigationRail from '../components/ui/NavigationRail.astro';
+import Pagination from '../components/ui/Pagination.astro';
+import ProgressCircle from '../components/ui/ProgressCircle.astro';
+import Radio from '../components/ui/Radio.astro';
+import Rating from '../components/ui/Rating.astro';
+import Ripple from '../components/ui/Ripple.astro';
+import SearchBar from '../components/ui/SearchBar.astro';
+import Select from '../components/ui/Select.astro';
+import SkeletonLoader from '../components/ui/SkeletonLoader.astro';
+import Slider from '../components/ui/Slider.astro';
+import Snackbar from '../components/ui/Snackbar.astro';
+import StatCard from '../components/ui/StatCard.astro';
+import Stepper from '../components/ui/Stepper.astro';
+import Switch from '../components/ui/Switch.astro';
+import Tab from '../components/ui/Tab.astro';
+import Tabs from '../components/ui/Tabs.astro';
+import TextField from '../components/ui/TextField.astro';
+import ThemeToggle from '../components/ui/ThemeToggle.astro';
+import TimePicker from '../components/ui/TimePicker.astro';
+import Timeline from '../components/ui/Timeline.astro';
+import Tooltip from '../components/ui/Tooltip.astro';
+import TopAppBar from '../components/ui/TopAppBar.astro';
+import TreeNode from '../components/ui/TreeNode.astro';
+import TreeView from '../components/ui/TreeView.astro';
+import ValidationMessage from '../components/ui/ValidationMessage.astro';
+---
+
+<Layout title="UI Components Showcase">
+  <main class="showcase">
+    <header class="showcase-header">
+      <h1>Полная витрина UI компонентов</h1>
+      <p>Все 70+ компонентов Material Design 3 с вариациями</p>
+      <ThemeToggle />
+    </header>
+
+    <nav class="showcase-nav">
+      <h3>Навигация по секциям</h3>
+      <ul>
+        <li><a href="#buttons">Кнопки</a></li>
+        <li><a href="#inputs">Поля ввода</a></li>
+        <li><a href="#selections">Выбор</a></li>
+        <li><a href="#navigation">Навигация</a></li>
+        <li><a href="#feedback">Обратная связь</a></li>
+        <li><a href="#data-display">Отображение данных</a></li>
+        <li><a href="#overlays">Оверлеи</a></li>
+        <li><a href="#media">Медиа</a></li>
+      </ul>
+    </nav>
+
+    <!-- BUTTONS SECTION -->
+    <section id="buttons" class="showcase-section">
+      <h2>Кнопки (Button, FAB)</h2>
+
+      <div class="component-demo">
+        <h3>Button - Варианты стилей</h3>
+        <div class="demo-grid">
+          <Button variant="filled">Filled</Button>
+          <Button variant="outlined">Outlined</Button>
+          <Button variant="text">Text</Button>
+          <Button variant="elevated">Elevated</Button>
+          <Button variant="tonal">Tonal</Button>
+        </div>
+      </div>
+
+      <div class="component-demo">
+        <h3>Button - Размеры</h3>
+        <div class="demo-grid">
+          <Button size="small">Small</Button>
+          <Button size="medium">Medium</Button>
+          <Button size="large">Large</Button>
+        </div>
+      </div>
+
+      <div class="component-demo">
+        <h3>Button - С иконками</h3>
+        <div class="demo-grid">
+          <Button icon="add">С leading иконкой</Button>
+          <Button icon="delete" variant="outlined">Удалить</Button>
+          <Button trailingIcon="arrow_forward">Далее</Button>
+          <Button icon="settings" variant="text" ariaLabel="Настройки" />
+        </div>
+      </div>
+
+      <div class="component-demo">
+        <h3>FAB - Floating Action Button</h3>
+        <div class="demo-grid">
+          <Button variant="fab" icon="add" size="small" ariaLabel="Добавить малая" />
+          <Button variant="fab" icon="edit" ariaLabel="Редактировать" />
+          <Button variant="fab" icon="favorite" size="large" ariaLabel="Избранное большая" />
+          <Button variant="fab" icon="add" extended>Extended FAB</Button>
+        </div>
+      </div>
+
+      <div class="component-demo">
+        <h3>Button - Состояния</h3>
+        <div class="demo-grid">
+          <Button disabled>Disabled</Button>
+          <Button variant="outlined" disabled>Disabled Outlined</Button>
+          <Button href="https://example.com">Ссылка-кнопка</Button>
+        </div>
+      </div>
+    </section>
+
+    <!-- INPUTS SECTION -->
+    <section id="inputs" class="showcase-section">
+      <h2>Поля ввода (TextField, SearchBar, Pickers, Slider)</h2>
+
+      <div class="component-demo">
+        <h3>TextField - Варианты</h3>
+        <div class="demo-grid">
+          <TextField label="Filled поле" variant="filled" placeholder="Введите текст" />
+          <TextField label="Outlined поле" variant="outlined" placeholder="Введите текст" />
+        </div>
+      </div>
+
+      <div class="component-demo">
+        <h3>TextField - Типы ввода</h3>
+        <div class="demo-grid">
+          <TextField label="Email" type="email" placeholder="example@email.com" />
+          <TextField label="Пароль" type="password" placeholder="••••••••" />
+          <TextField label="Телефон" type="tel" placeholder="+7 (999) 123-45-67" />
+          <TextField label="Число" type="number" placeholder="0" />
+          <TextField label="Текстовая область" type="text" placeholder="Многострочный текст" />
+        </div>
+      </div>
+
+      <div class="component-demo">
+        <h3>TextField - С иконками</h3>
+        <div class="demo-grid">
+          <TextField label="Поиск" leadingIcon="search" placeholder="Искать..." />
+          <TextField label="Email" leadingIcon="email" placeholder="example@email.com" />
+          <TextField label="Пароль" type="password" trailingIcon="visibility" />
+        </div>
+      </div>
+
+      <div class="component-demo">
+        <h3>TextField - Валидация и состояния</h3>
+        <div class="demo-grid">
+          <TextField label="Обязательное поле" required error helperText="Это поле обязательно" />
+          <TextField label="С подсказкой" helperText="Введите ваше имя" />
+          <TextField label="Отключенное" disabled value="Отключено" />
+        </div>
+      </div>
+
+      <div class="component-demo">
+        <h3>SearchBar - Поиск</h3>
+        <div class="demo-grid">
+          <SearchBar placeholder="Поиск компонентов..." />
+          <SearchBar placeholder="Поиск с значением" value="test" />
+        </div>
+      </div>
+
+      <div class="component-demo">
+        <h3>Autocomplete - Автодополнение</h3>
+        <div class="demo-grid">
+          <Autocomplete 
+            id="auto1"
+            label="Выберите язык" 
+            options={[
+              { value: 'js', label: 'JavaScript' },
+              { value: 'ts', label: 'TypeScript' },
+              { value: 'py', label: 'Python' }
+            ]} 
+          />
+          <Autocomplete 
+            id="auto2"
+            label="С начальным значением" 
+            value="ts"
+            options={[
+              { value: 'js', label: 'JavaScript' },
+              { value: 'ts', label: 'TypeScript' }
+            ]} 
+          />
+        </div>
+      </div>
+
+      <div class="component-demo">
+        <h3>ColorPicker - Выбор цвета</h3>
+        <div class="demo-grid">
+          <ColorPicker id="color1" label="Выберите цвет" />
+          <ColorPicker id="color2" label="С начальным" value="#FF5722" />
+        </div>
+      </div>
+
+      <div class="component-demo">
+        <h3>DatePicker - Выбор даты</h3>
+        <div class="demo-grid">
+          <DatePicker id="date1" label="Выберите дату" />
+          <DatePicker id="date2" label="Дата рождения" />
+        </div>
+      </div>
+
+      <div class="component-demo">
+        <h3>DateRangePicker - Диапазон дат</h3>
+        <div class="demo-grid">
+          <DateRangePicker id="daterange1" label="Диапазон дат" />
+        </div>
+      </div>
+
+      <div class="component-demo">
+        <h3>TimePicker - Выбор времени</h3>
+        <div class="demo-grid">
+          <TimePicker id="time1" label="Выберите время" />
+          <TimePicker id="time2" label="Время встречи" />
+        </div>
+      </div>
+
+      <div class="component-demo">
+        <h3>Slider - Ползунок</h3>
+        <div class="demo-grid">
+          <Slider name="slider1" min={0} max={100} value={50} />
+          <Slider name="slider2" min={0} max={100} value={75} step={5} />
+          <Slider name="slider3" min={0} max={100} value={30} disabled />
+        </div>
+      </div>
+
+      <div class="component-demo">
+        <h3>FileUpload - Загрузка файлов</h3>
+        <div class="demo-grid">
+          <FileUpload id="file1" label="Загрузить файл" />
+          <FileUpload id="file2" label="Загрузить изображение" accept="image/*" />
+          <FileUpload id="file3" label="Множественная загрузка" multiple />
+        </div>
+      </div>
+    </section>
+
+    <!-- SELECTIONS SECTION -->
+    <section id="selections" class="showcase-section">
+      <h2>Элементы выбора (Checkbox, Radio, Switch, Select, Rating, Chip)</h2>
+
+      <div class="component-demo">
+        <h3>Checkbox - Чекбоксы</h3>
+        <div class="demo-grid">
+          <Checkbox name="check1" label="Обычный" />
+          <Checkbox name="check2" label="Выбранный" checked />
+          <Checkbox name="check3" label="Отключенный" disabled />
+          <Checkbox name="check4" label="Выбран и отключен" checked disabled />
+        </div>
+      </div>
+
+      <div class="component-demo">
+        <h3>Radio - Радиокнопки</h3>
+        <div class="demo-grid">
+          <Radio name="option" label="Вариант 1" value="1" />
+          <Radio name="option" label="Вариант 2" value="2" checked />
+          <Radio name="option" label="Вариант 3" value="3" />
+          <Radio name="option2" label="Отключенный" value="4" disabled />
+        </div>
+      </div>
+
+      <div class="component-demo">
+        <h3>Switch - Переключатели</h3>
+        <div class="demo-grid">
+          <Switch name="sw1" label="Уведомления" />
+          <Switch name="sw2" label="Включено" checked />
+          <Switch name="sw3" label="Отключено" disabled />
+          <Switch name="sw4" label="Включено и отключено" checked disabled />
+        </div>
+      </div>
+
+      <div class="component-demo">
+        <h3>Select - Выпадающий список</h3>
+        <div class="demo-grid">
+          <Select label="Выберите страну">
+            <option value="ru">Россия</option>
+            <option value="us">США</option>
+            <option value="de">Германия</option>
+          </Select>
+          <Select label="С выбранным">
+            <option value="1">Вариант 1</option>
+            <option value="2" selected>Вариант 2</option>
+            <option value="3">Вариант 3</option>
+          </Select>
+        </div>
+      </div>
+
+      <div class="component-demo">
+        <h3>Rating - Рейтинг</h3>
+        <div class="demo-grid">
+          <Rating id="rating1" value={3} max={5} />
+          <Rating id="rating2" value={4} max={5} />
+          <Rating id="rating3" value={5} max={5} readonly />
+          <Rating id="rating4" value={7} max={10} />
+        </div>
+      </div>
+
+      <div class="component-demo">
+        <h3>Chip - Чипсы</h3>
+        <div class="demo-grid">
+          <Chip label="Базовый чип" />
+          <Chip label="Выбран" selected />
+          <Chip label="Отключен" disabled />
+        </div>
+      </div>
+    </section>
+
+    <!-- NAVIGATION SECTION -->
+    <section id="navigation" class="showcase-section">
+      <h2>Навигация (TopAppBar, NavigationBar, NavigationRail, Breadcrumbs, Pagination, Tabs, Stepper, Menu)</h2>
+
+      <div class="component-demo">
+        <h3>TopAppBar - Верхняя панель</h3>
+        <div class="demo-grid">
+          <TopAppBar title="Заголовок приложения" />
+          <TopAppBar title="Заголовок с меню" />
+        </div>
+      </div>
+
+      <div class="component-demo">
+        <h3>NavigationBar - Нижняя навигация</h3>
+        <div class="demo-grid">
+          <NavigationBar>
+            <NavigationItem icon="home" label="Главная" href="/" />
+            <NavigationItem icon="explore" label="Поиск" href="/search" />
+            <NavigationItem icon="favorite" label="Избранное" href="/favorites" />
+          </NavigationBar>
+        </div>
+      </div>
+
+      <div class="component-demo">
+        <h3>NavigationRail - Боковая навигация</h3>
+        <div class="demo-grid">
+          <NavigationRail 
+            items={[
+              { icon: 'home', label: 'Главная', href: '/', active: true },
+              { icon: 'explore', label: 'Поиск', href: '/search' },
+              { icon: 'favorite', label: 'Избранное', href: '/favorites' }
+            ]}
+          />
+        </div>
+      </div>
+
+      <div class="component-demo">
+        <h3>Breadcrumbs - Хлебные крошки</h3>
+        <div class="demo-grid">
+          <Breadcrumbs items={[
+            { label: 'Главная', href: '/' },
+            { label: 'Компоненты', href: '/components' },
+            { label: 'Showcase', href: '/showcase' }
+          ]} />
+        </div>
+      </div>
+
+      <div class="component-demo">
+        <h3>Pagination - Пагинация</h3>
+        <div class="demo-grid">
+          <Pagination totalPages={10} currentPage={1} />
+          <Pagination totalPages={10} currentPage={5} />
+          <Pagination totalPages={20} currentPage={10} siblingCount={1} />
+        </div>
+      </div>
+
+      <div class="component-demo">
+        <h3>Tabs - Вкладки</h3>
+        <div class="demo-grid">
+          <Tabs>
+            <Tab label="Вкладка 1" />
+            <Tab label="Вкладка 2" />
+            <Tab label="Вкладка 3" />
+          </Tabs>
+        </div>
+      </div>
+
+      <div class="component-demo">
+        <h3>Stepper - Шаги</h3>
+        <div class="demo-grid">
+          <Stepper 
+            steps={[
+              { label: 'Шаг 1' },
+              { label: 'Шаг 2' },
+              { label: 'Шаг 3' }
+            ]} 
+          />
+        </div>
+      </div>
+
+      <div class="component-demo">
+        <h3>Menu & MenuItem - Меню</h3>
+        <div class="demo-grid">
+          <div>
+            <Button>Открыть меню</Button>
+            <Menu id="menu1">
+              <MenuItem label="Пункт 1" />
+              <MenuItem label="Пункт 2" />
+              <MenuItem label="Пункт 3" />
+            </Menu>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FEEDBACK SECTION -->
+    <section id="feedback" class="showcase-section">
+      <h2>Обратная связь (Alert, Snackbar, Progress, Skeleton, Validation, Tooltip)</h2>
+
+      <div class="component-demo">
+        <h3>Alert - Уведомления</h3>
+        <div class="demo-grid">
+          <Alert variant="info">Информация</Alert>
+          <Alert variant="success">Успех</Alert>
+          <Alert variant="warning">Предупреждение</Alert>
+          <Alert variant="error">Ошибка</Alert>
+        </div>
+      </div>
+
+      <div class="component-demo">
+        <h3>Alert - Варианты</h3>
+        <div class="demo-grid">
+          <Alert variant="info">Закрываемое уведомление</Alert>
+          <Alert variant="success">Успешное действие</Alert>
+        </div>
+      </div>
+
+      <div class="component-demo">
+        <h3>Snackbar - Всплывающие уведомления</h3>
+        <div class="demo-grid">
+          <Snackbar id="snack1" message="Простое уведомление" />
+          <Snackbar id="snack2" message="С действием" action="Отменить" />
+        </div>
+      </div>
+
+      <div class="component-demo">
+        <h3>CircularProgress - Круговой прогресс</h3>
+        <div class="demo-grid">
+          <CircularProgress />
+          <CircularProgress value={25} />
+          <CircularProgress value={50} />
+          <CircularProgress value={75} />
+        </div>
+      </div>
+
+      <div class="component-demo">
+        <h3>CircularProgress - Размеры</h3>
+        <div class="demo-grid">
+          <CircularProgress size={20} />
+          <CircularProgress size={40} />
+          <CircularProgress size={60} />
+        </div>
+      </div>
+
+      <div class="component-demo">
+        <h3>LinearProgress - Линейный прогресс</h3>
+        <div class="demo-grid">
+          <LinearProgress />
+          <LinearProgress value={30} />
+          <LinearProgress value={70} />
+        </div>
+      </div>
+
+      <div class="component-demo">
+        <h3>ProgressCircle - Круговой прогресс с меткой</h3>
+        <div class="demo-grid">
+          <ProgressCircle value={25} size={100} />
+          <ProgressCircle value={50} size={100} />
+          <ProgressCircle value={75} size={100} />
+        </div>
+      </div>
+
+      <div class="component-demo">
+        <h3>SkeletonLoader - Заглушки загрузки</h3>
+        <div class="demo-grid">
+          <SkeletonLoader variant="text" />
+          <SkeletonLoader variant="circular" width="40px" height="40px" />
+          <SkeletonLoader variant="rectangular" width="200px" height="100px" />
+          <SkeletonLoader variant="rounded" width="200px" height="100px" />
+        </div>
+      </div>
+
+      <div class="component-demo">
+        <h3>ValidationMessage - Сообщения валидации</h3>
+        <div class="demo-grid">
+          <ValidationMessage variant="error">Ошибка валидации</ValidationMessage>
+          <ValidationMessage variant="warning">Предупреждение</ValidationMessage>
+          <ValidationMessage variant="info">Информация</ValidationMessage>
+        </div>
+      </div>
+
+      <div class="component-demo">
+        <h3>Tooltip - Подсказки</h3>
+        <div class="demo-grid">
+          <Tooltip text="Подсказка">
+            <Button>Наведи на меня</Button>
+          </Tooltip>
+          <Tooltip text="Еще подсказка">
+            <Button variant="outlined">Еще кнопка</Button>
+          </Tooltip>
+        </div>
+      </div>
+    </section>
+
+    <!-- DATA DISPLAY SECTION -->
+    <section id="data-display" class="showcase-section">
+      <h2>Отображение данных (Card, StatCard, List, Table, Avatar, Badge, Timeline, Tree, Accordion, Icon)</h2>
+
+      <div class="component-demo">
+        <h3>Card - Карточки</h3>
+        <div class="demo-grid">
+          <Card>
+            <h3>Простая карточка</h3>
+            <p>Содержимое карточки</p>
+          </Card>
+          <Card variant="outlined">
+            <h3>Обведённая</h3>
+            <p>С границей</p>
+          </Card>
+          <Card variant="elevated">
+            <h3>Поднятая</h3>
+            <p>С тенью</p>
+          </Card>
+        </div>
+      </div>
+
+      <div class="component-demo">
+        <h3>StatCard - Карточки статистики</h3>
+        <div class="demo-grid">
+          <StatCard title="Пользователи" value="1,234" icon="people" trend="up" />
+          <StatCard title="Продажи" value="$45,678" icon="attach_money" trend="down" />
+          <StatCard title="Конверсия" value="23.5%" icon="trending_up" trend="up" />
+        </div>
+      </div>
+
+      <div class="component-demo">
+        <h3>List & ListItem - Списки</h3>
+        <div class="demo-grid">
+          <List>
+            <ListItem headline="Элемент 1" />
+            <ListItem headline="Элемент 2" supportingText="С описанием" />
+            <ListDivider />
+            <ListItem headline="Элемент 3">
+              <Icon slot="leading" name="star" />
+            </ListItem>
+          </List>
+        </div>
+      </div>
+
+      <div class="component-demo">
+        <h3>DataTable - Таблица данных</h3>
+        <div class="demo-grid">
+          <DataTable 
+            columns={[
+              { key: 'id', label: 'ID' },
+              { key: 'name', label: 'Имя' },
+              { key: 'email', label: 'Email' }
+            ]}
+            data={[
+              { id: '1', name: 'Иван Иванов', email: 'ivan@example.com' },
+              { id: '2', name: 'Мария Петрова', email: 'maria@example.com' }
+            ]}
+          />
+        </div>
+      </div>
+
+      <div class="component-demo">
+        <h3>Avatar - Аватары</h3>
+        <div class="demo-grid">
+          <Avatar src="/avatar.jpg" alt="User" />
+          <Avatar alt="AB">AB</Avatar>
+          <Avatar alt="Icon"><Icon name="person" /></Avatar>
+          <Avatar src="/avatar.jpg" alt="Small" size="small" />
+          <Avatar src="/avatar.jpg" alt="Large" size="large" />
+        </div>
+      </div>
+
+      <div class="component-demo">
+        <h3>AvatarGroup - Группа аватаров</h3>
+        <div class="demo-grid">
+          <AvatarGroup avatars={[
+            { src: '/avatar1.jpg', alt: 'User 1' },
+            { src: '/avatar2.jpg', alt: 'User 2' },
+            { src: '/avatar3.jpg', alt: 'User 3' }
+          ]} />
+          <AvatarGroup avatars={[
+            { src: '/avatar1.jpg', alt: 'User 1' },
+            { src: '/avatar2.jpg', alt: 'User 2' }
+          ]} max={2} />
+        </div>
+      </div>
+
+      <div class="component-demo">
+        <h3>Badge - Значки</h3>
+        <div class="demo-grid">
+          <Badge><Icon name="notifications" /></Badge>
+          <Badge variant="error"><Icon name="email" /></Badge>
+          <Badge><Icon name="chat" /></Badge>
+        </div>
+      </div>
+
+      <div class="component-demo">
+        <h3>Timeline - Временная шкала</h3>
+        <div class="demo-grid">
+          <Timeline items={[
+            { title: 'Событие 1', description: 'Описание 1' },
+            { title: 'Событие 2', description: 'Описание 2' },
+            { title: 'Событие 3', description: 'Описание 3' }
+          ]} />
+        </div>
+      </div>
+
+      <div class="component-demo">
+        <h3>TreeView - Дерево</h3>
+        <div class="demo-grid">
+          <TreeView nodes={[
+            { id: '1', label: 'Родитель 1', children: [
+              { id: '1-1', label: 'Дочерний 1.1' },
+              { id: '1-2', label: 'Дочерний 1.2' }
+            ]},
+            { id: '2', label: 'Родитель 2' }
+          ]} />
+        </div>
+      </div>
+
+      <div class="component-demo">
+        <h3>Accordion - Аккордеон</h3>
+        <div class="demo-grid">
+          <Accordion items={[
+            { id: 'acc1', title: 'Секция 1', content: 'Содержимое 1' },
+            { id: 'acc2', title: 'Секция 2', content: 'Содержимое 2' },
+            { id: 'acc3', title: 'Секция 3', content: 'Содержимое 3' }
+          ]} />
+        </div>
+      </div>
+
+      <div class="component-demo">
+        <h3>Divider - Разделитель</h3>
+        <div class="demo-grid">
+          <div>
+            <p>Текст выше</p>
+            <Divider />
+            <p>Текст ниже</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="component-demo">
+        <h3>Icon - Иконки</h3>
+        <div class="demo-grid">
+          <Icon name="home" />
+          <Icon name="favorite" />
+          <Icon name="settings" />
+          <Icon name="delete" />
+        </div>
+      </div>
+
+      <div class="component-demo">
+        <h3>EmptyState - Пустое состояние</h3>
+        <div class="demo-grid">
+          <EmptyState 
+            icon="inbox" 
+            title="Нет данных" 
+            description="Данные отсутствуют"
+          />
+        </div>
+      </div>
+    </section>
+
+    <!-- OVERLAYS SECTION -->
+    <section id="overlays" class="showcase-section">
+      <h2>Оверлеи (Dialog, BottomSheet, Backdrop)</h2>
+
+      <div class="component-demo">
+        <h3>Dialog - Диалоговые окна</h3>
+        <div class="demo-grid">
+          <div>
+            <Button onclick="document.getElementById('dialog1').showModal()">
+              Открыть диалог
+            </Button>
+            <Dialog id="dialog1" title="Заголовок">
+              <p>Содержимое диалога</p>
+              <div slot="actions">
+                <Button variant="text" onclick="document.getElementById('dialog1').close()">Отмена</Button>
+                <Button onclick="document.getElementById('dialog1').close()">OK</Button>
+              </div>
+            </Dialog>
+          </div>
+
+          <div>
+            <Button onclick="document.getElementById('dialog2').showModal()">
+              Полноэкранный
+            </Button>
+            <Dialog id="dialog2" title="Полноэкранный" fullscreen>
+              <p>Полноэкранное окно</p>
+              <div slot="actions">
+                <Button onclick="document.getElementById('dialog2').close()">Закрыть</Button>
+              </div>
+            </Dialog>
+          </div>
+        </div>
+      </div>
+
+      <div class="component-demo">
+        <h3>BottomSheet - Нижняя панель</h3>
+        <div class="demo-grid">
+          <div>
+            <Button onclick="document.getElementById('sheet1').showModal()">
+              Открыть Bottom Sheet
+            </Button>
+            <BottomSheet id="sheet1">
+              <h3>Нижняя панель</h3>
+              <p>Содержимое</p>
+              <Button onclick="document.getElementById('sheet1').close()">Закрыть</Button>
+            </BottomSheet>
+          </div>
+        </div>
+      </div>
+
+      <div class="component-demo">
+        <h3>Backdrop - Затемнение</h3>
+        <div class="demo-grid">
+          <Backdrop />
+        </div>
+      </div>
+    </section>
+
+    <!-- MEDIA SECTION -->
+    <section id="media" class="showcase-section">
+      <h2>Медиа (Carousel, ImageGallery)</h2>
+
+      <div class="component-demo">
+        <h3>Carousel - Карусель</h3>
+        <div class="demo-grid">
+          <Carousel images={[
+            { src: '/image1.jpg', alt: 'Slide 1' },
+            { src: '/image2.jpg', alt: 'Slide 2' },
+            { src: '/image3.jpg', alt: 'Slide 3' }
+          ]} />
+        </div>
+      </div>
+
+      <div class="component-demo">
+        <h3>ImageGallery - Галерея изображений</h3>
+        <div class="demo-grid">
+          <ImageGallery images={[
+            { src: '/image1.jpg', alt: 'Image 1' },
+            { src: '/image2.jpg', alt: 'Image 2' },
+            { src: '/image3.jpg', alt: 'Image 3' }
+          ]} />
+        </div>
+      </div>
+    </section>
+
+    <!-- FORMS SECTION -->
+    <section id="forms" class="showcase-section">
+      <h2>Формы (Form, FormField, Ripple)</h2>
+
+      <div class="component-demo">
+        <h3>Form & FormField - Форма</h3>
+        <div class="demo-grid">
+          <Form>
+            <FormField label="Имя" required>
+              <TextField label="Имя" name="name" />
+            </FormField>
+            <FormField label="Email" required>
+              <TextField label="Email" name="email" type="email" />
+            </FormField>
+            <FormField label="Сообщение">
+              <TextField label="Сообщение" name="message" type="text" />
+            </FormField>
+            <Button type="submit">Отправить</Button>
+          </Form>
+        </div>
+      </div>
+
+      <div class="component-demo">
+        <h3>Ripple - Эффект волны</h3>
+        <div class="demo-grid">
+          <Ripple>
+            <div style="padding: 20px; background: var(--md-sys-color-surface-variant); border-radius: 8px; cursor: pointer;">
+              Нажми для эффекта ripple
+            </div>
+          </Ripple>
+        </div>
+      </div>
+    </section>
+  </main>
+</Layout>
+
+<style>
+  .showcase {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 40px 20px;
+  }
+
+  .showcase-header {
+    text-align: center;
+    margin-bottom: 60px;
+  }
+
+  .showcase-header h1 {
+    font-size: 3rem;
+    margin-bottom: 16px;
+  }
+
+  .showcase-header p {
+    font-size: 1.2rem;
+    margin-bottom: 24px;
+  }
+
+  .showcase-nav {
+    position: sticky;
+    top: 20px;
+    background: var(--md-sys-color-surface);
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 40px;
+    box-shadow: var(--md-sys-elevation-level2);
+    z-index: 100;
+  }
+
+  .showcase-nav h3 {
+    margin-bottom: 16px;
+  }
+
+  .showcase-nav ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .showcase-nav a {
+    display: inline-block;
+    padding: 8px 16px;
+    background: var(--md-sys-color-surface-variant);
+    text-decoration: none;
+    border-radius: 8px;
+    transition: all 0.2s;
+  }
+
+  .showcase-nav a:hover {
+    background: var(--md-sys-color-primary);
+    color: var(--md-sys-color-on-primary);
+  }
+
+  .showcase-nav a.active {
+    background: var(--md-sys-color-primary);
+    color: var(--md-sys-color-on-primary);
+  }
+
+  .showcase-section {
+    margin-bottom: 80px;
+    scroll-margin-top: 100px;
+  }
+
+  .showcase-section h2 {
+    font-size: 2.5rem;
+    margin-bottom: 32px;
+    color: var(--md-sys-color-primary);
+    border-bottom: 2px solid var(--md-sys-color-primary);
+    padding-bottom: 16px;
+  }
+
+  .component-demo {
+    background: var(--md-sys-color-surface);
+    border-radius: 12px;
+    padding: 32px;
+    margin-bottom: 32px;
+    box-shadow: var(--md-sys-elevation-level1);
+  }
+
+  .component-demo h3 {
+    font-size: 1.5rem;
+    margin-bottom: 24px;
+  }
+
+  .demo-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 24px;
+    align-items: start;
+  }
+
+  @media (max-width: 768px) {
+    .showcase-header h1 {
+      font-size: 2rem;
+    }
+
+    .showcase-section h2 {
+      font-size: 1.75rem;
+    }
+
+    .component-demo {
+      padding: 20px;
+    }
+
+    .demo-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
+
+<script>
+  document.querySelectorAll('.showcase-nav a').forEach(anchor => {
+    anchor.addEventListener('click', function (this: HTMLAnchorElement, e: Event) {
+      e.preventDefault();
+      const href = this.getAttribute('href');
+      if (href) {
+        const target = document.querySelector(href);
+        if (target) {
+          target.scrollIntoView({
+            behavior: 'smooth',
+            block: 'start'
+          });
+        }
+      }
+    });
+  });
+
+  const sections = document.querySelectorAll<HTMLElement>('.showcase-section');
+  const navLinks = document.querySelectorAll('.showcase-nav a');
+
+  window.addEventListener('scroll', () => {
+    let current = '';
+    sections.forEach(section => {
+      const sectionTop = section.offsetTop;
+      if (window.pageYOffset >= sectionTop - 150) {
+        const id = section.getAttribute('id');
+        if (id) current = id;
+      }
+    });
+
+    navLinks.forEach(link => {
+      link.classList.remove('active');
+      if (link.getAttribute('href') === `#${current}`) {
+        link.classList.add('active');
+      }
+    });
+  });
+</script>

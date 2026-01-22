@@ -1,0 +1,561 @@
+---
+/**
+ * ColorPicker Component - Material Design 3 Enhanced
+ * Улучшенный выбор цвета с красивыми анимациями
+ */
+import Icon from './Icon.astro';
+
+interface Props {
+  id: string;
+  name?: string;
+  label?: string;
+  value?: string;
+  presets?: string[];
+  fullWidth?: boolean;
+  disabled?: boolean;
+  showInput?: boolean;
+}
+
+const {
+  id,
+  name = id,
+  label,
+  value = '#6750A4',
+  presets = [
+    '#6750A4', // Primary
+    '#625B71', // Secondary
+    '#7D5260', // Tertiary
+    '#D0BCFF', // Light primary
+    '#CCC2DC', // Light secondary
+    '#EFB8C8', // Light tertiary
+    '#1C1B1F', // Dark surface
+    '#313033', // Dark surface variant
+    '#49454F', // Dark outline
+    '#E8DEF8', // Light surface variant
+    '#FEF7FF', // Light background
+    '#B3261E'  // Error
+  ],
+  fullWidth = false,
+  disabled = false,
+  showInput = true
+} = Astro.props;
+
+const pickerId = `color-picker-${id}`;
+---
+
+<div 
+  class:list={[
+    'color-picker',
+    { 'color-picker--full-width': fullWidth },
+    { 'color-picker--disabled': disabled }
+  ]}
+  data-color-picker={pickerId}
+>
+  {label && (
+    <label for={id} class="color-picker__label">
+      {label}
+    </label>
+  )}
+
+  <div class="color-picker__main">
+    <!-- Preview swatch -->
+    <div class="color-picker__preview" data-preview>
+      <button
+        type="button"
+        class="color-picker__swatch"
+        style={`background-color: ${value}`}
+        disabled={disabled}
+        aria-label="Выбрать цвет"
+        data-swatch-button
+      >
+        <Icon name="palette" class="color-picker__icon" />
+        <span class="color-picker__ripple"></span>
+      </button>
+      <input
+        type="color"
+        id={id}
+        name={name}
+        class="color-picker__input"
+        value={value}
+        disabled={disabled}
+        data-color-input
+      />
+    </div>
+
+    <!-- Text input -->
+    {showInput && (
+      <input
+        type="text"
+        class="color-picker__text-input"
+        value={value}
+        placeholder="#000000"
+        pattern="^#[0-9A-Fa-f]{6}$"
+        disabled={disabled}
+        data-text-input
+      />
+    )}
+  </div>
+
+  <!-- Color presets -->
+  {presets && presets.length > 0 && (
+    <div class="color-picker__presets" data-presets>
+      <div class="color-picker__presets-label">Быстрый выбор</div>
+      <div class="color-picker__presets-grid">
+        {presets.map((color, index) => (
+          <button
+            type="button"
+            class="color-picker__preset"
+            style={`background-color: ${color}`}
+            data-color={color}
+            disabled={disabled}
+            aria-label={`Выбрать цвет ${color}`}
+            data-index={index}
+          >
+            <span class="color-picker__preset-ripple"></span>
+            {value.toLowerCase() === color.toLowerCase() && (
+              <span class="color-picker__check-container">
+                <Icon name="check" class="color-picker__check" />
+              </span>
+            )}
+          </button>
+        ))}
+      </div>
+    </div>
+  )}
+
+  <!-- Color info -->
+  <div class="color-picker__info" data-info>
+    <div class="color-picker__info-item">
+      <span class="color-picker__info-label">RGB:</span>
+      <span class="color-picker__info-value" data-rgb>—</span>
+    </div>
+    <div class="color-picker__info-item">
+      <span class="color-picker__info-label">HSL:</span>
+      <span class="color-picker__info-value" data-hsl>—</span>
+    </div>
+  </div>
+</div>
+
+<style>
+  .color-picker {
+    display: inline-flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .color-picker--full-width {
+    width: 100%;
+  }
+
+  .color-picker--disabled {
+    opacity: 0.38;
+    pointer-events: none;
+  }
+
+  /* Label */
+  .color-picker__label {
+    color: var(--md-sys-color-on-surface);
+    font: var(--md-sys-typescale-body-medium);
+    font-weight: 500;
+  }
+
+  /* Main container */
+  .color-picker__main {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+  }
+
+  /* Preview */
+  .color-picker__preview {
+    position: relative;
+    width: 64px;
+    height: 64px;
+    flex-shrink: 0;
+  }
+
+  .color-picker__swatch {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    border-radius: 16px;
+    border: 2px solid var(--md-sys-color-outline-variant);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 250ms cubic-bezier(0.4, 0, 0.2, 1);
+    padding: 0;
+    overflow: hidden;
+    box-shadow: 
+      0 1px 2px rgba(0, 0, 0, 0.1),
+      0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+
+  .color-picker__swatch:hover:not(:disabled) {
+    border-color: var(--md-sys-color-primary);
+    transform: scale(1.05);
+    box-shadow: 
+      0 2px 4px rgba(0, 0, 0, 0.12),
+      0 4px 8px rgba(0, 0, 0, 0.15);
+  }
+
+  .color-picker__swatch:active:not(:disabled) {
+    transform: scale(0.98);
+  }
+
+  .color-picker__icon {
+    color: white;
+    font-size: 28px;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+    z-index: 1;
+    transition: transform 250ms cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .color-picker__swatch:hover:not(:disabled) .color-picker__icon {
+    transform: scale(1.1) rotate(-10deg);
+  }
+
+  .color-picker__ripple {
+    position: absolute;
+    inset: 0;
+    background: rgba(255, 255, 255, 0.3);
+    opacity: 0;
+    transform: scale(0);
+    border-radius: 16px;
+    transition: all 400ms cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .color-picker__swatch:active:not(:disabled) .color-picker__ripple {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  .color-picker__input {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    cursor: pointer;
+  }
+
+  /* Text input */
+  .color-picker__text-input {
+    flex: 1;
+    padding: 16px 20px;
+    border: 1px solid var(--md-sys-color-outline);
+    border-radius: 12px;
+    background: var(--md-sys-color-surface);
+    color: var(--md-sys-color-on-surface);
+    font: var(--md-sys-typescale-body-large);
+    font-family: 'Roboto Mono', 'Courier New', monospace;
+    text-transform: uppercase;
+    font-weight: 500;
+    transition: all 200ms cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .color-picker__text-input:hover:not(:disabled) {
+    border-color: var(--md-sys-color-on-surface);
+    background: var(--md-sys-color-surface-container-highest);
+  }
+
+  .color-picker__text-input:focus {
+    outline: none;
+    border-color: var(--md-sys-color-primary);
+    border-width: 2px;
+    padding: 15px 19px;
+    box-shadow: 0 0 0 3px rgba(103, 80, 164, 0.12);
+  }
+
+  .color-picker--full-width .color-picker__text-input {
+    width: 100%;
+  }
+
+  /* Presets */
+  .color-picker__presets {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .color-picker__presets-label {
+    color: var(--md-sys-color-on-surface-variant);
+    font: var(--md-sys-typescale-label-small);
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .color-picker__presets-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(56px, 1fr));
+    gap: 12px;
+  }
+
+  .color-picker__preset {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 1;
+    border-radius: 12px;
+    border: 2px solid transparent;
+    cursor: pointer;
+    transition: all 250ms cubic-bezier(0.4, 0, 0.2, 1);
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    box-shadow: 
+      0 1px 2px rgba(0, 0, 0, 0.1),
+      0 1px 3px rgba(0, 0, 0, 0.1);
+  }
+
+  .color-picker__preset:hover:not(:disabled) {
+    border-color: var(--md-sys-color-primary);
+    transform: translateY(-2px) scale(1.05);
+    box-shadow: 
+      0 4px 6px rgba(0, 0, 0, 0.12),
+      0 6px 12px rgba(0, 0, 0, 0.15);
+  }
+
+  .color-picker__preset:active:not(:disabled) {
+    transform: translateY(0) scale(0.95);
+  }
+
+  .color-picker__preset:focus-visible {
+    outline: 2px solid var(--md-sys-color-primary);
+    outline-offset: 2px;
+  }
+
+  .color-picker__preset-ripple {
+    position: absolute;
+    inset: 0;
+    background: rgba(255, 255, 255, 0.3);
+    opacity: 0;
+    transform: scale(0);
+    border-radius: 12px;
+    transition: all 400ms cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .color-picker__preset:active:not(:disabled) .color-picker__preset-ripple {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  .color-picker__check-container {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.9);
+    animation: checkPop 300ms cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .color-picker__check {
+    color: var(--md-sys-color-primary);
+    font-size: 24px;
+    font-weight: bold;
+  }
+
+  @keyframes checkPop {
+    0% {
+      opacity: 0;
+      transform: scale(0);
+    }
+    50% {
+      transform: scale(1.2);
+    }
+    100% {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  /* Color info */
+  .color-picker__info {
+    display: flex;
+    gap: 24px;
+    padding: 12px 16px;
+    border-radius: 12px;
+    background: var(--md-sys-color-surface-container-highest);
+  }
+
+  .color-picker__info-item {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .color-picker__info-label {
+    color: var(--md-sys-color-on-surface-variant);
+    font: var(--md-sys-typescale-label-small);
+    font-weight: 500;
+  }
+
+  .color-picker__info-value {
+    color: var(--md-sys-color-on-surface);
+    font: var(--md-sys-typescale-body-medium);
+    font-family: 'Roboto Mono', 'Courier New', monospace;
+  }
+
+  /* Responsive */
+  @media (max-width: 640px) {
+    .color-picker__presets-grid {
+      grid-template-columns: repeat(auto-fill, minmax(48px, 1fr));
+      gap: 8px;
+    }
+
+    .color-picker__main {
+      flex-wrap: wrap;
+    }
+
+    .color-picker__text-input {
+      width: 100%;
+    }
+  }
+
+  /* Reduced motion */
+  @media (prefers-reduced-motion: reduce) {
+    .color-picker__swatch,
+    .color-picker__preset,
+    .color-picker__ripple,
+    .color-picker__preset-ripple,
+    .color-picker__check-container {
+      transition: none;
+      animation: none;
+    }
+  }
+</style>
+
+<script>
+  function hexToRgb(hex: string): { r: number; g: number; b: number } | null {
+    const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+    return result ? {
+      r: parseInt(result[1], 16),
+      g: parseInt(result[2], 16),
+      b: parseInt(result[3], 16)
+    } : null;
+  }
+
+  function rgbToHsl(r: number, g: number, b: number): { h: number; s: number; l: number } {
+    r /= 255;
+    g /= 255;
+    b /= 255;
+
+    const max = Math.max(r, g, b);
+    const min = Math.min(r, g, b);
+    let h = 0, s = 0;
+    const l = (max + min) / 2;
+
+    if (max !== min) {
+      const d = max - min;
+      s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+
+      switch (max) {
+        case r: h = ((g - b) / d + (g < b ? 6 : 0)) / 6; break;
+        case g: h = ((b - r) / d + 2) / 6; break;
+        case b: h = ((r - g) / d + 4) / 6; break;
+      }
+    }
+
+    return {
+      h: Math.round(h * 360),
+      s: Math.round(s * 100),
+      l: Math.round(l * 100)
+    };
+  }
+
+  function initColorPicker() {
+    const pickers = document.querySelectorAll('[data-color-picker]');
+
+    pickers.forEach(picker => {
+      const colorInput = picker.querySelector('[data-color-input]') as HTMLInputElement;
+      const textInput = picker.querySelector('[data-text-input]') as HTMLInputElement;
+      const swatch = picker.querySelector('[data-swatch-button]') as HTMLButtonElement;
+      const presets = picker.querySelectorAll('[data-color]');
+      const rgbDisplay = picker.querySelector('[data-rgb]') as HTMLElement;
+      const hslDisplay = picker.querySelector('[data-hsl]') as HTMLElement;
+
+      function updateColorInfo(color: string) {
+        const rgb = hexToRgb(color);
+        if (rgb && rgbDisplay && hslDisplay) {
+          rgbDisplay.textContent = `${rgb.r}, ${rgb.g}, ${rgb.b}`;
+          
+          const hsl = rgbToHsl(rgb.r, rgb.g, rgb.b);
+          hslDisplay.textContent = `${hsl.h}°, ${hsl.s}%, ${hsl.l}%`;
+        }
+      }
+
+      function updateColor(color: string) {
+        const normalizedColor = color.toUpperCase();
+        
+        if (colorInput) colorInput.value = color;
+        if (textInput) textInput.value = normalizedColor;
+        if (swatch) swatch.style.backgroundColor = color;
+
+        updateColorInfo(color);
+
+        // Update checkmarks
+        presets.forEach(preset => {
+          const presetColor = (preset as HTMLElement).dataset.color!;
+          const checkContainer = preset.querySelector('.color-picker__check-container');
+
+          if (presetColor.toLowerCase() === color.toLowerCase()) {
+            if (!checkContainer) {
+              const container = document.createElement('span');
+              container.className = 'color-picker__check-container';
+              container.innerHTML = '<span class="material-symbols-outlined icon color-picker__check">check</span>';
+              preset.appendChild(container);
+            }
+          } else {
+            checkContainer?.remove();
+          }
+        });
+
+        // Dispatch event
+        picker.dispatchEvent(new CustomEvent('color-change', {
+          detail: { color: normalizedColor },
+          bubbles: true
+        }));
+      }
+
+      // Update from color input
+      colorInput?.addEventListener('input', (e) => {
+        const color = (e.target as HTMLInputElement).value;
+        updateColor(color);
+      });
+
+      // Update from text input
+      textInput?.addEventListener('input', (e) => {
+        const color = (e.target as HTMLInputElement).value;
+        if (/^#[0-9A-Fa-f]{6}$/.test(color)) {
+          updateColor(color);
+        }
+      });
+
+      // Preset selection
+      presets.forEach(preset => {
+        preset.addEventListener('click', () => {
+          const color = (preset as HTMLElement).dataset.color!;
+          updateColor(color);
+        });
+      });
+
+      // Initialize
+      if (colorInput?.value) {
+        updateColorInfo(colorInput.value);
+      }
+    });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initColorPicker);
+  } else {
+    initColorPicker();
+  }
+
+  document.addEventListener('astro:page-load', initColorPicker);
+</script>

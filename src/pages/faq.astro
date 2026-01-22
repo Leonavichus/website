@@ -1,0 +1,418 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Header from '../components/layout/Header.astro';
+import Footer from '../components/layout/Footer.astro';
+
+const faqs = [
+  {
+    category: 'Общие вопросы',
+    icon: 'help_outline',
+    questions: [
+      {
+        q: 'Что такое DARK NIGHT?',
+        a: 'DARK NIGHT — это команда разработчиков, создающих инди-игры и приложения с открытым исходным кодом. Все наши проекты бесплатны и доступны на GitHub.',
+      },
+      {
+        q: 'Все проекты бесплатны?',
+        a: 'Да! Все наши проекты имеют открытый исходный код и полностью бесплатны. Мы верим в философию open-source и делимся всем с сообществом.',
+      },
+      {
+        q: 'Как вы финансируетесь?',
+        a: 'Мы работаем на энтузиазме и принимаем добровольные пожертвования от сообщества. Это помогает покрывать расходы на хостинг, домены и инструменты разработки.',
+      },
+      {
+        q: 'Могу ли я использовать ваши проекты в коммерческих целях?',
+        a: 'Да, большинство проектов используют лицензии MIT или Apache 2.0, позволяющие коммерческое использование. Проверьте LICENSE файл конкретного проекта.',
+      },
+    ],
+  },
+  {
+    category: 'Участие',
+    icon: 'group_add',
+    questions: [
+      {
+        q: 'Как я могу присоединиться к команде?',
+        a: 'Начните с контрибьюта в любой проект на GitHub! Создайте PR, помогите с issues, или напишите нам напрямую. Мы приветствуем всех участников.',
+      },
+      {
+        q: 'Нужно ли быть опытным разработчиком?',
+        a: 'Нет! Мы рады новичкам. Можно помогать с переводами, тестированием, документацией, дизайном или просто идеями. Найдется место для каждого.',
+      },
+      {
+        q: 'Есть ли у вас Discord или Telegram?',
+        a: 'Да, у нас есть Discord сервер для общения команды и сообщества. Ссылку можно найти в README репозиториев на GitHub.',
+      },
+      {
+        q: 'Как предложить новую идею?',
+        a: 'Откройте issue на GitHub в репозитории проекта с меткой "enhancement" или "feature request". Мы обсуждаем все предложения с сообществом!',
+      },
+    ],
+  },
+  {
+    category: 'Технические вопросы',
+    icon: 'code',
+    questions: [
+      {
+        q: 'На каких технологиях вы работаете?',
+        a: 'Основные стеки: Flutter/Dart для мобильных приложений, Unity/C# для игр, Astro/TypeScript для веб. Также используем Docker, PostgreSQL и другие современные инструменты.',
+      },
+      {
+        q: 'Где хранится исходный код?',
+        a: 'Весь код находится на GitHub: github.com/darkmoonight. Каждый проект имеет свой репозиторий с подробным README.',
+      },
+      {
+        q: 'Как собрать проекты локально?',
+        a: 'Инструкции по сборке есть в README каждого проекта. Обычно это: клонировать репозиторий, установить зависимости, запустить команду сборки.',
+      },
+      {
+        q: 'Поддерживаете ли вы старые версии?',
+        a: 'Мы фокусируемся на последних стабильных версиях. Критические баги в старых версиях исправляем по возможности, но новые функции только в актуальных релизах.',
+      },
+    ],
+  },
+  {
+    category: 'Проекты',
+    icon: 'apps',
+    questions: [
+      {
+        q: 'Какой ваш самый популярный проект?',
+        a: 'Zest — наше флагманское приложение для Android. Это кастомизируемый лаунчер с уникальными виджетами и Material Design 3.',
+      },
+      {
+        q: 'Планируете ли iOS версии?',
+        a: 'Да, в планах портирование Flutter приложений на iOS. Пока фокусируемся на Android из-за ограниченных ресурсов.',
+      },
+      {
+        q: 'Когда выйдет следующее обновление?',
+        a: 'График обновлений можно посмотреть на странице Roadmap. Мы стараемся выпускать мажорные версии каждые 3-4 месяца.',
+      },
+      {
+        q: 'Где скачать приложения?',
+        a: 'Все релизы доступны на GitHub Releases каждого проекта. Некоторые приложения также есть в Google Play и других магазинах.',
+      },
+    ],
+  },
+];
+---
+
+<Layout title="FAQ - Часто задаваемые вопросы" >
+  <Header />
+
+  <!-- Hero -->
+  <section class="faq-hero">
+    <div class="container">
+      <span class="material-icons hero-icon">help_center</span>
+      <h1>Часто задаваемые вопросы</h1>
+      <p class="hero-subtitle">
+        Здесь собраны ответы на самые популярные вопросы о наших проектах и команде
+      </p>
+    </div>
+  </section>
+
+  <!-- FAQ Categories -->
+  <section class="faq-section">
+    <div class="container">
+      {faqs.map(category => (
+        <div class="faq-category">
+          <div class="category-header">
+            <span class="material-icons">{category.icon}</span>
+            <h2>{category.category}</h2>
+          </div>
+
+          <div class="questions-list">
+            {category.questions.map((item, index) => (
+              <div class="faq-item">
+                <button class="faq-question" data-faq-toggle>
+                  <span class="question-text">{item.q}</span>
+                  <span class="material-icons chevron">expand_more</span>
+                </button>
+                <div class="faq-answer">
+                  <p>{item.a}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      ))}
+    </div>
+  </section>
+
+  <!-- Contact -->
+  <section class="contact-section">
+    <div class="container">
+      <div class="contact-card">
+        <span class="material-icons">contact_support</span>
+        <h2>Не нашли ответ?</h2>
+        <p>
+          Если у вас остались вопросы, напишите нам на GitHub 
+          или в Discord. Мы всегда рады помочь!
+        </p>
+        <div class="contact-buttons">
+          <a href="https://github.com/darkmoonight" class="contact-btn primary">
+            <span class="material-icons">code</span>
+            GitHub
+          </a>
+          <a href="/#contact" class="contact-btn secondary">
+            <span class="material-icons">mail</span>
+            Контакты
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <Footer />
+</Layout>
+
+<script>
+  // FAQ Accordion
+  document.addEventListener('DOMContentLoaded', () => {
+    const faqToggles = document.querySelectorAll('[data-faq-toggle]');
+
+    faqToggles.forEach(toggle => {
+      toggle.addEventListener('click', () => {
+        const faqItem = toggle.closest('.faq-item');
+        const isOpen = faqItem?.classList.contains('open');
+
+        // Close all other items
+        document.querySelectorAll('.faq-item.open').forEach(item => {
+          if (item !== faqItem) {
+            item.classList.remove('open');
+          }
+        });
+
+        // Toggle current item
+        faqItem?.classList.toggle('open');
+      });
+    });
+  });
+</script>
+
+<style>
+  .container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 32px;
+  }
+
+  .faq-hero {
+    padding: 140px 0 60px;
+    text-align: center;
+  }
+
+  .hero-icon {
+    font-size: 80px;
+    color: var(--md-sys-color-primary);
+    margin-bottom: 20px;
+  }
+
+  .faq-hero h1 {
+    font-size: 56px;
+    font-weight: 900;
+    margin-bottom: 20px;
+    letter-spacing: -1px;
+  }
+
+  .hero-subtitle {
+    font-size: 20px;
+    color: var(--md-sys-color-on-surface-variant);
+    max-width: 700px;
+    margin: 0 auto;
+    line-height: 1.7;
+  }
+
+  .faq-section {
+    padding: 40px 0 80px;
+  }
+
+  .faq-category {
+    margin-bottom: 60px;
+  }
+
+  .category-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 28px;
+    padding-bottom: 16px;
+    border-bottom: 2px solid var(--md-sys-color-outline-variant);
+  }
+
+  .category-header .material-icons {
+    font-size: 32px;
+    color: var(--md-sys-color-primary);
+  }
+
+  .category-header h2 {
+    font-size: 28px;
+    font-weight: 800;
+  }
+
+  .questions-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .faq-item {
+    background-color: var(--md-sys-color-surface-container);
+    border-radius: 16px;
+    border: 1px solid var(--md-sys-color-outline-variant);
+    overflow: hidden;
+    transition: all 0.3s;
+  }
+
+  .faq-item:hover {
+    border-color: var(--md-sys-color-primary);
+  }
+
+  .faq-item.open {
+    border-color: var(--md-sys-color-primary);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+  }
+
+  .faq-question {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 24px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    text-align: left;
+    color: var(--md-sys-color-on-surface);
+    font-size: 18px;
+    font-weight: 600;
+    transition: all 0.3s;
+  }
+
+  .faq-question:hover {
+    background-color: var(--md-sys-color-surface-container-high);
+  }
+
+  .question-text {
+    flex: 1;
+    padding-right: 20px;
+  }
+
+  .chevron {
+    color: var(--md-sys-color-primary);
+    transition: transform 0.3s;
+    flex-shrink: 0;
+  }
+
+  .faq-item.open .chevron {
+    transform: rotate(180deg);
+  }
+
+  .faq-answer {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease-out, padding 0.3s ease-out;
+  }
+
+  .faq-item.open .faq-answer {
+    max-height: 500px;
+    padding: 0 24px 24px;
+  }
+
+  .faq-answer p {
+    font-size: 16px;
+    line-height: 1.7;
+    color: var(--md-sys-color-on-surface-variant);
+    margin: 0;
+  }
+
+  .contact-section {
+    padding: 40px 0 80px;
+  }
+
+  .contact-card {
+    background: linear-gradient(135deg, var(--md-sys-color-primary-container), var(--md-sys-color-secondary-container));
+    border-radius: 28px;
+    padding: 60px;
+    text-align: center;
+    border: 1px solid var(--md-sys-color-primary);
+  }
+
+  .contact-card .material-icons {
+    font-size: 64px;
+    color: var(--md-sys-color-on-primary-container);
+    margin-bottom: 24px;
+  }
+
+  .contact-card h2 {
+    font-size: 36px;
+    font-weight: 800;
+    margin-bottom: 16px;
+    color: var(--md-sys-color-on-primary-container);
+  }
+
+  .contact-card p {
+    font-size: 18px;
+    max-width: 600px;
+    margin: 0 auto 32px;
+    color: var(--md-sys-color-on-primary-container);
+    opacity: 0.95;
+    line-height: 1.7;
+  }
+
+  .contact-buttons {
+    display: flex;
+    gap: 14px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .contact-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 6px 12px;
+    border-radius: 100px;
+    font-weight: 500;
+    font-size: 11px;
+    text-decoration: none;
+    transition: all 0.3s;
+  }
+
+  .contact-btn .material-icons {
+    font-size: 16px;
+  }
+
+  .contact-btn.primary {
+    background-color: white;
+    color: var(--md-sys-color-primary);
+  }
+
+  .contact-btn.secondary {
+    background-color: var(--md-sys-color-surface-container);
+    color: var(--md-sys-color-on-surface);
+    border: 1px solid var(--md-sys-color-outline-variant);
+  }
+
+  .contact-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+  }
+
+  @media (max-width: 768px) {
+    .faq-hero h1 {
+      font-size: 36px;
+    }
+
+    .container {
+      padding: 0 20px;
+    }
+
+    .faq-question {
+      font-size: 16px;
+      padding: 20px;
+    }
+
+    .contact-card {
+      padding: 40px 24px;
+    }
+  }
+</style>

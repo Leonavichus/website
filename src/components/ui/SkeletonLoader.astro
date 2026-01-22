@@ -1,0 +1,109 @@
+---
+/**
+ * SkeletonLoader Component
+ * Material Design 3 skeleton loader for loading states
+ */
+interface Props {
+  variant?: 'text' | 'circular' | 'rectangular' | 'rounded';
+  width?: string;
+  height?: string;
+  animation?: 'pulse' | 'wave' | 'none';
+  class?: string;
+}
+
+const {
+  variant = 'text',
+  width,
+  height,
+  animation = 'pulse',
+  class: className
+} = Astro.props;
+---
+
+<div
+  class:list={[
+    'skeleton',
+    `skeleton--${variant}`,
+    `skeleton--${animation}`,
+    className
+  ]}
+  style={`${width ? `width: ${width};` : ''} ${height ? `height: ${height};` : ''}`}
+  aria-busy="true"
+  aria-label="Loading..."
+>
+  {animation === 'wave' && <div class="skeleton__wave"></div>}
+</div>
+
+<style>
+  .skeleton {
+    position: relative;
+    overflow: hidden;
+    background: var(--md-sys-color-surface-container-highest);
+  }
+
+  /* Variants */
+  .skeleton--text {
+    height: 1em;
+    border-radius: var(--md-sys-shape-corner-extra-small);
+    transform: scale(1, 0.6);
+  }
+
+  .skeleton--circular {
+    border-radius: 50%;
+  }
+
+  .skeleton--rectangular {
+    border-radius: 0;
+  }
+
+  .skeleton--rounded {
+    border-radius: var(--md-sys-shape-corner-medium);
+  }
+
+  /* Animations */
+  .skeleton--pulse {
+    animation: skeleton-pulse 1.5s ease-in-out infinite;
+  }
+
+  @keyframes skeleton-pulse {
+    0%, 100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.4;
+    }
+  }
+
+  .skeleton--wave::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgba(255, 255, 255, 0.4),
+      transparent
+    );
+    animation: skeleton-wave 1.5s linear infinite;
+  }
+
+  @keyframes skeleton-wave {
+    0% {
+      transform: translateX(-100%);
+    }
+    100% {
+      transform: translateX(100%);
+    }
+  }
+
+  /* Reduced motion */
+  @media (prefers-reduced-motion: reduce) {
+    .skeleton--pulse {
+      animation: none;
+    }
+
+    .skeleton--wave::before {
+      animation: none;
+    }
+  }
+</style>

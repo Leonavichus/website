@@ -1,0 +1,365 @@
+---
+/**
+ * Form Component
+ * Material Design 3 form with validation
+ */
+interface Props {
+  id?: string;
+  action?: string;
+  method?: 'get' | 'post';
+  noValidate?: boolean;
+  autocomplete?: 'on' | 'off';
+  class?: string;
+}
+
+const {
+  id,
+  action,
+  method = 'post',
+  noValidate = false,
+  autocomplete = 'on',
+  class: className
+} = Astro.props;
+---
+
+<form
+  id={id}
+  class:list={['md-form', className]}
+  action={action}
+  method={method}
+  novalidate={noValidate}
+  autocomplete={autocomplete}
+  data-md-form
+>
+  <slot />
+</form>
+
+<style>
+  .md-form {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  .md-form :global(.form-field) {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .md-form :global(.form-field--error) {
+    color: var(--md-sys-color-error);
+  }
+
+  .md-form :global(.form-field__label) {
+    color: var(--md-sys-color-on-surface);
+    font: var(--md-sys-typescale-body-medium);
+    font-weight: 500;
+  }
+
+  .md-form :global(.form-field__helper-text) {
+    color: var(--md-sys-color-on-surface-variant);
+    font: var(--md-sys-typescale-body-small);
+  }
+
+  .md-form :global(.form-field--error .form-field__helper-text) {
+    color: var(--md-sys-color-error);
+  }
+
+  .md-form :global(.form-actions) {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    margin-top: 8px;
+    padding-top: 24px;
+    border-top: 1px solid var(--md-sys-color-outline-variant);
+  }
+
+  /* Field groups */
+  .md-form :global(.form-group) {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding: 16px;
+    border-radius: var(--md-sys-shape-corner-medium);
+    background: var(--md-sys-color-surface-container-lowest);
+  }
+
+  .md-form :global(.form-group__title) {
+    margin-bottom: 8px;
+    color: var(--md-sys-color-on-surface);
+    font: var(--md-sys-typescale-title-medium);
+    font-weight: 500;
+  }
+
+  .md-form :global(.form-group__description) {
+    margin-bottom: 16px;
+    color: var(--md-sys-color-on-surface-variant);
+    font: var(--md-sys-typescale-body-medium);
+  }
+
+  /* Inline fields */
+  .md-form :global(.form-row) {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+  }
+
+  /* Required indicator */
+  .md-form :global(.required) {
+    color: var(--md-sys-color-error);
+  }
+
+  /* Validation messages */
+  .md-form :global(.validation-message) {
+    display: none;
+    padding: 12px 16px;
+    border-radius: var(--md-sys-shape-corner-small);
+    background: var(--md-sys-color-error-container);
+    color: var(--md-sys-color-on-error-container);
+    font: var(--md-sys-typescale-body-medium);
+  }
+
+  .md-form :global(.validation-message--visible) {
+    display: block;
+  }
+
+  .md-form :global(.validation-message__title) {
+    margin-bottom: 8px;
+    font-weight: 500;
+  }
+
+  .md-form :global(.validation-message__list) {
+    margin: 0;
+    padding-left: 20px;
+  }
+
+  /* Success message */
+  .md-form :global(.success-message) {
+    display: none;
+    padding: 12px 16px;
+    border-radius: var(--md-sys-shape-corner-small);
+    background: var(--md-sys-color-tertiary-container);
+    color: var(--md-sys-color-on-tertiary-container);
+    font: var(--md-sys-typescale-body-medium);
+  }
+
+  .md-form :global(.success-message--visible) {
+    display: block;
+  }
+
+  /* Loading state */
+  .md-form[data-loading] {
+    pointer-events: none;
+    opacity: 0.6;
+  }
+</style>
+
+<script>
+  interface ValidationRule {
+    required?: boolean;
+    minLength?: number;
+    maxLength?: number;
+    min?: number;
+    max?: number;
+    pattern?: RegExp;
+    email?: boolean;
+    url?: boolean;
+    custom?: (value: string) => boolean | string;
+  }
+
+  interface FormField {
+    element: HTMLElement;
+    rules: ValidationRule;
+    errorElement?: HTMLElement;
+  }
+
+  class FormValidator {
+    private form: HTMLFormElement;
+    private fields: Map<string, FormField> = new Map();
+
+    constructor(form: HTMLFormElement) {
+      this.form = form;
+      this.init();
+    }
+
+    private init() {
+      // Find all form fields
+      const inputs = this.form.querySelectorAll('input, textarea, select');
+
+      inputs.forEach(input => {
+        const field = input as HTMLInputElement;
+        const fieldName = field.name || field.id;
+
+        if (!fieldName) return;
+
+        const rules: ValidationRule = {
+          required: field.hasAttribute('required'),
+          minLength: field.minLength > 0 ? field.minLength : undefined,
+          maxLength: field.maxLength > 0 ? field.maxLength : undefined,
+          min: field.min ? parseFloat(field.min) : undefined,
+          max: field.max ? parseFloat(field.max) : undefined,
+          pattern: field.pattern ? new RegExp(field.pattern) : undefined,
+          email: field.type === 'email',
+          url: field.type === 'url'
+        };
+
+        this.fields.set(fieldName, {
+          element: field,
+          rules
+        });
+
+        // Real-time validation
+        field.addEventListener('blur', () => {
+          this.validateField(fieldName);
+        });
+
+        field.addEventListener('input', () => {
+          if (field.classList.contains('form-field--error')) {
+            this.validateField(fieldName);
+          }
+        });
+      });
+
+      // Form submission
+      this.form.addEventListener('submit', (e) => {
+        e.preventDefault();
+        this.handleSubmit();
+      });
+    }
+
+    private validateField(fieldName: string): boolean {
+      const field = this.fields.get(fieldName);
+      if (!field) return true;
+
+      const input = field.element as HTMLInputElement;
+      const value = input.value.trim();
+      const errors: string[] = [];
+
+      // Required
+      if (field.rules.required && !value) {
+        errors.push('This field is required');
+      }
+
+      // Min length
+      if (field.rules.minLength && value.length < field.rules.minLength) {
+        errors.push(`Minimum ${field.rules.minLength} characters required`);
+      }
+
+      // Max length
+      if (field.rules.maxLength && value.length > field.rules.maxLength) {
+        errors.push(`Maximum ${field.rules.maxLength} characters allowed`);
+      }
+
+      // Min value
+      if (field.rules.min !== undefined && parseFloat(value) < field.rules.min) {
+        errors.push(`Minimum value is ${field.rules.min}`);
+      }
+
+      // Max value
+      if (field.rules.max !== undefined && parseFloat(value) > field.rules.max) {
+        errors.push(`Maximum value is ${field.rules.max}`);
+      }
+
+      // Pattern
+      if (field.rules.pattern && !field.rules.pattern.test(value)) {
+        errors.push('Invalid format');
+      }
+
+      // Email
+      if (field.rules.email && value && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
+        errors.push('Invalid email address');
+      }
+
+      // URL
+      if (field.rules.url && value) {
+        try {
+          new URL(value);
+        } catch {
+          errors.push('Invalid URL');
+        }
+      }
+
+      // Custom validation
+      if (field.rules.custom) {
+        const result = field.rules.custom(value);
+        if (result !== true) {
+          errors.push(typeof result === 'string' ? result : 'Invalid value');
+        }
+      }
+
+      // Update UI
+      const fieldContainer = input.closest('.form-field');
+      const errorElement = fieldContainer?.querySelector('.form-field__helper-text');
+
+      if (errors.length > 0) {
+        fieldContainer?.classList.add('form-field--error');
+        input.setAttribute('aria-invalid', 'true');
+        if (errorElement) {
+          errorElement.textContent = errors[0];
+        }
+        return false;
+      } else {
+        fieldContainer?.classList.remove('form-field--error');
+        input.removeAttribute('aria-invalid');
+        if (errorElement) {
+          errorElement.textContent = input.dataset.helperText || '';
+        }
+        return true;
+      }
+    }
+
+    private async handleSubmit() {
+      // Validate all fields
+      let isValid = true;
+      for (const fieldName of this.fields.keys()) {
+        if (!this.validateField(fieldName)) {
+          isValid = false;
+        }
+      }
+
+      if (!isValid) {
+        // Focus first error
+        const firstError = this.form.querySelector('.form-field--error input, .form-field--error textarea, .form-field--error select') as HTMLElement;
+        firstError?.focus();
+        return;
+      }
+
+      // Show loading state
+      this.form.setAttribute('data-loading', '');
+
+      // Dispatch submit event
+      const event = new CustomEvent('form-submit', {
+        detail: {
+          data: new FormData(this.form)
+        },
+        bubbles: true,
+        cancelable: true
+      });
+
+      this.form.dispatchEvent(event);
+
+      // If not prevented, submit normally
+      if (!event.defaultPrevented && this.form.action) {
+        this.form.submit();
+      } else {
+        this.form.removeAttribute('data-loading');
+      }
+    }
+  }
+
+  function initForms() {
+    const forms = document.querySelectorAll('[data-md-form]');
+    forms.forEach(form => {
+      new FormValidator(form as HTMLFormElement);
+    });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initForms);
+  } else {
+    initForms();
+  }
+
+  document.addEventListener('astro:page-load', initForms);
+</script>

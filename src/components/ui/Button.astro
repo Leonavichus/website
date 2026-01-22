@@ -1,0 +1,381 @@
+---
+/**
+ * Button Component - Enhanced Material Design 3
+ * Modern button with ripple effects and animations
+ */
+import Icon from './Icon.astro';
+
+export interface Props {
+  variant?: 'text' | 'filled' | 'outlined' | 'elevated' | 'tonal' | 'fab';
+  size?: 'small' | 'medium' | 'large';
+  icon?: string;
+  trailingIcon?: string;
+  disabled?: boolean;
+  href?: string;
+  target?: string;
+  type?: 'button' | 'submit' | 'reset';
+  extended?: boolean;
+  ariaLabel?: string;
+  class?: string;
+  onclick?: string;
+}
+
+const {
+  variant = 'filled',
+  size = 'medium',
+  icon,
+  trailingIcon,
+  disabled = false,
+  href,
+  target,
+  type = 'button',
+  extended = false,
+  ariaLabel,
+  class: className = '',
+  onclick,
+} = Astro.props;
+
+const Tag = href ? 'a' : 'button';
+const isFab = variant === 'fab';
+const hasText = Astro.slots.has('default');
+const iconOnly = (icon && !hasText && !extended) || (isFab && !extended);
+---
+
+<Tag
+  class:list={[
+    'btn',
+    `btn--${variant}`,
+    `btn--${size}`,
+    { 'btn--icon-only': iconOnly },
+    { 'btn--extended': extended && isFab },
+    className,
+  ]}
+  href={href}
+  target={target}
+  type={!href ? type : undefined}
+  disabled={disabled}
+  aria-label={ariaLabel || (iconOnly ? icon : undefined)}
+  onclick={onclick}
+  data-ripple
+>
+  {icon && (
+    <span class="btn__icon btn__icon--leading">
+      <Icon name={icon} />
+    </span>
+  )}
+
+  {(hasText || extended) && (
+    <span class="btn__label">
+      <slot />
+    </span>
+  )}
+
+  {trailingIcon && (
+    <span class="btn__icon btn__icon--trailing">
+      <Icon name={trailingIcon} />
+    </span>
+  )}
+
+  <span class="btn__state-layer"></span>
+  <span class="btn__ripple"></span>
+</Tag>
+
+<style>
+  .btn {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    border: none;
+    font-family: var(--md-sys-typescale-label-large-font);
+    font-size: var(--md-sys-typescale-label-large-size);
+    font-weight: 600;
+    line-height: var(--md-sys-typescale-label-large-line-height);
+    text-decoration: none;
+    cursor: pointer;
+    user-select: none;
+    overflow: hidden;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    letter-spacing: 0.5px;
+  }
+
+  /* State layer */
+  .btn__state-layer {
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background-color: currentColor;
+    opacity: 0;
+    transition: opacity 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    pointer-events: none;
+  }
+
+  .btn:hover:not(:disabled) .btn__state-layer {
+    opacity: 0.08;
+  }
+
+  .btn:focus-visible .btn__state-layer {
+    opacity: 0.12;
+  }
+
+  .btn:active:not(:disabled) .btn__state-layer {
+    opacity: 0.12;
+  }
+
+  /* Ripple effect */
+  .btn__ripple {
+    position: absolute;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.6);
+    transform: scale(0);
+    pointer-events: none;
+  }
+
+  .btn__icon,
+  .btn__label {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .btn:hover:not(:disabled) .btn__icon {
+    transform: scale(1.1);
+  }
+
+  /* Regular buttons */
+  .btn--filled,
+  .btn--outlined,
+  .btn--text,
+  .btn--elevated,
+  .btn--tonal {
+    min-height: 40px;
+    padding: 10px 24px;
+    border-radius: 20px;
+  }
+
+  .btn--small {
+    min-height: 32px;
+    padding: 6px 16px;
+    font-size: 13px;
+  }
+
+  .btn--large {
+    min-height: 48px;
+    padding: 14px 32px;
+    font-size: 15px;
+  }
+
+  .btn--icon-only {
+    width: 40px;
+    min-width: 40px;
+    padding: 0;
+  }
+
+  .btn--small.btn--icon-only {
+    width: 32px;
+    min-width: 32px;
+  }
+
+  .btn--large.btn--icon-only {
+    width: 48px;
+    min-width: 48px;
+  }
+
+  /* Filled */
+  .btn--filled {
+    background: linear-gradient(135deg, 
+      var(--md-sys-color-primary),
+      color-mix(in srgb, var(--md-sys-color-primary) 85%, black)
+    );
+    color: var(--md-sys-color-on-primary);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+
+  .btn--filled:hover:not(:disabled) {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    transform: translateY(-2px);
+  }
+
+  .btn--filled:active:not(:disabled) {
+    transform: translateY(0);
+  }
+
+  /* Outlined */
+  .btn--outlined {
+    background-color: transparent;
+    color: var(--md-sys-color-primary);
+    border: 2px solid var(--md-sys-color-outline);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .btn--outlined:hover:not(:disabled) {
+    border-color: var(--md-sys-color-primary);
+    background: rgba(var(--md-sys-color-primary-rgb, 103, 80, 164), 0.05);
+    box-shadow: 0 0 0 4px rgba(var(--md-sys-color-primary-rgb, 103, 80, 164), 0.1);
+  }
+
+  /* Text */
+  .btn--text {
+    background-color: transparent;
+    color: var(--md-sys-color-primary);
+    padding: 10px 12px;
+  }
+
+  .btn--text:hover:not(:disabled) {
+    background: rgba(var(--md-sys-color-primary-rgb, 103, 80, 164), 0.08);
+  }
+
+  /* Elevated */
+  .btn--elevated {
+    background: linear-gradient(135deg,
+      var(--md-sys-color-surface-container-low),
+      var(--md-sys-color-surface-container)
+    );
+    color: var(--md-sys-color-primary);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  .btn--elevated:hover:not(:disabled) {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    transform: translateY(-2px);
+  }
+
+  /* Tonal */
+  .btn--tonal {
+    background: linear-gradient(135deg,
+      var(--md-sys-color-secondary-container),
+      color-mix(in srgb, var(--md-sys-color-secondary-container) 90%, white)
+    );
+    color: var(--md-sys-color-on-secondary-container);
+  }
+
+  .btn--tonal:hover:not(:disabled) {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    transform: translateY(-1px);
+  }
+
+  /* FAB */
+  .btn--fab {
+    width: 56px;
+    height: 56px;
+    min-width: 56px;
+    min-height: 56px;
+    padding: 16px;
+    border-radius: 16px;
+    background: linear-gradient(135deg,
+      var(--md-sys-color-primary-container),
+      color-mix(in srgb, var(--md-sys-color-primary-container) 85%, var(--md-sys-color-primary))
+    );
+    color: var(--md-sys-color-on-primary-container);
+    box-shadow: 
+      0 4px 12px rgba(0, 0, 0, 0.15),
+      0 1px 4px rgba(0, 0, 0, 0.1);
+  }
+
+  .btn--fab:hover:not(:disabled) {
+    box-shadow: 
+      0 8px 20px rgba(0, 0, 0, 0.2),
+      0 2px 8px rgba(0, 0, 0, 0.15);
+    transform: translateY(-4px) scale(1.05);
+  }
+
+  .btn--fab:active:not(:disabled) {
+    transform: translateY(-2px) scale(1);
+  }
+
+  /* FAB Small */
+  .btn--fab.btn--small {
+    width: 40px;
+    height: 40px;
+    min-width: 40px;
+    min-height: 40px;
+    padding: 8px;
+    border-radius: 12px;
+  }
+
+  /* FAB Large */
+  .btn--fab.btn--large {
+    width: 96px;
+    height: 96px;
+    min-width: 96px;
+    min-height: 96px;
+    padding: 30px;
+    border-radius: 28px;
+  }
+
+  /* Extended FAB */
+  .btn--fab.btn--extended {
+    width: auto;
+    min-width: auto;
+    padding: 16px 20px;
+    gap: 12px;
+    border-radius: 16px;
+  }
+
+  /* Disabled */
+  .btn:disabled,
+  .btn[disabled] {
+    opacity: 0.38;
+    pointer-events: none;
+    box-shadow: none;
+  }
+
+  /* Focus visible */
+  .btn:focus-visible {
+    outline: 2px solid var(--md-sys-color-primary);
+    outline-offset: 2px;
+  }
+</style>
+
+<script>
+  function initButtons() {
+    document.querySelectorAll('[data-ripple]').forEach(button => {
+      button.addEventListener('click', (e) => {
+        const target = e.currentTarget as HTMLElement;
+        const ripple = target.querySelector('.btn__ripple') as HTMLElement;
+        if (!ripple) return;
+
+        const mouseEvent = e as MouseEvent;
+        const rect = target.getBoundingClientRect();
+        const size = Math.max(rect.width, rect.height);
+        const x = mouseEvent.clientX - rect.left - size / 2;
+        const y = mouseEvent.clientY - rect.top - size / 2;
+
+        ripple.style.width = ripple.style.height = `${size}px`;
+        ripple.style.left = `${x}px`;
+        ripple.style.top = `${y}px`;
+
+        ripple.style.animation = 'none';
+        setTimeout(() => {
+          ripple.style.animation = 'ripple 0.6s ease-out';
+        }, 10);
+      });
+    });
+
+    const style = document.createElement('style');
+    style.textContent = `
+      @keyframes ripple {
+        from {
+          transform: scale(0);
+          opacity: 1;
+        }
+        to {
+          transform: scale(4);
+          opacity: 0;
+        }
+      }
+    `;
+    document.head.appendChild(style);
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initButtons);
+  } else {
+    initButtons();
+  }
+
+  document.addEventListener('astro:page-load', initButtons);
+</script>

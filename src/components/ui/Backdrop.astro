@@ -1,0 +1,232 @@
+---
+/**
+ * Backdrop Component - Enhanced Material Design 3
+ * Modern backdrop overlay with blur and animations
+ */
+interface Props {
+  id?: string;
+  visible?: boolean;
+  persistent?: boolean;
+  blur?: boolean;
+  intensity?: 'light' | 'medium' | 'strong';
+  class?: string;
+}
+
+const {
+  id,
+  visible = false,
+  persistent = false,
+  blur = true,
+  intensity = 'medium',
+  class: className
+} = Astro.props;
+---
+
+<div
+  id={id}
+  class:list={[
+    'backdrop',
+    { 'backdrop--visible': visible },
+    { 'backdrop--blur': blur },
+    `backdrop--${intensity}`,
+    className
+  ]}
+  data-backdrop
+  data-persistent={persistent}
+  hidden={!visible}
+  aria-hidden={!visible}
+>
+  <div class="backdrop__pattern"></div>
+  <div class="backdrop__content">
+    <slot />
+  </div>
+</div>
+
+<style>
+  .backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    pointer-events: none;
+    overflow: hidden;
+  }
+
+  .backdrop--visible {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .backdrop[hidden] {
+    display: none;
+  }
+
+  /* Intensity variants */
+  .backdrop--light {
+    background: rgba(0, 0, 0, 0.3);
+  }
+
+  .backdrop--medium {
+    background: rgba(0, 0, 0, 0.5);
+  }
+
+  .backdrop--strong {
+    background: rgba(0, 0, 0, 0.7);
+  }
+
+  /* Blur effect */
+  .backdrop--blur {
+    backdrop-filter: blur(8px);
+  }
+
+  /* Animated pattern */
+  .backdrop__pattern {
+    position: absolute;
+    inset: 0;
+    background: 
+      radial-gradient(circle at 20% 30%, rgba(103, 80, 164, 0.1) 0%, transparent 50%),
+      radial-gradient(circle at 80% 70%, rgba(103, 80, 164, 0.1) 0%, transparent 50%);
+    opacity: 0;
+    animation: pattern-fade-in 0.6s ease-out 0.2s forwards;
+    pointer-events: none;
+  }
+
+  @keyframes pattern-fade-in {
+    to {
+      opacity: 1;
+    }
+  }
+
+  .backdrop__content {
+    position: relative;
+    z-index: 1;
+    animation: content-scale-in 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  @keyframes content-scale-in {
+    from {
+      transform: scale(0.8);
+      opacity: 0;
+    }
+    to {
+      transform: scale(1);
+      opacity: 1;
+    }
+  }
+
+  /* Closing animation */
+  .backdrop--closing {
+    animation: backdrop-fade-out 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  }
+
+  @keyframes backdrop-fade-out {
+    to {
+      opacity: 0;
+    }
+  }
+
+  .backdrop--closing .backdrop__content {
+    animation: content-scale-out 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  @keyframes content-scale-out {
+    to {
+      transform: scale(0.8);
+      opacity: 0;
+    }
+  }
+
+  /* Reduced motion */
+  @media (prefers-reduced-motion: reduce) {
+    .backdrop,
+    .backdrop__pattern,
+    .backdrop__content {
+      animation: none;
+      transition: none;
+    }
+  }
+</style>
+
+<script>
+  function initBackdrops() {
+    const backdrops = document.querySelectorAll('[data-backdrop]');
+
+    backdrops.forEach(backdrop => {
+      const isPersistent = (backdrop as HTMLElement).dataset.persistent === 'true';
+
+      if (!isPersistent) {
+        backdrop.addEventListener('click', (e) => {
+          if (e.target === backdrop) {
+            const clickEvent = new CustomEvent('backdrop-click', {
+              bubbles: true,
+              cancelable: true
+            });
+            
+            backdrop.dispatchEvent(clickEvent);
+
+            if (!clickEvent.defaultPrevented) {
+              hideBackdrop(backdrop as HTMLElement);
+            }
+          }
+        });
+      }
+
+      document.addEventListener('keydown', (e: Event) => {
+        if (e instanceof KeyboardEvent && 
+            e.key === 'Escape' && 
+            !backdrop.hasAttribute('hidden') && 
+            !isPersistent) {
+          hideBackdrop(backdrop as HTMLElement);
+        }
+      });
+    });
+  }
+
+  function showBackdrop(backdrop: HTMLElement) {
+    backdrop.removeAttribute('hidden');
+    backdrop.setAttribute('aria-hidden', 'false');
+    backdrop.classList.remove('backdrop--closing');
+    backdrop.classList.add('backdrop--visible');
+
+    document.body.style.overflow = 'hidden';
+
+    backdrop.dispatchEvent(new CustomEvent('backdrop-show', {
+      bubbles: true
+    }));
+  }
+
+  function hideBackdrop(backdrop: HTMLElement) {
+    backdrop.classList.add('backdrop--closing');
+    backdrop.classList.remove('backdrop--visible');
+    backdrop.setAttribute('aria-hidden', 'true');
+
+    setTimeout(() => {
+      backdrop.setAttribute('hidden', '');
+      backdrop.classList.remove('backdrop--closing');
+
+      const visibleBackdrops = document.querySelectorAll('.backdrop--visible');
+      if (visibleBackdrops.length === 0) {
+        document.body.style.overflow = '';
+      }
+    }, 300);
+
+    backdrop.dispatchEvent(new CustomEvent('backdrop-hide', {
+      bubbles: true
+    }));
+  }
+
+  (window as any).showBackdrop = showBackdrop;
+  (window as any).hideBackdrop = hideBackdrop;
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initBackdrops);
+  } else {
+    initBackdrops();
+  }
+
+  document.addEventListener('astro:page-load', initBackdrops);
+</script>

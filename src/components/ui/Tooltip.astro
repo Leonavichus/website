@@ -1,0 +1,158 @@
+---
+// src/components/ui/Tooltip.astro
+/**
+ * Material Design 3 Tooltip Component
+ * Контекстные подсказки
+ */
+
+export interface Props {
+  text: string;
+  placement?: 'top' | 'bottom' | 'left' | 'right';
+  rich?: boolean;
+  class?: string;
+}
+
+const {
+  text,
+  placement = 'top',
+  rich = false,
+  class: className = '',
+} = Astro.props;
+---
+
+<div
+  class:list={[
+    'tooltip-wrapper',
+    className,
+  ]}
+>
+  <slot />
+
+  <div
+    class:list={[
+      'tooltip',
+      `tooltip-${placement}`,
+      { 'tooltip-rich': rich },
+    ]}
+    role="tooltip"
+  >
+    {rich ? (
+      <div class="tooltip-content" set:html={text} />
+    ) : (
+      <span class="tooltip-content">{text}</span>
+    )}
+    <div class="tooltip-arrow"></div>
+  </div>
+</div>
+
+<style>
+  .tooltip-wrapper {
+    position: relative;
+    display: inline-flex;
+  }
+
+  .tooltip {
+    position: absolute;
+    z-index: 500;
+    padding: 4px 8px;
+    background-color: var(--md-sys-color-inverse-surface);
+    color: var(--md-sys-color-inverse-on-surface);
+    border-radius: var(--md-sys-shape-corner-extra-small);
+    font-family: var(--md-sys-typescale-body-small-font);
+    font-size: var(--md-sys-typescale-body-small-size);
+    line-height: var(--md-sys-typescale-body-small-line-height);
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity var(--md-sys-motion-duration-short4) var(--md-sys-motion-easing-standard);
+  }
+
+  .tooltip-wrapper:hover .tooltip,
+  .tooltip-wrapper:focus-within .tooltip {
+    opacity: 1;
+  }
+
+  /* Rich tooltip */
+  .tooltip-rich {
+    max-width: 320px;
+    padding: 8px 12px;
+    white-space: normal;
+  }
+
+  .tooltip-content {
+    position: relative;
+    z-index: 1;
+  }
+
+  /* Arrow */
+  .tooltip-arrow {
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    background-color: var(--md-sys-color-inverse-surface);
+    transform: rotate(45deg);
+  }
+
+  /* Placement: top */
+  .tooltip-top {
+    bottom: calc(100% + 8px);
+    left: 50%;
+    transform: translateX(-50%);
+  }
+
+  .tooltip-top .tooltip-arrow {
+    bottom: -4px;
+    left: 50%;
+    transform: translateX(-50%) rotate(45deg);
+  }
+
+  /* Placement: bottom */
+  .tooltip-bottom {
+    top: calc(100% + 8px);
+    left: 50%;
+    transform: translateX(-50%);
+  }
+
+  .tooltip-bottom .tooltip-arrow {
+    top: -4px;
+    left: 50%;
+    transform: translateX(-50%) rotate(45deg);
+  }
+
+  /* Placement: left */
+  .tooltip-left {
+    right: calc(100% + 8px);
+    top: 50%;
+    transform: translateY(-50%);
+  }
+
+  .tooltip-left .tooltip-arrow {
+    right: -4px;
+    top: 50%;
+    transform: translateY(-50%) rotate(45deg);
+  }
+
+  /* Placement: right */
+  .tooltip-right {
+    left: calc(100% + 8px);
+    top: 50%;
+    transform: translateY(-50%);
+  }
+
+  .tooltip-right .tooltip-arrow {
+    left: -4px;
+    top: 50%;
+    transform: translateY(-50%) rotate(45deg);
+  }
+
+  /* Responsive */
+  @media (max-width: 599px) {
+    .tooltip {
+      max-width: 200px;
+    }
+
+    .tooltip-rich {
+      max-width: 280px;
+    }
+  }
+</style>

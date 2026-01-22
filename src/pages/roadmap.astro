@@ -1,0 +1,523 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Header from '../components/layout/Header.astro';
+import Footer from '../components/layout/Footer.astro';
+
+// Типы для статусов
+type Status = 'completed' | 'in-progress' | 'planned' | 'idea';
+type Priority = 'high' | 'medium' | 'low';
+type QuarterStatus = 'in-progress' | 'planned' | 'completed';
+
+interface RoadmapItem {
+  title: string;
+  description: string;
+  status: Status;
+  priority: Priority;
+}
+
+interface Quarter {
+  quarter: string;
+  status: QuarterStatus;
+  items: RoadmapItem[];
+}
+
+const roadmap: Quarter[] = [
+  {
+    quarter: 'Q1 2026',
+    status: 'in-progress',
+    items: [
+      {
+        title: 'Zest 2.1',
+        description: 'Улучшения UI/UX, новые виджеты для главного экрана',
+        status: 'in-progress',
+        priority: 'high',
+      },
+      {
+        title: 'Shadow Realm - Глава 2',
+        description: 'Новая локация, враги и сюжетные квесты',
+        status: 'in-progress',
+        priority: 'high',
+      },
+      {
+        title: 'Веб-сайт команды',
+        description: 'Современный сайт с портфолио и блогом',
+        status: 'completed',
+        priority: 'medium',
+      },
+    ],
+  },
+  {
+    quarter: 'Q2 2026',
+    status: 'planned',
+    items: [
+      {
+        title: 'RavenUI 2.0',
+        description: 'Переработанная библиотека компонентов для Flutter',
+        status: 'planned',
+        priority: 'high',
+      },
+      {
+        title: 'Toolkit Pro',
+        description: 'Набор инструментов для разработчиков Flutter',
+        status: 'planned',
+        priority: 'medium',
+      },
+      {
+        title: 'Документация',
+        description: 'Подробная документация для всех проектов',
+        status: 'planned',
+        priority: 'high',
+      },
+    ],
+  },
+  {
+    quarter: 'Q3 2026',
+    status: 'planned',
+    items: [
+      {
+        title: 'Мобильная версия Shadow Realm',
+        description: 'Адаптация игры для мобильных устройств',
+        status: 'planned',
+        priority: 'medium',
+      },
+      {
+        title: 'Zest Cloud Sync',
+        description: 'Синхронизация данных между устройствами',
+        status: 'planned',
+        priority: 'low',
+      },
+      {
+        title: 'Новый проект TBA',
+        description: 'Секретный проект - объявим позже',
+        status: 'idea',
+        priority: 'medium',
+      },
+    ],
+  },
+  {
+    quarter: 'Q4 2026',
+    status: 'planned',
+    items: [
+      {
+        title: 'Shadow Realm - Финальная глава',
+        description: 'Завершение истории, эпический финал',
+        status: 'planned',
+        priority: 'high',
+      },
+      {
+        title: 'Zest 3.0',
+        description: 'Глобальное обновление с новыми возможностями',
+        status: 'idea',
+        priority: 'high',
+      },
+      {
+        title: 'Поддержка сообщества',
+        description: 'Форум, Discord сервер, мероприятия',
+        status: 'planned',
+        priority: 'medium',
+      },
+    ],
+  },
+];
+
+const statusLabels: Record<Status, string> = {
+  completed: 'Завершено',
+  'in-progress': 'В разработке',
+  planned: 'Запланировано',
+  idea: 'Идея',
+};
+
+const statusIcons: Record<Status, string> = {
+  completed: 'check_circle',
+  'in-progress': 'hourglass_empty',
+  planned: 'schedule',
+  idea: 'lightbulb',
+};
+---
+
+<Layout title="Дорожная карта" >
+  <Header />
+
+  <!-- Hero -->
+  <section class="roadmap-hero">
+    <div class="container">
+      <span class="hero-badge">
+        <span class="material-icons">map</span>
+        Roadmap 2026
+      </span>
+      <h1>Дорожная карта</h1>
+      <p class="hero-subtitle">
+        Наши планы по развитию проектов на ближайший год. 
+        Следите за обновлениями и участвуйте в обсуждениях!
+      </p>
+    </div>
+  </section>
+
+  <!-- Legend -->
+  <section class="legend-section">
+    <div class="container">
+      <div class="legend">
+        <div class="legend-item">
+          <span class="material-icons completed">check_circle</span>
+          <span>Завершено</span>
+        </div>
+        <div class="legend-item">
+          <span class="material-icons in-progress">hourglass_empty</span>
+          <span>В разработке</span>
+        </div>
+        <div class="legend-item">
+          <span class="material-icons planned">schedule</span>
+          <span>Запланировано</span>
+        </div>
+        <div class="legend-item">
+          <span class="material-icons idea">lightbulb</span>
+          <span>Идея</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Roadmap Timeline -->
+  <section class="roadmap-timeline">
+    <div class="container">
+      {roadmap.map((quarter) => (
+        <div class="quarter-section" data-status={quarter.status}>
+          <div class="quarter-header">
+            <h2>{quarter.quarter}</h2>
+            <span class={`quarter-badge ${quarter.status}`}>
+              {quarter.status === 'in-progress' ? 'Текущий квартал' : 
+               quarter.status === 'completed' ? 'Завершен' : 'Будущее'}
+            </span>
+          </div>
+
+          <div class="items-grid">
+            {quarter.items.map((item) => (
+              <div class={`roadmap-item ${item.status}`}>
+                <div class="item-header">
+                  <span class={`material-icons status-icon ${item.status}`}>
+                    {statusIcons[item.status]}
+                  </span>
+                  <span class={`priority-badge ${item.priority}`}>
+                    {item.priority === 'high' ? 'Высокий' : 
+                     item.priority === 'medium' ? 'Средний' : 'Низкий'} приоритет
+                  </span>
+                </div>
+                <h3>{item.title}</h3>
+                <p>{item.description}</p>
+                <div class="item-status">
+                  {statusLabels[item.status]}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      ))}
+    </div>
+  </section>
+
+  <!-- Contribute -->
+  <section class="contribute-section">
+    <div class="container">
+      <div class="contribute-card">
+        <span class="material-icons">volunteer_activism</span>
+        <h2>Помогите нам воплотить планы</h2>
+        <p>
+          Вы можете повлиять на приоритеты, предложить новые идеи 
+          или помочь с разработкой. Каждый вклад ценен!
+        </p>
+        <a href="https://github.com/darkmoonight" class="contribute-btn">
+          <span class="material-icons">code</span>
+          Начать контрибьютить
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <Footer />
+</Layout>
+
+<style>
+  .container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 32px;
+  }
+
+  .roadmap-hero {
+    padding: 140px 0 60px;
+    text-align: center;
+  }
+
+  .hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background-color: var(--md-sys-color-surface-container-high);
+    color: var(--md-sys-color-primary);
+    padding: 10px 20px;
+    border-radius: 100px;
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 24px;
+    border: 1px solid var(--md-sys-color-outline-variant);
+  }
+
+  .roadmap-hero h1 {
+    font-size: 56px;
+    font-weight: 900;
+    margin-bottom: 20px;
+    letter-spacing: -1px;
+  }
+
+  .hero-subtitle {
+    font-size: 20px;
+    color: var(--md-sys-color-on-surface-variant);
+    max-width: 700px;
+    margin: 0 auto;
+    line-height: 1.7;
+  }
+
+  .legend-section {
+    padding: 40px 0;
+  }
+
+  .legend {
+    display: flex;
+    gap: 32px;
+    justify-content: center;
+    flex-wrap: wrap;
+    padding: 24px;
+    background-color: var(--md-sys-color-surface-container);
+    border-radius: 100px;
+    border: 1px solid var(--md-sys-color-outline-variant);
+  }
+
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--md-sys-color-on-surface);
+  }
+
+  .legend-item .material-icons {
+    font-size: 20px;
+  }
+
+  .legend-item .completed { color: #4CAF50; }
+  .legend-item .in-progress { color: #FF9800; }
+  .legend-item .planned { color: #2196F3; }
+  .legend-item .idea { color: #9C27B0; }
+
+  .roadmap-timeline {
+    padding: 60px 0 80px;
+  }
+
+  .quarter-section {
+    margin-bottom: 60px;
+  }
+
+  .quarter-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 32px;
+    padding-bottom: 16px;
+    border-bottom: 2px solid var(--md-sys-color-outline-variant);
+  }
+
+  .quarter-header h2 {
+    font-size: 32px;
+    font-weight: 800;
+  }
+
+  .quarter-badge {
+    padding: 6px 16px;
+    border-radius: 100px;
+    font-size: 13px;
+    font-weight: 600;
+  }
+
+  .quarter-badge.in-progress {
+    background-color: #FF9800;
+    color: white;
+  }
+
+  .quarter-badge.completed {
+    background-color: #4CAF50;
+    color: white;
+  }
+
+  .quarter-badge.planned {
+    background-color: var(--md-sys-color-surface-container-highest);
+    color: var(--md-sys-color-on-surface-variant);
+    border: 1px solid var(--md-sys-color-outline-variant);
+  }
+
+  .items-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 20px;
+  }
+
+  .roadmap-item {
+    background-color: var(--md-sys-color-surface-container);
+    border-radius: 16px;
+    padding: 24px;
+    border: 2px solid var(--md-sys-color-outline-variant);
+    transition: all 0.3s;
+  }
+
+  .roadmap-item:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+  }
+
+  .roadmap-item.completed {
+    border-color: #4CAF50;
+    background-color: rgba(76, 175, 80, 0.05);
+  }
+
+  .roadmap-item.in-progress {
+    border-color: #FF9800;
+    background-color: rgba(255, 152, 0, 0.05);
+  }
+
+  .item-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+  }
+
+  .status-icon {
+    font-size: 28px;
+  }
+
+  .status-icon.completed { color: #4CAF50; }
+  .status-icon.in-progress { color: #FF9800; }
+  .status-icon.planned { color: #2196F3; }
+  .status-icon.idea { color: #9C27B0; }
+
+  .priority-badge {
+    padding: 4px 12px;
+    border-radius: 100px;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+  }
+
+  .priority-badge.high {
+    background-color: rgba(244, 67, 54, 0.15);
+    color: #F44336;
+  }
+
+  .priority-badge.medium {
+    background-color: rgba(33, 150, 243, 0.15);
+    color: #2196F3;
+  }
+
+  .priority-badge.low {
+    background-color: rgba(156, 39, 176, 0.15);
+    color: #9C27B0;
+  }
+
+  .roadmap-item h3 {
+    font-size: 20px;
+    margin-bottom: 10px;
+    color: var(--md-sys-color-on-surface);
+  }
+
+  .roadmap-item p {
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--md-sys-color-on-surface-variant);
+    margin-bottom: 16px;
+  }
+
+  .item-status {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--md-sys-color-on-surface-variant);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .contribute-section {
+    padding: 60px 0 80px;
+  }
+
+  .contribute-card {
+    background: linear-gradient(135deg, var(--md-sys-color-primary-container), var(--md-sys-color-secondary-container));
+    border-radius: 28px;
+    padding: 60px;
+    text-align: center;
+    border: 1px solid var(--md-sys-color-primary);
+  }
+
+  .contribute-card .material-icons {
+    font-size: 64px;
+    color: var(--md-sys-color-on-primary-container);
+    margin-bottom: 24px;
+  }
+
+  .contribute-card h2 {
+    font-size: 36px;
+    font-weight: 800;
+    margin-bottom: 16px;
+    color: var(--md-sys-color-on-primary-container);
+  }
+
+  .contribute-card p {
+    font-size: 18px;
+    max-width: 600px;
+    margin: 0 auto 32px;
+    color: var(--md-sys-color-on-primary-container);
+    opacity: 0.95;
+    line-height: 1.7;
+  }
+
+  .contribute-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 6px 12px;
+    background-color: white;
+    color: var(--md-sys-color-primary);
+    border-radius: 100px;
+    font-weight: 500;
+    font-size: 11px;
+    text-decoration: none;
+    transition: all 0.3s;
+  }
+
+  .contribute-btn .material-icons {
+    font-size: 16px;
+  }
+
+  .contribute-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+  }
+
+  @media (max-width: 768px) {
+    .roadmap-hero h1 {
+      font-size: 36px;
+    }
+
+    .container {
+      padding: 0 20px;
+    }
+
+    .items-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .legend {
+      flex-direction: column;
+      align-items: flex-start;
+      border-radius: 20px;
+    }
+  }
+</style>

@@ -1,0 +1,133 @@
+/**
+ * Material Design 3 Breakpoints System
+ * Based on Material Design 3 guidelines
+ * https://m3.material.io/foundations/layout/applying-layout/window-size-classes
+ */
+
+:root {
+  /* Breakpoint values */
+  --breakpoint-compact: 600px;      /* Mobile */
+  --breakpoint-medium: 840px;       /* Tablet */
+  --breakpoint-expanded: 1240px;    /* Desktop */
+  --breakpoint-large: 1440px;       /* Large Desktop */
+  --breakpoint-extra-large: 1920px; /* Extra Large */
+
+  /* Container max-widths */
+  --container-compact: 100%;
+  --container-medium: 100%;
+  --container-expanded: 1200px;
+  --container-large: 1400px;
+  --container-extra-large: 1600px;
+
+  /* Container padding */
+  --container-padding-compact: 16px;
+  --container-padding-medium: 24px;
+  --container-padding-expanded: 32px;
+  --container-padding-large: 40px;
+  --container-padding-extra-large: 48px;
+
+  /* Grid gaps */
+  --grid-gap-compact: 8px;
+  --grid-gap-medium: 16px;
+  --grid-gap-expanded: 24px;
+  --grid-gap-large: 32px;
+
+  /* Section spacing */
+  --section-spacing-compact: 40px;
+  --section-spacing-medium: 60px;
+  --section-spacing-expanded: 80px;
+  --section-spacing-large: 100px;
+}
+
+/* Breakpoint mixins via container queries */
+/* Compact (Mobile) - default, < 600px */
+@media (max-width: 599px) {
+  :root {
+    --current-breakpoint: compact;
+    --container-padding: var(--container-padding-compact);
+    --grid-gap: var(--grid-gap-compact);
+    --section-spacing: var(--section-spacing-compact);
+  }
+}
+
+/* Medium (Tablet) - 600px to 839px */
+@media (min-width: 600px) and (max-width: 839px) {
+  :root {
+    --current-breakpoint: medium;
+    --container-padding: var(--container-padding-medium);
+    --grid-gap: var(--grid-gap-medium);
+    --section-spacing: var(--section-spacing-medium);
+  }
+}
+
+/* Expanded (Desktop) - 840px to 1239px */
+@media (min-width: 840px) and (max-width: 1239px) {
+  :root {
+    --current-breakpoint: expanded;
+    --container-padding: var(--container-padding-expanded);
+    --grid-gap: var(--grid-gap-expanded);
+    --section-spacing: var(--section-spacing-expanded);
+  }
+}
+
+/* Large (Large Desktop) - 1240px to 1439px */
+@media (min-width: 1240px) and (max-width: 1439px) {
+  :root {
+    --current-breakpoint: large;
+    --container-padding: var(--container-padding-large);
+    --grid-gap: var(--grid-gap-large);
+    --section-spacing: var(--section-spacing-large);
+  }
+}
+
+/* Extra Large - >= 1440px */
+@media (min-width: 1440px) {
+  :root {
+    --current-breakpoint: extra-large;
+    --container-padding: var(--container-padding-extra-large);
+    --grid-gap: var(--grid-gap-large);
+    --section-spacing: var(--section-spacing-large);
+  }
+}
+
+/* Utility classes for responsive display */
+.hide-compact { display: none !important; }
+.hide-medium { display: initial !important; }
+.hide-expanded { display: initial !important; }
+.hide-large { display: initial !important; }
+
+@media (min-width: 600px) {
+  .hide-compact { display: initial !important; }
+  .hide-medium { display: none !important; }
+}
+
+@media (min-width: 840px) {
+  .hide-medium { display: initial !important; }
+  .hide-expanded { display: none !important; }
+}
+
+@media (min-width: 1240px) {
+  .hide-expanded { display: initial !important; }
+  .hide-large { display: none !important; }
+}
+
+/* Show only on specific breakpoint */
+.show-compact-only { display: initial !important; }
+.show-medium-only { display: none !important; }
+.show-expanded-only { display: none !important; }
+.show-large-only { display: none !important; }
+
+@media (min-width: 600px) {
+  .show-compact-only { display: none !important; }
+  .show-medium-only { display: initial !important; }
+}
+
+@media (min-width: 840px) {
+  .show-medium-only { display: none !important; }
+  .show-expanded-only { display: initial !important; }
+}
+
+@media (min-width: 1240px) {
+  .show-expanded-only { display: none !important; }
+  .show-large-only { display: initial !important; }
+}

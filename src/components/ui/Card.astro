@@ -1,0 +1,176 @@
+---
+/**
+ * Card Component - Enhanced Material Design 3
+ * Modern card with depth and hover effects
+ */
+export interface Props {
+  variant?: 'filled' | 'elevated' | 'outlined';
+  clickable?: boolean;
+  href?: string;
+  class?: string;
+  padding?: 'none' | 'small' | 'medium' | 'large';
+}
+
+const {
+  variant = 'filled',
+  clickable = false,
+  href,
+  class: className = '',
+  padding = 'medium',
+} = Astro.props;
+
+const Tag = href ? 'a' : 'div';
+const isClickable = clickable || !!href;
+const attrs = href ? { href } : {};
+---
+
+<Tag
+  class:list={[
+    'card',
+    `card--${variant}`,
+    `card--padding-${padding}`,
+    { 'card--clickable': isClickable },
+    className,
+  ]}
+  {...attrs}
+>
+  <div class="card__shine"></div>
+  <div class="card__content">
+    <slot />
+  </div>
+</Tag>
+
+<style>
+  .card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    border-radius: var(--md-sys-shape-corner-extra-large, 28px);
+    overflow: hidden;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    text-decoration: none;
+    color: inherit;
+  }
+
+  .card__shine {
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(
+      45deg,
+      transparent 30%,
+      rgba(255, 255, 255, 0.1) 50%,
+      transparent 70%
+    );
+    transform: translateX(-100%);
+    transition: transform 0.6s;
+    pointer-events: none;
+  }
+
+  .card:hover .card__shine {
+    transform: translateX(100%);
+  }
+
+  .card__content {
+    position: relative;
+    z-index: 1;
+  }
+
+  /* Variants */
+  .card--filled {
+    background: linear-gradient(135deg,
+      var(--md-sys-color-surface-container-highest),
+      var(--md-sys-color-surface-container-high)
+    );
+    color: var(--md-sys-color-on-surface);
+  }
+
+  .card--elevated {
+    background: linear-gradient(135deg,
+      var(--md-sys-color-surface-container-low),
+      var(--md-sys-color-surface-container)
+    );
+    color: var(--md-sys-color-on-surface);
+    box-shadow: 
+      0 2px 8px rgba(0, 0, 0, 0.08),
+      0 1px 4px rgba(0, 0, 0, 0.06);
+  }
+
+  .card--outlined {
+    background: var(--md-sys-color-surface);
+    color: var(--md-sys-color-on-surface);
+    border: 2px solid var(--md-sys-color-outline-variant);
+  }
+
+  /* Padding variants */
+  .card--padding-none {
+    padding: 0;
+  }
+
+  .card--padding-small {
+    padding: 12px;
+  }
+
+  .card--padding-medium {
+    padding: 20px;
+  }
+
+  .card--padding-large {
+    padding: 28px;
+  }
+
+  /* Clickable state */
+  .card--clickable {
+    cursor: pointer;
+  }
+
+  .card--clickable:hover {
+    transform: translateY(-4px) scale(1.01);
+  }
+
+  .card--elevated.card--clickable:hover {
+    box-shadow: 
+      0 8px 24px rgba(0, 0, 0, 0.12),
+      0 4px 12px rgba(0, 0, 0, 0.08);
+  }
+
+  .card--outlined.card--clickable:hover {
+    border-color: var(--md-sys-color-primary);
+    box-shadow: 0 0 0 4px rgba(var(--md-sys-color-primary-rgb, 103, 80, 164), 0.1);
+  }
+
+  .card--clickable:active {
+    transform: translateY(-2px) scale(0.99);
+  }
+
+  .card--clickable:focus-visible {
+    outline: 2px solid var(--md-sys-color-primary);
+    outline-offset: 2px;
+  }
+
+  /* Glass effect for filled variant */
+  .card--filled::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      135deg,
+      rgba(255, 255, 255, 0.1) 0%,
+      transparent 100%
+    );
+    pointer-events: none;
+  }
+
+  /* Responsive */
+  @media (max-width: 600px) {
+    .card--padding-medium {
+      padding: 16px;
+    }
+
+    .card--padding-large {
+      padding: 20px;
+    }
+  }
+</style>

@@ -1,0 +1,195 @@
+---
+// src/components/ui/ListItem.astro
+/**
+ * Material Design 3 List Item Component
+ */
+
+export interface Props {
+  headline: string;
+  supportingText?: string;
+  leadingIcon?: string;
+  trailingIcon?: string;
+  leadingImage?: string;
+  lines?: 1 | 2 | 3;
+  href?: string;
+  onclick?: string;
+  class?: string;
+}
+
+const {
+  headline,
+  supportingText,
+  leadingIcon,
+  trailingIcon,
+  leadingImage,
+  lines = 1,
+  href,
+  onclick,
+  class: className = '',
+} = Astro.props;
+
+import Icon from './Icon.astro';
+
+const Tag = href ? 'a' : 'li';
+---
+
+<Tag
+  class:list={[
+    'list-item',
+    `list-item-${lines}-line`,
+    { 'list-item-interactive': href || onclick },
+    className,
+  ]}
+  href={href}
+  onclick={onclick}
+  role={href || onclick ? 'button' : 'listitem'}
+  tabindex={href || onclick ? 0 : undefined}
+>
+  {leadingIcon && (
+    <span class="list-item-leading list-item-icon">
+      <Icon name={leadingIcon} />
+    </span>
+  )}
+
+  {leadingImage && (
+    <span class="list-item-leading list-item-image">
+      <img src={leadingImage} alt="" />
+    </span>
+  )}
+
+  <div class="list-item-content">
+    <span class="list-item-headline">{headline}</span>
+    {supportingText && (
+      <span class="list-item-supporting-text">{supportingText}</span>
+    )}
+  </div>
+
+  {trailingIcon && (
+    <span class="list-item-trailing list-item-icon">
+      <Icon name={trailingIcon} />
+    </span>
+  )}
+
+  <slot name="trailing" />
+</Tag>
+
+<style>
+  .list-item {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    min-height: 56px;
+    padding: 8px 16px;
+    background-color: var(--md-sys-color-surface);
+    color: var(--md-sys-color-on-surface);
+    text-decoration: none;
+    transition: background-color 200ms cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  /* Interactive states */
+  .list-item-interactive {
+    cursor: pointer;
+  }
+
+  .list-item-interactive:hover {
+    background-color: var(--md-sys-color-surface-container-highest);
+  }
+
+  .list-item-interactive:focus-visible {
+    outline: 2px solid var(--md-sys-color-primary);
+    outline-offset: -2px;
+  }
+
+  /* Leading element */
+  .list-item-leading {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .list-item-leading.list-item-icon {
+    width: 24px;
+    height: 24px;
+    color: var(--md-sys-color-on-surface-variant);
+  }
+
+  .list-item-leading.list-item-image {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    overflow: hidden;
+  }
+
+  .list-item-leading.list-item-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  /* Content */
+  .list-item-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 0;
+  }
+
+  .list-item-headline {
+    font-family: var(--md-sys-typescale-body-large-font);
+    font-size: var(--md-sys-typescale-body-large-size);
+    font-weight: var(--md-sys-typescale-body-large-weight);
+    color: var(--md-sys-color-on-surface);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .list-item-supporting-text {
+    font-family: var(--md-sys-typescale-body-medium-font);
+    font-size: var(--md-sys-typescale-body-medium-size);
+    font-weight: var(--md-sys-typescale-body-medium-weight);
+    color: var(--md-sys-color-on-surface-variant);
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  /* Multi-line support */
+  .list-item-1-line .list-item-supporting-text {
+    display: none;
+  }
+
+  .list-item-2-line .list-item-supporting-text {
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+  }
+
+  .list-item-3-line {
+    min-height: 88px;
+    align-items: flex-start;
+  }
+
+  .list-item-3-line .list-item-supporting-text {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    white-space: normal;
+  }
+
+  /* Trailing element */
+  .list-item-trailing {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .list-item-trailing.list-item-icon {
+    width: 24px;
+    height: 24px;
+    color: var(--md-sys-color-on-surface-variant);
+  }
+</style>

@@ -1,0 +1,91 @@
+---
+// src/components/ui/Tab.astro
+/**
+ * Material Design 3 Tab Component
+ */
+
+export interface Props {
+  id?: string;
+  label: string;
+  icon?: string;
+  active?: boolean;
+  disabled?: boolean;
+  class?: string;
+}
+
+const {
+  id,
+  label,
+  icon,
+  active = false,
+  disabled = false,
+  class: className = '',
+} = Astro.props;
+
+import Icon from './Icon.astro';
+---
+
+<button
+  class:list={[
+    'tab',
+    { 'tab-active': active },
+    { 'tab-disabled': disabled },
+    className,
+  ]}
+  data-tab-id={id}
+  role="tab"
+  aria-selected={active}
+  disabled={disabled}
+  type="button"
+>
+  {icon && (
+    <span class="tab-icon">
+      <Icon name={icon} />
+    </span>
+  )}
+  <span class="tab-label">{label}</span>
+</button>
+
+<style>
+  .tab {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    padding: 12px 16px;
+    min-width: 90px;
+    border: none;
+    background: transparent;
+    color: var(--md-sys-color-on-surface-variant);
+    font-family: var(--md-sys-typescale-title-small-font);
+    font-size: var(--md-sys-typescale-title-small-size);
+    font-weight: var(--md-sys-typescale-title-small-weight);
+    cursor: pointer;
+    transition: all 200ms cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .tab:hover:not(.tab-disabled) {
+    background-color: var(--md-sys-color-surface-container-highest);
+  }
+
+  .tab-active {
+    color: var(--md-sys-color-primary);
+  }
+
+  .tab-icon {
+    font-size: 24px;
+    display: flex;
+    align-items: center;
+  }
+
+  .tab-label {
+    font-size: 14px;
+  }
+
+  .tab-disabled {
+    opacity: 0.38;
+    cursor: not-allowed;
+  }
+</style>

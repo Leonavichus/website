@@ -1,0 +1,177 @@
+---
+export interface Props {
+  title: string;
+  tech: string;
+  description: string;
+  icon: string;
+  badges: string[];
+  slug: string;
+  downloadLink?: string;
+}
+
+const { title, tech, description, icon, badges, slug, downloadLink } = Astro.props;
+---
+
+<div class="project-card">
+  <div class="project-icon">
+    <span class="material-icons">{icon}</span>
+  </div>
+
+  <div class="project-header">
+    <h3>{title}</h3>
+    <p class="project-tech">{tech}</p>
+  </div>
+
+  <p class="project-description">{description}</p>
+
+  <div class="project-badges">
+    {badges.map((badge: string) => (
+      <span class="badge">{badge}</span>
+    ))}
+  </div>
+
+  <div class="project-actions">
+    <a href={`/projects/${slug}`} class="btn-primary">
+      <span class="material-icons">info</span>
+      Подробнее
+    </a>
+    {downloadLink && (
+      <a href={downloadLink} class="btn-secondary">
+        <span class="material-icons">download</span>
+        Скачать
+      </a>
+    )}
+  </div>
+</div>
+
+<style>
+  .project-card {
+    background-color: var(--md-sys-color-surface-container);
+    border-radius: 24px;
+    padding: 32px;
+    border: 1px solid var(--md-sys-color-outline-variant);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    height: 100%;
+  }
+
+  .project-card:hover {
+    border-color: var(--md-sys-color-primary);
+    transform: translateY(-6px);
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4);
+  }
+
+  .project-icon {
+    width: 64px;
+    height: 64px;
+    background: linear-gradient(135deg, var(--md-sys-color-primary-container), var(--md-sys-color-tertiary));
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--md-sys-color-on-primary-container);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .project-icon .material-icons {
+    font-size: 32px;
+  }
+
+  .project-card:hover .project-icon {
+    transform: scale(1.1) rotate(5deg);
+  }
+
+  .project-header h3 {
+    font-size: 24px;
+    font-weight: 700;
+    margin-bottom: 6px;
+    color: var(--md-sys-color-on-surface);
+  }
+
+  .project-tech {
+    font-size: 14px;
+    color: var(--md-sys-color-secondary);
+    font-weight: 500;
+  }
+
+  .project-description {
+    font-size: 15px;
+    line-height: 1.6;
+    color: var(--md-sys-color-on-surface-variant);
+    flex-grow: 1;
+  }
+
+  .project-badges {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .badge {
+    background-color: var(--md-sys-color-surface-container-highest);
+    color: var(--md-sys-color-on-surface);
+    padding: 6px 14px;
+    border-radius: 100px;
+    font-size: 12px;
+    font-weight: 600;
+    border: none;
+    transition: all 0.3s;
+  }
+
+  .project-card:hover .badge {
+    background-color: var(--md-sys-color-primary-container);
+    color: var(--md-sys-color-on-primary-container);
+  }
+
+  .project-actions {
+    display: flex;
+    gap: 12px;
+  }
+
+  .btn-primary,
+  .btn-secondary {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 12px 20px;
+    border-radius: 100px;
+    font-weight: 600;
+    font-size: 14px;
+    text-decoration: none;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    border: none;
+    cursor: pointer;
+  }
+
+  .btn-primary {
+    background-color: var(--md-sys-color-primary);
+    color: var(--md-sys-color-on-primary);
+  }
+
+  .btn-primary:hover {
+    background-color: var(--md-sys-color-primary);
+    box-shadow: 0 6px 16px rgba(166, 196, 255, 0.4);
+    transform: translateY(-2px);
+  }
+
+  .btn-secondary {
+    background-color: var(--md-sys-color-surface-container-highest);
+    color: var(--md-sys-color-on-surface);
+    border: 1px solid var(--md-sys-color-outline-variant);
+  }
+
+  .btn-secondary:hover {
+    background-color: var(--md-sys-color-surface-container-high);
+    border-color: var(--md-sys-color-primary);
+    transform: translateY(-2px);
+  }
+
+  .btn-primary .material-icons,
+  .btn-secondary .material-icons {
+    font-size: 18px;
+  }
+</style>

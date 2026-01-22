@@ -1,0 +1,288 @@
+---
+/**
+ * EmptyState Component - Enhanced Material Design 3
+ * Modern empty state with animations
+ */
+import Icon from './Icon.astro';
+import Button from './Button.astro';
+
+interface Props {
+  icon?: string;
+  title: string;
+  description?: string;
+  actionLabel?: string;
+  actionIcon?: string;
+  secondaryActionLabel?: string;
+  compact?: boolean;
+}
+
+const {
+  icon = 'inbox',
+  title,
+  description,
+  actionLabel,
+  actionIcon,
+  secondaryActionLabel,
+  compact = false
+} = Astro.props;
+---
+
+<div 
+  class:list={[
+    'empty-state',
+    { 'empty-state--compact': compact }
+  ]}
+>
+  <div class="empty-state__icon-wrapper">
+    <div class="empty-state__icon-container">
+      <Icon name={icon} class="empty-state__icon" />
+      <div class="empty-state__icon-glow"></div>
+      <div class="empty-state__icon-ring"></div>
+    </div>
+  </div>
+
+  <h3 class="empty-state__title">{title}</h3>
+
+  {description && (
+    <p class="empty-state__description">{description}</p>
+  )}
+
+  {(actionLabel || secondaryActionLabel) && (
+    <div class="empty-state__actions">
+      {actionLabel && (
+        <Button 
+          variant="filled" 
+          icon={actionIcon}
+          data-primary-action
+        >
+          {actionLabel}
+        </Button>
+      )}
+      {secondaryActionLabel && (
+        <Button variant="outlined" data-secondary-action>
+          {secondaryActionLabel}
+        </Button>
+      )}
+    </div>
+  )}
+
+  <slot />
+</div>
+
+<style>
+  .empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 400px;
+    padding: 64px 32px;
+    text-align: center;
+    animation: empty-state-fade-in 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  @keyframes empty-state-fade-in {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .empty-state--compact {
+    min-height: 240px;
+    padding: 32px 24px;
+  }
+
+  /* Icon wrapper with animations */
+  .empty-state__icon-wrapper {
+    position: relative;
+    margin-bottom: 32px;
+    animation: icon-float 3s ease-in-out infinite;
+  }
+
+  @keyframes icon-float {
+    0%, 100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-12px);
+    }
+  }
+
+  .empty-state__icon-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    background: linear-gradient(135deg,
+      var(--md-sys-color-surface-container-high),
+      var(--md-sys-color-surface-container-highest)
+    );
+    animation: icon-bounce 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  }
+
+  @keyframes icon-bounce {
+    0% {
+      transform: scale(0);
+      opacity: 0;
+    }
+    50% {
+      transform: scale(1.1);
+    }
+    100% {
+      transform: scale(1);
+      opacity: 1;
+    }
+  }
+
+  .empty-state--compact .empty-state__icon-container {
+    width: 80px;
+    height: 80px;
+  }
+
+  .empty-state__icon {
+    font-size: 64px;
+    color: var(--md-sys-color-on-surface-variant);
+    position: relative;
+    z-index: 1;
+  }
+
+  .empty-state--compact .empty-state__icon {
+    font-size: 48px;
+  }
+
+  /* Glow effect */
+  .empty-state__icon-glow {
+    position: absolute;
+    inset: -12px;
+    border-radius: 50%;
+    background: radial-gradient(
+      circle,
+      var(--md-sys-color-primary) 0%,
+      transparent 70%
+    );
+    opacity: 0.2;
+    animation: glow-pulse 2s ease-in-out infinite;
+  }
+
+  @keyframes glow-pulse {
+    0%, 100% {
+      transform: scale(1);
+      opacity: 0.2;
+    }
+    50% {
+      transform: scale(1.2);
+      opacity: 0.4;
+    }
+  }
+
+  /* Ring animation */
+  .empty-state__icon-ring {
+    position: absolute;
+    inset: -4px;
+    border-radius: 50%;
+    border: 2px solid var(--md-sys-color-primary);
+    opacity: 0;
+    animation: ring-pulse 2s ease-in-out infinite;
+  }
+
+  @keyframes ring-pulse {
+    0% {
+      transform: scale(1);
+      opacity: 0.4;
+    }
+    50% {
+      transform: scale(1.15);
+      opacity: 0;
+    }
+    100% {
+      transform: scale(1);
+      opacity: 0;
+    }
+  }
+
+  /* Title */
+  .empty-state__title {
+    margin: 0 0 12px;
+    color: var(--md-sys-color-on-surface);
+    font: var(--md-sys-typescale-headline-medium);
+    font-weight: 600;
+    letter-spacing: 0.1px;
+    animation: text-slide-in 0.6s cubic-bezier(0.4, 0, 0.2, 1) 0.1s backwards;
+  }
+
+  @keyframes text-slide-in {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .empty-state--compact .empty-state__title {
+    font: var(--md-sys-typescale-title-large);
+  }
+
+  /* Description */
+  .empty-state__description {
+    max-width: 480px;
+    margin: 0 0 32px;
+    color: var(--md-sys-color-on-surface-variant);
+    font: var(--md-sys-typescale-body-large);
+    line-height: 1.6;
+    animation: text-slide-in 0.6s cubic-bezier(0.4, 0, 0.2, 1) 0.2s backwards;
+  }
+
+  .empty-state--compact .empty-state__description {
+    font: var(--md-sys-typescale-body-medium);
+    margin-bottom: 24px;
+  }
+
+  /* Actions */
+  .empty-state__actions {
+    display: flex;
+    gap: 12px;
+    margin-top: 8px;
+    animation: text-slide-in 0.6s cubic-bezier(0.4, 0, 0.2, 1) 0.3s backwards;
+  }
+
+  /* Responsive */
+  @media (max-width: 600px) {
+    .empty-state {
+      min-height: 320px;
+      padding: 48px 20px;
+    }
+
+    .empty-state__icon-container {
+      width: 96px;
+      height: 96px;
+    }
+
+    .empty-state__icon {
+      font-size: 48px;
+    }
+
+    .empty-state__description {
+      max-width: 100%;
+    }
+
+    .empty-state__actions {
+      flex-direction: column;
+      width: 100%;
+    }
+
+    .empty-state__actions :global(.btn) {
+      width: 100%;
+    }
+  }
+</style>

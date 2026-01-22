@@ -1,0 +1,214 @@
+---
+/**
+ * TreeView Component
+ * Material Design 3 tree view for hierarchical data
+ */
+import TreeNode from './TreeNode.astro';
+
+interface TreeNodeType {
+  id: string;
+  label: string;
+  icon?: string;
+  children?: TreeNodeType[];
+  expanded?: boolean;
+  selected?: boolean;
+  disabled?: boolean;
+}
+
+interface Props {
+  nodes: TreeNodeType[];
+  multiSelect?: boolean;
+  showIcons?: boolean;
+}
+
+const {
+  nodes,
+  multiSelect = false,
+  showIcons = true
+} = Astro.props;
+---
+
+<div 
+  class="tree-view"
+  role="tree"
+  data-tree-view
+  data-multi-select={multiSelect}
+>
+  {nodes.map((node) => (
+    <TreeNode 
+      node={node} 
+      level={0} 
+      showIcons={showIcons} 
+    />
+  ))}
+</div>
+
+<style>
+  .tree-view {
+    padding: 8px 0;
+    color: var(--md-sys-color-on-surface);
+    font: var(--md-sys-typescale-body-medium);
+  }
+
+  :global(.tree-node) {
+    display: flex;
+    align-items: center;
+  }
+
+  :global(.tree-node--disabled) {
+    opacity: 0.38;
+    pointer-events: none;
+  }
+
+  :global(.tree-node--selected .tree-node__content) {
+    background: var(--md-sys-color-secondary-container);
+    color: var(--md-sys-color-on-secondary-container);
+  }
+
+  :global(.tree-node__toggle) {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    border: none;
+    border-radius: 50%;
+    background: transparent;
+    color: var(--md-sys-color-on-surface-variant);
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  :global(.tree-node__toggle:hover:not(:disabled)) {
+    background: var(--md-sys-color-surface-container-highest);
+  }
+
+  :global(.tree-node__toggle--hidden) {
+    visibility: hidden;
+  }
+
+  :global(.tree-node[aria-expanded="true"] .tree-node__toggle .icon) {
+    transform: rotate(90deg);
+  }
+
+  :global(.tree-node__content) {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    border-radius: var(--md-sys-shape-corner-small);
+    cursor: pointer;
+    transition: background-color 0.2s;
+  }
+
+  :global(.tree-node__content:hover) {
+    background: var(--md-sys-color-surface-container-highest);
+  }
+
+  :global(.tree-node__icon) {
+    color: var(--md-sys-color-on-surface-variant);
+  }
+
+  :global(.tree-node__label) {
+    flex: 1;
+    user-select: none;
+  }
+
+  :global(.tree-node__children) {
+    overflow: hidden;
+  }
+
+  :global(.tree-node__children[hidden]) {
+    display: none;
+  }
+
+  /* Reduced motion */
+  @media (prefers-reduced-motion: reduce) {
+    :global(.tree-node__toggle),
+    :global(.tree-node__toggle .icon) {
+      transition: none;
+    }
+  }
+</style>
+
+<script>
+  function initTreeView() {
+    const trees = document.querySelectorAll('[data-tree-view]');
+
+    trees.forEach(tree => {
+      const multiSelect = (tree as HTMLElement).dataset.multiSelect === 'true';
+
+      // Toggle expansion
+      tree.addEventListener('click', (e) => {
+        const toggle = (e.target as HTMLElement).closest('[data-toggle]');
+        if (toggle) {
+          const node = toggle.closest('[data-node-id]');
+          const children = node?.nextElementSibling as HTMLElement;
+
+          if (children?.dataset.children !== undefined) {
+            const isExpanded = node?.getAttribute('aria-expanded') === 'true';
+            node?.setAttribute('aria-expanded', (!isExpanded).toString());
+
+            if (isExpanded) {
+              children.setAttribute('hidden', '');
+            } else {
+              children.removeAttribute('hidden');
+            }
+
+            tree.dispatchEvent(new CustomEvent('tree-toggle', {
+              detail: {
+                nodeId: (node as HTMLElement).dataset.nodeId,
+                expanded: !isExpanded
+              },
+              bubbles: true
+            }));
+          }
+        }
+      });
+
+      // Selection
+      tree.addEventListener('click', (e) => {
+        const content = (e.target as HTMLElement).closest('[data-content]');
+        if (content) {
+          const node = content.closest('[data-node-id]');
+
+          if (!multiSelect) {
+            // Clear all selections
+            tree.querySelectorAll('.tree-node--selected').forEach(n => {
+              n.classList.remove('tree-node--selected');
+              n.setAttribute('aria-selected', 'false');
+            });
+          }
+
+          // Toggle current selection
+          const isSelected = node?.classList.contains('tree-node--selected');
+          if (isSelected) {
+            node?.classList.remove('tree-node--selected');
+            node?.setAttribute('aria-selected', 'false');
+          } else {
+            node?.classList.add('tree-node--selected');
+            node?.setAttribute('aria-selected', 'true');
+          }
+
+          tree.dispatchEvent(new CustomEvent('tree-select', {
+            detail: {
+              nodeId: (node as HTMLElement).dataset.nodeId,
+              selected: !isSelected
+            },
+            bubbles: true
+          }));
+        }
+      });
+    });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initTreeView);
+  } else {
+    initTreeView();
+  }
+
+  document.addEventListener('astro:page-load', initTreeView);
+</script>

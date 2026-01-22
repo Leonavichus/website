@@ -1,0 +1,246 @@
+---
+// src/components/ui/Select.astro - FINAL with dark mode fix
+/**
+ * Material Design 3 Select Component
+ */
+
+export interface Props {
+  label: string;
+  name?: string;
+  value?: string;
+  variant?: 'filled' | 'outlined';
+  disabled?: boolean;
+  required?: boolean;
+  error?: boolean;
+  helperText?: string;
+  leadingIcon?: string;
+  class?: string;
+}
+
+const {
+  label,
+  name,
+  value,
+  variant = 'filled',
+  disabled = false,
+  required = false,
+  error = false,
+  helperText,
+  leadingIcon,
+  class: className = '',
+} = Astro.props;
+
+import Icon from './Icon.astro';
+
+const selectId = `select-${Math.random().toString(36).substr(2, 9)}`;
+---
+
+<div
+  class:list={[
+    'select',
+    `select-${variant}`,
+    { 'select-disabled': disabled },
+    { 'select-error': error },
+    { 'select-with-leading-icon': leadingIcon },
+    className,
+  ]}
+>
+  {leadingIcon && (
+    <span class="select-icon select-icon-leading">
+      <Icon name={leadingIcon} />
+    </span>
+  )}
+
+  <div class="select-input-wrapper">
+    <select
+      id={selectId}
+      name={name}
+      disabled={disabled}
+      required={required}
+      class="select-input"
+    >
+      <slot />
+    </select>
+
+    <label for={selectId} class="select-label">
+      {label}{required && ' *'}
+    </label>
+
+    <span class="select-icon select-icon-trailing">
+      <Icon name="arrow_drop_down" />
+    </span>
+  </div>
+
+  {helperText && (
+    <span class="select-helper-text">{helperText}</span>
+  )}
+</div>
+
+<style>
+  .select {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    width: 100%;
+    max-width: 400px;
+  }
+
+  .select-input-wrapper {
+    position: relative;
+    flex: 1;
+    display: flex;
+    align-items: center;
+  }
+
+  /* Select input */
+  .select-input {
+    width: 100%;
+    height: 56px;
+    padding: 20px 48px 8px 16px;
+    border: none;
+    background: transparent;
+    font-family: var(--md-sys-typescale-body-large-font);
+    font-size: var(--md-sys-typescale-body-large-size);
+    color: var(--md-sys-color-on-surface);
+    outline: none;
+    cursor: pointer;
+    appearance: none;
+    position: relative;
+    z-index: 1;
+  }
+
+  .select-with-leading-icon .select-input {
+    padding-left: 52px;
+  }
+
+  /* Label */
+  .select-label {
+    position: absolute;
+    left: 16px;
+    top: 8px;
+    font-size: 12px;
+    color: var(--md-sys-color-on-surface-variant);
+    pointer-events: none;
+    transition: all 200ms cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 2;
+  }
+
+  .select-with-leading-icon .select-label {
+    left: 52px;
+  }
+
+  .select-input:focus ~ .select-label {
+    color: var(--md-sys-color-primary);
+  }
+
+  /* Filled variant */
+  .select-filled .select-input-wrapper {
+    background-color: var(--md-sys-color-surface-container-highest);
+    border-radius: 4px 4px 0 0;
+    border-bottom: 1px solid var(--md-sys-color-on-surface-variant);
+  }
+
+  .select-filled .select-input-wrapper::after {
+    content: '';
+    position: absolute;
+    bottom: -1px;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background-color: var(--md-sys-color-primary);
+    transform: scaleX(0);
+    transition: transform 200ms cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .select-filled:has(.select-input:focus) .select-input-wrapper::after {
+    transform: scaleX(1);
+  }
+
+  /* Outlined variant */
+  .select-outlined .select-input-wrapper {
+    border: 1px solid var(--md-sys-color-outline);
+    border-radius: 4px;
+  }
+
+  .select-outlined:has(.select-input:focus) .select-input-wrapper {
+    border-color: var(--md-sys-color-primary);
+    border-width: 2px;
+  }
+
+  /* Icons */
+  .select-icon {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    height: 48px;
+    color: var(--md-sys-color-on-surface-variant);
+    z-index: 3;
+    pointer-events: none;
+  }
+
+  .select-icon-leading {
+    left: 4px;
+  }
+
+  .select-icon-trailing {
+    right: 4px;
+  }
+
+  /* Helper text */
+  .select-helper-text {
+    position: absolute;
+    bottom: -20px;
+    left: 16px;
+    font-family: var(--md-sys-typescale-body-small-font);
+    font-size: var(--md-sys-typescale-body-small-size);
+    color: var(--md-sys-color-on-surface-variant);
+  }
+
+  /* Error state */
+  .select-error .select-input-wrapper {
+    border-color: var(--md-sys-color-error);
+  }
+
+  .select-error .select-label {
+    color: var(--md-sys-color-error);
+  }
+
+  .select-error .select-helper-text {
+    color: var(--md-sys-color-error);
+  }
+
+  /* Disabled */
+  .select-disabled {
+    opacity: 0.38;
+    pointer-events: none;
+  }
+</style>
+
+<style is:global>
+  /* ✅ GLOBAL STYLES для dropdown options - работает в dark mode! */
+
+  /* Light theme */
+  select option {
+    background-color: #F3EDF7; /* surface-container light */
+    color: #1C1B1F; /* on-surface light */
+    padding: 12px 16px;
+  }
+
+  select option:checked {
+    background-color: #EADDFF; /* primary-container light */
+    color: #21005D; /* on-primary-container light */
+  }
+
+  /* Dark theme */
+  [data-theme="dark"] select option {
+    background-color: #211F26; /* surface-container dark */
+    color: #E6E1E5; /* on-surface dark */
+  }
+
+  [data-theme="dark"] select option:checked {
+    background-color: #4F378B; /* primary-container dark */
+    color: #EADDFF; /* on-primary-container dark */
+  }
+</style>

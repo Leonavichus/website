@@ -1,0 +1,343 @@
+---
+/**
+ * Alert Component - Enhanced Material Design 3
+ * Modern alert with animations and visual effects
+ */
+import Icon from './Icon.astro';
+import Button from './Button.astro';
+
+interface Props {
+  variant?: 'info' | 'success' | 'warning' | 'error';
+  title?: string;
+  icon?: string;
+  dismissible?: boolean;
+  actions?: Array<{ label: string; onClick?: string }>;
+  class?: string;
+}
+
+const {
+  variant = 'info',
+  title,
+  icon,
+  dismissible = false,
+  actions = [],
+  class: className
+} = Astro.props;
+
+const defaultIcons = {
+  info: 'info',
+  success: 'check_circle',
+  warning: 'warning',
+  error: 'error'
+};
+---
+
+<div 
+  class:list={[
+    'alert',
+    `alert--${variant}`,
+    className
+  ]}
+  role="alert"
+  data-alert
+>
+  <div class="alert__shine"></div>
+  
+  {(icon || defaultIcons[variant]) && (
+    <div class="alert__icon-wrapper">
+      <Icon name={icon || defaultIcons[variant]} class="alert__icon" />
+      <div class="alert__icon-glow"></div>
+    </div>
+  )}
+
+  <div class="alert__content">
+    {title && <div class="alert__title">{title}</div>}
+    <div class="alert__message">
+      <slot />
+    </div>
+  </div>
+
+  {(actions.length > 0 || dismissible) && (
+    <div class="alert__actions">
+      {actions.map((action) => (
+        <Button 
+          variant="text" 
+          size="small"
+          onclick={action.onClick}
+        >
+          {action.label}
+        </Button>
+      ))}
+      {dismissible && (
+        <button
+          type="button"
+          class="alert__close"
+          aria-label="Close"
+          data-close
+        >
+          <Icon name="close" />
+        </button>
+      )}
+    </div>
+  )}
+</div>
+
+<style>
+  .alert {
+    position: relative;
+    display: flex;
+    gap: 16px;
+    padding: 20px;
+    border-radius: var(--md-sys-shape-corner-large, 16px);
+    overflow: hidden;
+    animation: alert-slide-in 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .alert:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+    transform: translateY(-2px);
+  }
+
+  @keyframes alert-slide-in {
+    from {
+      opacity: 0;
+      transform: translateY(-12px) scale(0.95);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+  }
+
+  /* Shine effect */
+  .alert__shine {
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(
+      45deg,
+      transparent 30%,
+      rgba(255, 255, 255, 0.15) 50%,
+      transparent 70%
+    );
+    transform: translateX(-100%);
+    transition: transform 0.6s;
+  }
+
+  .alert:hover .alert__shine {
+    transform: translateX(100%);
+  }
+
+  /* Variants */
+  .alert--info {
+    background: linear-gradient(135deg, 
+      var(--md-sys-color-primary-container),
+      color-mix(in srgb, var(--md-sys-color-primary-container) 90%, white)
+    );
+    color: var(--md-sys-color-on-primary-container);
+    border-left: 4px solid var(--md-sys-color-primary);
+  }
+
+  .alert--success {
+    background: linear-gradient(135deg, #e8f5e9, #f1f8f2);
+    color: #1b5e20;
+    border-left: 4px solid #4CAF50;
+  }
+
+  .alert--warning {
+    background: linear-gradient(135deg,
+      var(--md-sys-color-tertiary-container),
+      color-mix(in srgb, var(--md-sys-color-tertiary-container) 90%, white)
+    );
+    color: var(--md-sys-color-on-tertiary-container);
+    border-left: 4px solid #FFA726;
+  }
+
+  .alert--error {
+    background: linear-gradient(135deg,
+      var(--md-sys-color-error-container),
+      color-mix(in srgb, var(--md-sys-color-error-container) 90%, white)
+    );
+    color: var(--md-sys-color-on-error-container);
+    border-left: 4px solid var(--md-sys-color-error);
+  }
+
+  /* Icon wrapper with glow */
+  .alert__icon-wrapper {
+    position: relative;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.3);
+    backdrop-filter: blur(10px);
+    animation: icon-bounce 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  }
+
+  @keyframes icon-bounce {
+    0% {
+      transform: scale(0);
+      opacity: 0;
+    }
+    50% {
+      transform: scale(1.1);
+    }
+    100% {
+      transform: scale(1);
+      opacity: 1;
+    }
+  }
+
+  .alert__icon {
+    font-size: 24px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .alert__icon-glow {
+    position: absolute;
+    inset: -4px;
+    border-radius: 50%;
+    opacity: 0.4;
+    animation: glow-pulse 2s ease-in-out infinite;
+  }
+
+  .alert--info .alert__icon-glow {
+    background: radial-gradient(circle, var(--md-sys-color-primary) 0%, transparent 70%);
+  }
+
+  .alert--success .alert__icon-glow {
+    background: radial-gradient(circle, #4CAF50 0%, transparent 70%);
+  }
+
+  .alert--warning .alert__icon-glow {
+    background: radial-gradient(circle, #FFA726 0%, transparent 70%);
+  }
+
+  .alert--error .alert__icon-glow {
+    background: radial-gradient(circle, var(--md-sys-color-error) 0%, transparent 70%);
+  }
+
+  @keyframes glow-pulse {
+    0%, 100% {
+      transform: scale(1);
+      opacity: 0.4;
+    }
+    50% {
+      transform: scale(1.2);
+      opacity: 0.6;
+    }
+  }
+
+  .alert__content {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .alert__title {
+    margin-bottom: 6px;
+    font: var(--md-sys-typescale-title-medium);
+    font-weight: 600;
+    letter-spacing: 0.1px;
+  }
+
+  .alert__message {
+    font: var(--md-sys-typescale-body-medium);
+    line-height: 1.5;
+  }
+
+  .alert__actions {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .alert__close {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    padding: 0;
+    border: none;
+    border-radius: 50%;
+    background: transparent;
+    color: inherit;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .alert__close:hover {
+    background: rgba(0, 0, 0, 0.1);
+    transform: scale(1.1) rotate(90deg);
+  }
+
+  .alert__close:active {
+    transform: scale(0.95) rotate(90deg);
+  }
+
+  /* Closing animation */
+  .alert--closing {
+    animation: alert-slide-out 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  }
+
+  @keyframes alert-slide-out {
+    to {
+      opacity: 0;
+      transform: translateX(100%) scale(0.9);
+    }
+  }
+
+  /* Responsive */
+  @media (max-width: 600px) {
+    .alert {
+      flex-direction: column;
+    }
+
+    .alert__icon-wrapper {
+      width: 40px;
+      height: 40px;
+    }
+
+    .alert__actions {
+      width: 100%;
+      justify-content: flex-end;
+    }
+  }
+</style>
+
+<script>
+  function initAlerts() {
+    const alerts = document.querySelectorAll('[data-alert]');
+
+    alerts.forEach(alert => {
+      const closeButton = alert.querySelector('[data-close]');
+
+      closeButton?.addEventListener('click', () => {
+        alert.dispatchEvent(new CustomEvent('alert-close', {
+          bubbles: true
+        }));
+
+        alert.classList.add('alert--closing');
+        setTimeout(() => {
+          alert.remove();
+        }, 300);
+      });
+    });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initAlerts);
+  } else {
+    initAlerts();
+  }
+
+  document.addEventListener('astro:page-load', initAlerts);
+</script>

@@ -1,0 +1,376 @@
+---
+/**
+ * BottomSheet Component - Enhanced Material Design 3
+ * Modern modal from bottom with smooth animations
+ */
+import Icon from './Icon.astro';
+
+export interface Props {
+  id: string;
+  title?: string;
+  persistent?: boolean;
+  class?: string;
+}
+
+const {
+  id,
+  title,
+  persistent = false,
+  class: className = '',
+} = Astro.props;
+---
+
+<div
+  class:list={['bottom-sheet', className]}
+  id={id}
+  data-persistent={persistent}
+  role="dialog"
+  aria-modal="true"
+  aria-labelledby={title ? `${id}-title` : undefined}
+>
+  <div class="bottom-sheet-overlay"></div>
+
+  <div class="bottom-sheet-content">
+    <div class="bottom-sheet__shine"></div>
+    <div class="bottom-sheet-handle"></div>
+
+    {title && (
+      <div class="bottom-sheet-header">
+        <h2 id={`${id}-title`} class="bottom-sheet-title">{title}</h2>
+        <button class="bottom-sheet-close" aria-label="Close">
+          <Icon name="close" />
+          <span class="bottom-sheet-close__ripple"></span>
+        </button>
+      </div>
+    )}
+
+    <div class="bottom-sheet-body">
+      <slot />
+    </div>
+  </div>
+</div>
+
+<style>
+  .bottom-sheet {
+    position: fixed;
+    inset: 0;
+    z-index: 999;
+    display: none;
+    align-items: flex-end;
+  }
+
+  .bottom-sheet.active {
+    display: flex;
+  }
+
+  .bottom-sheet-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(8px);
+    opacity: 0;
+    transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .bottom-sheet.active .bottom-sheet-overlay {
+    opacity: 1;
+  }
+
+  .bottom-sheet-content {
+    position: relative;
+    width: 100%;
+    max-height: 90vh;
+    background: linear-gradient(135deg,
+      var(--md-sys-color-surface-container-low),
+      var(--md-sys-color-surface-container)
+    );
+    border-radius: 28px 28px 0 0;
+    display: flex;
+    flex-direction: column;
+    transform: translateY(100%);
+    transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 
+      0 -8px 32px rgba(0, 0, 0, 0.2),
+      0 -4px 16px rgba(0, 0, 0, 0.15);
+    overflow: hidden;
+  }
+
+  .bottom-sheet.active .bottom-sheet-content {
+    transform: translateY(0);
+  }
+
+  /* Shine effect */
+  .bottom-sheet__shine {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 200px;
+    background: linear-gradient(
+      to bottom,
+      rgba(255, 255, 255, 0.1) 0%,
+      transparent 100%
+    );
+    pointer-events: none;
+  }
+
+  .bottom-sheet-handle {
+    width: 40px;
+    height: 4px;
+    background: linear-gradient(135deg,
+      var(--md-sys-color-on-surface-variant),
+      color-mix(in srgb, var(--md-sys-color-on-surface-variant) 60%, transparent)
+    );
+    border-radius: 2px;
+    margin: 12px auto 8px;
+    opacity: 0.5;
+    cursor: grab;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .bottom-sheet-handle:active {
+    cursor: grabbing;
+  }
+
+  .bottom-sheet-handle:hover {
+    opacity: 0.8;
+    transform: scaleX(1.2);
+  }
+
+  .bottom-sheet-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 24px;
+    border-bottom: 1px solid var(--md-sys-color-outline-variant);
+    position: relative;
+    z-index: 1;
+  }
+
+  .bottom-sheet-title {
+    font-family: var(--md-sys-typescale-title-large-font);
+    font-size: var(--md-sys-typescale-title-large-size);
+    font-weight: 600;
+    color: var(--md-sys-color-on-surface);
+    margin: 0;
+  }
+
+  .bottom-sheet-close {
+    position: relative;
+    width: 40px;
+    height: 40px;
+    border: none;
+    border-radius: 50%;
+    background: transparent;
+    color: var(--md-sys-color-on-surface-variant);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    overflow: hidden;
+  }
+
+  .bottom-sheet-close:hover {
+    background: var(--md-sys-color-surface-container-highest);
+    color: var(--md-sys-color-on-surface);
+    transform: scale(1.1) rotate(90deg);
+  }
+
+  .bottom-sheet-close:active {
+    transform: scale(0.95) rotate(90deg);
+  }
+
+  .bottom-sheet-close__ripple {
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(0, 0, 0, 0.1) 0%, transparent 70%);
+    transform: scale(0);
+    pointer-events: none;
+  }
+
+  .bottom-sheet-close:active .bottom-sheet-close__ripple {
+    animation: close-ripple 0.6s ease-out;
+  }
+
+  @keyframes close-ripple {
+    to {
+      transform: scale(2.5);
+      opacity: 0;
+    }
+  }
+
+  .bottom-sheet-body {
+    flex: 1;
+    overflow-y: auto;
+    padding: 24px;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* Scrollbar */
+  .bottom-sheet-body::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  .bottom-sheet-body::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .bottom-sheet-body::-webkit-scrollbar-thumb {
+    background: var(--md-sys-color-outline-variant);
+    border-radius: 4px;
+  }
+
+  .bottom-sheet-body::-webkit-scrollbar-thumb:hover {
+    background: var(--md-sys-color-outline);
+  }
+
+  /* Desktop */
+  @media (min-width: 768px) {
+    .bottom-sheet-content {
+      max-width: 640px;
+      margin: 0 auto;
+      border-radius: 28px;
+    }
+
+    .bottom-sheet {
+      align-items: center;
+      padding: 24px;
+    }
+
+    .bottom-sheet.active .bottom-sheet-content {
+      transform: scale(1);
+      animation: sheet-scale-in 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    @keyframes sheet-scale-in {
+      from {
+        transform: scale(0.8);
+        opacity: 0;
+      }
+      to {
+        transform: scale(1);
+        opacity: 1;
+      }
+    }
+  }
+</style>
+
+<script>
+  class BottomSheet {
+    element: HTMLElement;
+    overlay: HTMLElement;
+    content: HTMLElement;
+    closeBtn: HTMLElement | null;
+    handle: HTMLElement;
+    persistent: boolean;
+    startY: number;
+    currentY: number;
+    isDragging: boolean;
+
+    constructor(element: HTMLElement) {
+      this.element = element;
+      this.overlay = element.querySelector('.bottom-sheet-overlay')!;
+      this.content = element.querySelector('.bottom-sheet-content')!;
+      this.closeBtn = element.querySelector('.bottom-sheet-close');
+      this.handle = element.querySelector('.bottom-sheet-handle')!;
+      this.persistent = element.dataset.persistent === 'true';
+      this.startY = 0;
+      this.currentY = 0;
+      this.isDragging = false;
+
+      this.init();
+    }
+
+    init() {
+      this.closeBtn?.addEventListener('click', () => this.close());
+
+      if (!this.persistent) {
+        this.overlay.addEventListener('click', () => this.close());
+      }
+
+      document.addEventListener('keydown', (e: Event) => {
+        if (e instanceof KeyboardEvent && 
+            e.key === 'Escape' && 
+            this.element.classList.contains('active') && 
+            !this.persistent) {
+          this.close();
+        }
+      });
+
+      this.initSwipe();
+    }
+
+    open() {
+      this.element.classList.add('active');
+      document.body.style.overflow = 'hidden';
+      this.element.dispatchEvent(new CustomEvent('bottomsheet:open'));
+    }
+
+    close() {
+      this.element.classList.remove('active');
+      document.body.style.overflow = '';
+      this.element.dispatchEvent(new CustomEvent('bottomsheet:close'));
+    }
+
+    toggle() {
+      if (this.element.classList.contains('active')) {
+        this.close();
+      } else {
+        this.open();
+      }
+    }
+
+    initSwipe() {
+      this.handle.addEventListener('touchstart', (e: TouchEvent) => {
+        this.startY = e.touches[0].clientY;
+        this.isDragging = true;
+      });
+
+      document.addEventListener('touchmove', (e: TouchEvent) => {
+        if (!this.isDragging) return;
+
+        this.currentY = e.touches[0].clientY;
+        const diff = this.currentY - this.startY;
+
+        if (diff > 0) {
+          this.content.style.transform = `translateY(${diff}px)`;
+        }
+      });
+
+      document.addEventListener('touchend', () => {
+        if (!this.isDragging) return;
+
+        const diff = this.currentY - this.startY;
+
+        if (diff > 100 && !this.persistent) {
+          this.close();
+        }
+
+        this.content.style.transform = '';
+        this.isDragging = false;
+      });
+    }
+  }
+
+  (window as any).BottomSheets = {};
+
+  document.querySelectorAll('.bottom-sheet').forEach(el => {
+    const sheet = new BottomSheet(el as HTMLElement);
+    (window as any).BottomSheets[(el as HTMLElement).id] = sheet;
+  });
+
+  (window as any).openBottomSheet = (id: string) => {
+    (window as any).BottomSheets[id]?.open();
+  };
+
+  (window as any).closeBottomSheet = (id: string) => {
+    (window as any).BottomSheets[id]?.close();
+  };
+
+  (window as any).toggleBottomSheet = (id: string) => {
+    (window as any).BottomSheets[id]?.toggle();
+  };
+</script>

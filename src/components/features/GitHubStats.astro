@@ -1,0 +1,134 @@
+---
+import { getUserStats } from '../../utils/github';
+
+const stats = await getUserStats('darkmoonight');
+---
+
+{stats && (
+  <section class="github-stats">
+    <h3>Наша статистика на GitHub</h3>
+    <div class="stats-grid">
+      <div class="stat-item">
+        <span class="material-icons">star</span>
+        <div class="stat-content">
+          <div class="stat-value">{stats.totalStars}</div>
+          <div class="stat-label">Звезд</div>
+        </div>
+      </div>
+
+      <div class="stat-item">
+        <span class="material-icons">call_split</span>
+        <div class="stat-content">
+          <div class="stat-value">{stats.totalForks}</div>
+          <div class="stat-label">Форков</div>
+        </div>
+      </div>
+
+      <div class="stat-item">
+        <span class="material-icons">folder</span>
+        <div class="stat-content">
+          <div class="stat-value">{stats.totalRepos}</div>
+          <div class="stat-label">Репозиториев</div>
+        </div>
+      </div>
+
+      <div class="stat-item">
+        <span class="material-icons">code</span>
+        <div class="stat-content">
+          <div class="stat-value">{stats.languages.length}</div>
+          <div class="stat-label">Языков</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="languages">
+      <span>Языки:</span>
+      {stats.languages.slice(0, 5).map((lang: string) => (
+        <span class="language-tag">{lang}</span>
+      ))}
+    </div>
+  </section>
+)}
+
+<style>
+  .github-stats {
+    background-color: var(--md-sys-color-surface-container);
+    border-radius: 24px;
+    padding: 44px;
+    border: 1px solid var(--md-sys-color-outline-variant);
+    margin: 60px 0;
+  }
+
+  .github-stats h3 {
+    font-size: 28px;
+    font-weight: 800;
+    text-align: center;
+    margin-bottom: 32px;
+    color: var(--md-sys-color-on-surface);
+  }
+
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 24px;
+    margin-bottom: 32px;
+  }
+
+  .stat-item {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 24px;
+    background-color: var(--md-sys-color-surface-container-high);
+    border-radius: 16px;
+    transition: all 0.3s;
+  }
+
+  .stat-item:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+  }
+
+  .stat-item .material-icons {
+    font-size: 40px;
+    color: var(--md-sys-color-primary);
+  }
+
+  .stat-value {
+    font-size: 32px;
+    font-weight: 900;
+    color: var(--md-sys-color-primary);
+    line-height: 1;
+  }
+
+  .stat-label {
+    font-size: 14px;
+    color: var(--md-sys-color-on-surface-variant);
+    margin-top: 4px;
+  }
+
+  .languages {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    justify-content: center;
+    padding-top: 24px;
+    border-top: 1px solid var(--md-sys-color-outline-variant);
+  }
+
+  .languages > span:first-child {
+    font-weight: 600;
+    color: var(--md-sys-color-on-surface-variant);
+  }
+
+  .language-tag {
+    padding: 6px 16px;
+    background-color: var(--md-sys-color-surface-container-highest);
+    border: 1px solid var(--md-sys-color-outline-variant);
+    border-radius: 100px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--md-sys-color-on-surface);
+  }
+</style>
